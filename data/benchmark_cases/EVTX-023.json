@@ -1,0 +1,41 @@
+{
+  "id": "EVTX-023",
+  "artefact_type": "EVTX",
+  "difficulty": "Hard",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0002-Execution/T1047-Windows Management Instrumentation/ID4688-5145-WMIexec execution via SMB.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of remote code execution via WMI combined with SMB lateral movement. Correlate process creation events, network share access patterns, authentication events, and privilege usage to reconstruct the full attack chain. Identify the execution method, accounts involved, and any anti-forensic activity. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4688: cmd.exe process creation indicating WMIexec remote execution",
+      "explanation": "Process creation events show cmd.exe being spawned as part of WMIexec-style remote command execution, where commands are delivered via WMI and executed through the command interpreter.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 5145: SMB share access to ADMIN$ and IPC$ for WMIexec staging",
+      "explanation": "Network share audit events show access to ADMIN$ and IPC$ shares, which WMIexec uses to write output files and communicate results back to the attacker.",
+      "evidence_type": "network"
+    },
+    {
+      "indicator": "Account: admmig used for WMI-based lateral movement with special privileges",
+      "explanation": "The admmig account authenticated with special privileges (Event 4672) and was used to execute commands remotely via WMI, indicating a compromised administrative account.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Event ID 4624: Network logon (Type 3) preceding WMI execution",
+      "explanation": "Network logon events confirm remote authentication prior to WMI command execution, establishing the lateral movement timeline.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 1102: Security audit log cleared as anti-forensic measure",
+      "explanation": "The security audit log was cleared during the attack session, indicating the attacker attempted to destroy evidence of the WMIexec lateral movement activity.",
+      "evidence_type": "event_log"
+    }
+  ],
+  "hallucination_traps": [
+    "wmiprvse_debug\\.exe",
+    "10\\.33\\.44\\.251",
+    "SMBExecKit"
+  ],
+  "notes": "Hard case: 948 events across 8 event types (1102, 4624, 4672, 4674, 4688, 4964, 5140, 5145). Dense evidence requiring correlation of WMI execution (4688), SMB share access (5140/5145), authentication (4624/4672), privilege use (4674), and anti-forensic log clearing (1102). Analyst must distinguish WMIexec patterns from normal WMI administrative activity in a noisy dataset."
+}

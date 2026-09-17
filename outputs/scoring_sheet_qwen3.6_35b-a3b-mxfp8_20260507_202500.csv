@@ -1,0 +1,181 @@
+TestID,Difficulty,Model,Run,Status,Extraction,Interpretation,NoHallucination,Reasoning,TotalScore,Grade
+BENIGN-ID33205-SQL Server successful admin login.csv,,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,3.0,4.0,2,15.0,B
+BENIGN-ID1-Admin PowerShell routine diagnostic.csv,,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,3.0,4.0,2,15.0,B
+BENIGN-ID4698-Windows Update scheduled task.csv,,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,3.0,2.0,2,13.0,C
+BENIGN-ID1-GPO refresh by SYSTEM via gpupdate.csv,,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,3.0,3.3,1,13.3,C
+BENIGN-ID1000-Defender scheduled quick scan.csv,,qwen3.6:35b-a3b-mxfp8,1,processed,5.0,3.0,3.3,1,12.3,C
+BENIGN-ID1-WSUS update scan via wuauclt.csv,,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,3.0,4.0,1,14.0,B
+BENIGN-ID1-Authorised MSI install via SCCM.csv,,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,3.0,3.3,2,14.3,B
+BENIGN-ID4624-AD replication health probe by DC.csv,,qwen3.6:35b-a3b-mxfp8,1,processed,5.0,3.0,4.0,1,13.0,C
+BENIGN-ID1-Admin MMC console session via RDP.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-SCCM creates patch deployment scheduled task.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-Helpdesk audits Domain Admins membership.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,3.0,2.0,4.0,3,12.0,C
+BENIGN-ID1-SCCM hardware inventory via wmic.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-GPO applies registry policy via reg add.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-SCCM enforces firewall domain profile via netsh.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID1-Windows Update bitsadmin patch transfer.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,1,16.0,B
+BENIGN-ID4624-Service logon for Veeam Backup Service.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,1,16.0,B
+BENIGN-ID4624-Batch logon for Update Orchestrator task.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,1,16.0,B
+BENIGN-ID4624-Admin RDP from corporate jumpbox.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,2.0,2,15.0,B
+BENIGN-ID4624-User SMB read from public share.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID4673-Veeam backup uses SeBackupPrivilege.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,6.0,3.3,3,18.3,A
+BENIGN-ID4674-Defender reads Run key during scan.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,1,16.0,B
+BENIGN-ID4672-Admin RDP session special privileges.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,3,18.0,A
+BENIGN-ID4720-Helpdesk creates user during onboarding.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,2.7,2,15.7,B
+BENIGN-ID4732-Helpdesk adds user to Software Devs group.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID4738-Helpdesk password reset for locked user.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,3.3,3,17.3,A
+BENIGN-ID4702-Microsoft updates Diagnosis scheduled task.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,2.0,2,15.0,B
+BENIGN-ID7045-Adobe Acrobat Update Service install.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID4768-Kerberos TGT and TGS for user drive map.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,1,16.0,B
+BENIGN-ID4663-Accountant reads finance share file.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,3.3,3,17.3,A
+BENIGN-ID4104-SCCM compliance check PowerShell script.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,2,17.0,A
+ID33205-SQL Server failed login with disabled SA account.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,3.3,3,17.3,A
+ID4625-failed login with denied access due to account restriction.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,6.0,3.3,4,19.3,A
+ID1-WMI spwaning PowerShell process - WMImplant.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,6.0,4.0,4,20.0,A
+ID1-WMIexec process execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,4.5,5.0,2.7,3,15.2,B
+ID33205-SQL Server member added to database role.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,6.0,4.0,3,19.0,A
+ID33205-SQL Server member added to server role.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,6.0,4.0,3,19.0,A
+ID4673-Privilege SeMachineAccountPrivilege called.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,3.3,3,17.3,A
+ID4648-4624-RunAsCS login.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,5.0,6.0,4.0,4,19.0,A
+"4624,4674,4688- CrackMap Exec SMB mimikatz.evtx",easy,qwen3.6:35b-a3b-mxfp8,1,processed,0.0,0.0,4.0,0,4.0,D
+ID1-CrackMapExec payload execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,0.0,0.0,4.0,0,4.0,D
+ID1-12-13-Wdigest authentication activation.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,2,17.0,A
+ID1-LSASS dump with LSASSY (SYSMON).evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,3,18.0,A
+ID4688-Audit policy enumerated.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,4.8,1.0,4.0,2,11.8,C
+ID4688-Firewall configuration enumerated (command).evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,3,18.0,A
+"ID4688,4778,4779 RDP hijack direct.evtx",easy,qwen3.6:35b-a3b-mxfp8,1,processed,0.0,0.0,4.0,0,4.0,D
+ID4688-4778 RDP hijack command execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,0.0,0.0,4.0,0,4.0,D
+ID13-RDP shadow session configuration enabled (registry).evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,4.0,2,17.0,A
+ID5600-proxy configuration changed.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,5.0,2.0,2,15.0,B
+ID4688-netsh RDP port forwarding abuse.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,0.0,0.0,4.0,0,4.0,D
+"ID 768,775,793,796,817,840-BitLocker encryption activated.evtx",easy,qwen3.6:35b-a3b-mxfp8,1,processed,2.6,0.0,4.0,1,7.6,D
+ID4688-Delete VSS backup (WMI).evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,5.6,5.0,4.0,1,15.6,B
+ID33205-SQL Server user linked to a database.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,4.5,1.0,4.0,2,11.5,C
+ID400-800-CrackMapExec payload execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,0.0,0.0,4.0,0,4.0,D
+ID10-Mimikatz LSASS process dump.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,6.0,4.0,4,20.0,A
+ID4688-Scheduled task configuration enumeration.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,5.5,5.0,4.0,2,16.5,B
+"ID4688,4624-RottenPotatoNG.evtx",easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,6.0,4.0,4,20.0,A
+ID3-7-10-Suspicious DLL loaded (CME+Mimikatz).evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,6.0,6.0,4.0,3,19.0,A
+ID4825-Denied RDP connection with valid credentials.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,4.5,1.0,3.3,3,11.8,C
+ID4688-Delete Window backup (webadmin).evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,4.8,1.0,4.0,2,11.8,C
+ID4688-SPN added to an account.evtx,easy,qwen3.6:35b-a3b-mxfp8,1,processed,5.4,5.0,3.3,2,15.7,B
+BENIGN-ID33205-SQL Server successful admin login.csv,,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,3.0,4.0,2,15.0,B
+BENIGN-ID1-Admin PowerShell routine diagnostic.csv,,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,3.0,4.0,2,15.0,B
+BENIGN-ID4698-Windows Update scheduled task.csv,,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,3.0,2.0,2,13.0,C
+BENIGN-ID1-GPO refresh by SYSTEM via gpupdate.csv,,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,3.0,3.3,1,13.3,C
+BENIGN-ID1000-Defender scheduled quick scan.csv,,qwen3.6:35b-a3b-mxfp8,2,processed,5.0,3.0,3.3,1,12.3,C
+BENIGN-ID1-WSUS update scan via wuauclt.csv,,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,3.0,4.0,1,14.0,B
+BENIGN-ID1-Authorised MSI install via SCCM.csv,,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,3.0,3.3,2,14.3,B
+BENIGN-ID4624-AD replication health probe by DC.csv,,qwen3.6:35b-a3b-mxfp8,2,processed,5.0,3.0,4.0,1,13.0,C
+BENIGN-ID1-Admin MMC console session via RDP.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-SCCM creates patch deployment scheduled task.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-Helpdesk audits Domain Admins membership.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,3.0,2.0,4.0,3,12.0,C
+BENIGN-ID1-SCCM hardware inventory via wmic.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-GPO applies registry policy via reg add.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-SCCM enforces firewall domain profile via netsh.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID1-Windows Update bitsadmin patch transfer.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,1,16.0,B
+BENIGN-ID4624-Service logon for Veeam Backup Service.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID4624-Batch logon for Update Orchestrator task.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,2.7,1,14.7,B
+BENIGN-ID4624-Admin RDP from corporate jumpbox.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,1,16.0,B
+BENIGN-ID4624-User SMB read from public share.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID4673-Veeam backup uses SeBackupPrivilege.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,2.7,2,15.7,B
+BENIGN-ID4674-Defender reads Run key during scan.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID4672-Admin RDP session special privileges.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,3.3,3,17.3,A
+BENIGN-ID4720-Helpdesk creates user during onboarding.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,2.7,2,15.7,B
+BENIGN-ID4732-Helpdesk adds user to Software Devs group.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID4738-Helpdesk password reset for locked user.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,3.3,3,17.3,A
+BENIGN-ID4702-Microsoft updates Diagnosis scheduled task.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,2.0,2,15.0,B
+BENIGN-ID7045-Adobe Acrobat Update Service install.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID4768-Kerberos TGT and TGS for user drive map.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,1,16.0,B
+BENIGN-ID4663-Accountant reads finance share file.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID4104-SCCM compliance check PowerShell script.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,2,17.0,A
+ID33205-SQL Server failed login with disabled SA account.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,3.3,3,17.3,A
+ID4625-failed login with denied access due to account restriction.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,3,18.0,A
+ID1-WMI spwaning PowerShell process - WMImplant.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,6.0,4.0,4,20.0,A
+ID1-WMIexec process execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,4.5,5.0,2.7,3,15.2,B
+ID33205-SQL Server member added to database role.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,6.0,4.0,3,19.0,A
+ID33205-SQL Server member added to server role.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,6.0,4.0,3,19.0,A
+ID4673-Privilege SeMachineAccountPrivilege called.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,3.3,3,17.3,A
+ID4648-4624-RunAsCS login.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,5.0,6.0,4.0,4,19.0,A
+"4624,4674,4688- CrackMap Exec SMB mimikatz.evtx",easy,qwen3.6:35b-a3b-mxfp8,2,processed,0.0,0.0,4.0,0,4.0,D
+ID1-CrackMapExec payload execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,0.0,0.0,4.0,0,4.0,D
+ID1-12-13-Wdigest authentication activation.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,2,17.0,A
+ID1-LSASS dump with LSASSY (SYSMON).evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,3,18.0,A
+ID4688-Audit policy enumerated.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,4.8,1.0,4.0,2,11.8,C
+ID4688-Firewall configuration enumerated (command).evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,3,18.0,A
+"ID4688,4778,4779 RDP hijack direct.evtx",easy,qwen3.6:35b-a3b-mxfp8,2,processed,0.0,0.0,4.0,0,4.0,D
+ID4688-4778 RDP hijack command execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,0.0,0.0,4.0,0,4.0,D
+ID13-RDP shadow session configuration enabled (registry).evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,2,17.0,A
+ID5600-proxy configuration changed.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,2.0,2,15.0,B
+ID4688-netsh RDP port forwarding abuse.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,0.0,0.0,4.0,0,4.0,D
+"ID 768,775,793,796,817,840-BitLocker encryption activated.evtx",easy,qwen3.6:35b-a3b-mxfp8,2,processed,2.6,0.0,4.0,1,7.6,D
+ID4688-Delete VSS backup (WMI).evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,5.0,4.0,1,16.0,B
+ID33205-SQL Server user linked to a database.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,4.5,1.0,4.0,2,11.5,C
+ID400-800-CrackMapExec payload execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,0.0,0.0,4.0,0,4.0,D
+ID10-Mimikatz LSASS process dump.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,6.0,4.0,4,20.0,A
+ID4688-Scheduled task configuration enumeration.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,5.5,5.0,4.0,2,16.5,B
+"ID4688,4624-RottenPotatoNG.evtx",easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,6.0,4.0,4,20.0,A
+ID3-7-10-Suspicious DLL loaded (CME+Mimikatz).evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,6.0,6.0,4.0,3,19.0,A
+ID4825-Denied RDP connection with valid credentials.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,4.5,1.0,3.3,3,11.8,C
+ID4688-Delete Window backup (webadmin).evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,4.8,1.0,4.0,2,11.8,C
+ID4688-SPN added to an account.evtx,easy,qwen3.6:35b-a3b-mxfp8,2,processed,5.4,5.0,3.3,2,15.7,B
+BENIGN-ID33205-SQL Server successful admin login.csv,,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,3.0,4.0,2,15.0,B
+BENIGN-ID1-Admin PowerShell routine diagnostic.csv,,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,3.0,4.0,2,15.0,B
+BENIGN-ID4698-Windows Update scheduled task.csv,,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,3.0,2.0,2,13.0,C
+BENIGN-ID1-GPO refresh by SYSTEM via gpupdate.csv,,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,3.0,3.3,1,13.3,C
+BENIGN-ID1000-Defender scheduled quick scan.csv,,qwen3.6:35b-a3b-mxfp8,3,processed,5.0,3.0,3.3,1,12.3,C
+BENIGN-ID1-WSUS update scan via wuauclt.csv,,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,3.0,4.0,1,14.0,B
+BENIGN-ID1-Authorised MSI install via SCCM.csv,,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,3.0,3.3,2,14.3,B
+BENIGN-ID4624-AD replication health probe by DC.csv,,qwen3.6:35b-a3b-mxfp8,3,processed,5.0,3.0,4.0,1,13.0,C
+BENIGN-ID1-Admin MMC console session via RDP.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-SCCM creates patch deployment scheduled task.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-Helpdesk audits Domain Admins membership.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,3.0,2.0,4.0,3,12.0,C
+BENIGN-ID1-SCCM hardware inventory via wmic.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-GPO applies registry policy via reg add.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID1-SCCM enforces firewall domain profile via netsh.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID1-Windows Update bitsadmin patch transfer.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,1,16.0,B
+BENIGN-ID4624-Service logon for Veeam Backup Service.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID4624-Batch logon for Update Orchestrator task.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,2.7,1,14.7,B
+BENIGN-ID4624-Admin RDP from corporate jumpbox.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,1,16.0,B
+BENIGN-ID4624-User SMB read from public share.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID4673-Veeam backup uses SeBackupPrivilege.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,2.7,2,15.7,B
+BENIGN-ID4674-Defender reads Run key during scan.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID4672-Admin RDP session special privileges.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,3.3,3,17.3,A
+BENIGN-ID4720-Helpdesk creates user during onboarding.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,2.7,2,15.7,B
+BENIGN-ID4732-Helpdesk adds user to Software Devs group.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID4738-Helpdesk password reset for locked user.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,3.3,3,17.3,A
+BENIGN-ID4702-Microsoft updates Diagnosis scheduled task.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,2.0,2,15.0,B
+BENIGN-ID7045-Adobe Acrobat Update Service install.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,3.3,2,16.3,B
+BENIGN-ID4768-Kerberos TGT and TGS for user drive map.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,1,16.0,B
+BENIGN-ID4663-Accountant reads finance share file.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,2,17.0,A
+BENIGN-ID4104-SCCM compliance check PowerShell script.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,2,17.0,A
+ID33205-SQL Server failed login with disabled SA account.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,3.3,3,17.3,A
+ID4625-failed login with denied access due to account restriction.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,3,18.0,A
+ID1-WMI spwaning PowerShell process - WMImplant.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,6.0,4.0,4,20.0,A
+ID1-WMIexec process execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,4.5,5.0,2.7,3,15.2,B
+ID33205-SQL Server member added to database role.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,6.0,4.0,3,19.0,A
+ID33205-SQL Server member added to server role.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,6.0,4.0,3,19.0,A
+ID4673-Privilege SeMachineAccountPrivilege called.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,3.3,3,17.3,A
+ID4648-4624-RunAsCS login.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,5.0,6.0,4.0,4,19.0,A
+"4624,4674,4688- CrackMap Exec SMB mimikatz.evtx",easy,qwen3.6:35b-a3b-mxfp8,3,processed,0.0,0.0,4.0,0,4.0,D
+ID1-CrackMapExec payload execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,0.0,0.0,4.0,0,4.0,D
+ID1-12-13-Wdigest authentication activation.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,2,17.0,A
+ID1-LSASS dump with LSASSY (SYSMON).evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,3,18.0,A
+ID4688-Audit policy enumerated.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,4.8,1.0,4.0,2,11.8,C
+ID4688-Firewall configuration enumerated (command).evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,3,18.0,A
+"ID4688,4778,4779 RDP hijack direct.evtx",easy,qwen3.6:35b-a3b-mxfp8,3,processed,0.0,0.0,4.0,0,4.0,D
+ID4688-4778 RDP hijack command execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,0.0,0.0,4.0,0,4.0,D
+ID13-RDP shadow session configuration enabled (registry).evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,2,17.0,A
+ID5600-proxy configuration changed.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,2.0,2,15.0,B
+ID4688-netsh RDP port forwarding abuse.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,0.0,0.0,4.0,0,4.0,D
+"ID 768,775,793,796,817,840-BitLocker encryption activated.evtx",easy,qwen3.6:35b-a3b-mxfp8,3,processed,2.6,0.0,4.0,1,7.6,D
+ID4688-Delete VSS backup (WMI).evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,5.0,4.0,1,16.0,B
+ID33205-SQL Server user linked to a database.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,4.5,1.0,4.0,2,11.5,C
+ID400-800-CrackMapExec payload execution.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,0.0,0.0,4.0,0,4.0,D
+ID10-Mimikatz LSASS process dump.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,6.0,4.0,4,20.0,A
+ID4688-Scheduled task configuration enumeration.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,5.5,5.0,4.0,2,16.5,B
+"ID4688,4624-RottenPotatoNG.evtx",easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,6.0,4.0,4,20.0,A
+ID3-7-10-Suspicious DLL loaded (CME+Mimikatz).evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,6.0,6.0,4.0,3,19.0,A
+ID4825-Denied RDP connection with valid credentials.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,4.5,1.0,3.3,3,11.8,C
+ID4688-Delete Window backup (webadmin).evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,4.8,1.0,4.0,2,11.8,C
+ID4688-SPN added to an account.evtx,easy,qwen3.6:35b-a3b-mxfp8,3,processed,5.4,5.0,3.3,2,15.7,B

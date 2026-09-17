@@ -1,0 +1,36 @@
+{
+  "id": "EVTX-018",
+  "artefact_type": "EVTX",
+  "difficulty": "Medium",
+  "test_set": "B",
+  "artefact_file": "test_data/evtx/TA0004-Privilege Escalation/T1134-Access Token Manipulation/ID4688,4648,4624-Runas execution with different user.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of access token manipulation or credential misuse via runas-style execution. Identify the accounts involved, the logon patterns, and how privileges were escalated. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4648: Explicit credential logon (runas-style)",
+      "explanation": "Event 4648 records a logon attempt using explicitly provided credentials, indicating the use of runas or similar mechanism to execute commands as a different user.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Accounts: admmig and hack1 involved in credential switching",
+      "explanation": "The admmig account was used to perform runas execution as the hack1 account, suggesting lateral credential usage or token manipulation for privilege escalation.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Event ID 4624: Successful logon confirming credential use",
+      "explanation": "Successful logon events (4624) confirm the explicit credentials were accepted, establishing a session under the alternate identity.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 4672: Special privileges assigned to the new logon",
+      "explanation": "Special privilege assignment events indicate the target account received elevated privileges upon logon, confirming privilege escalation through token manipulation.",
+      "evidence_type": "event_log"
+    }
+  ],
+  "hallucination_traps": [
+    "svc_printmgr",
+    "172\\.31\\.255\\.88",
+    "RubeusPro"
+  ],
+  "notes": "Medium case: requires correlating 4648 (explicit credential), 4624 (logon), 4672 (privilege assignment), and 4688 (process creation) events. Must connect the runas execution chain between admmig and hack1 accounts with the log clearing (1102) that follows."
+}

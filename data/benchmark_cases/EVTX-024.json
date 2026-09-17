@@ -1,0 +1,36 @@
+{
+  "id": "EVTX-024",
+  "artefact_type": "EVTX",
+  "difficulty": "Hard",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0005-Defense Evasion/T1027-Obfuscated Files or Information/ID4688-Obfuscated payload transfer via service name - Tchopper.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of obfuscated payload delivery or data encoding used for defense evasion. Focus on process creation events to identify encoded or obfuscated command-line arguments, unusual service names, and suspicious process chains. Determine the technique used to transfer the payload and the accounts involved. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4688: cmd.exe and dllhost.exe process creation with obfuscated service name payloads",
+      "explanation": "Process creation events reveal commands using service names as a covert channel to transfer encoded payloads, a technique associated with the Tchopper tool for defense evasion.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Obfuscated payload embedded in service name field",
+      "explanation": "The attacker encoded a malicious payload within a Windows service name, exploiting the service creation mechanism as a data transfer channel to evade detection by security tools.",
+      "evidence_type": "command"
+    },
+    {
+      "indicator": "Account: admmig used for obfuscated payload delivery",
+      "explanation": "The admmig administrative account was used to execute the obfuscated payload transfer, requiring elevated privileges to create and manipulate service configurations.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Process chain: dllhost.exe spawning suspicious child processes",
+      "explanation": "The dllhost.exe COM surrogate process appears in the execution chain, indicating the obfuscated payload may leverage COM object execution for further evasion.",
+      "evidence_type": "process"
+    }
+  ],
+  "hallucination_traps": [
+    "CVE-2023-74102",
+    "searchindexer_svc\\.dll",
+    "7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f"
+  ],
+  "notes": "Hard case: 499 events all of type 4688 requiring deep command-line analysis. The obfuscation technique (payload in service name) is non-obvious and requires understanding of Tchopper's service-name-based data exfiltration method. Analyst must parse through many process creation events to identify the encoded payloads buried among legitimate process activity."
+}

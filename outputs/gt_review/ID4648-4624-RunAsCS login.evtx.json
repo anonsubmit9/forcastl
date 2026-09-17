@@ -1,0 +1,100 @@
+{
+  "file": "ID4648-4624-RunAsCS login.evtx",
+  "gt_key": "ID4648-4624-RunAsCS login.evtx",
+  "malicious": "YES",
+  "alignment_pct": 80.0,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Eventlog\"/>\n    <EventID>1102</EventID>\n    <TimeCreated SystemTime=\"2022-01-07 22:05:06.9368809\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4648</EventID>\n    <TimeCreated SystemTime=\"2022-01-07 22:05:07.6400307\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"SubjectUserName\">admmig</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x8B0AAD6</Data>\n    <Data Name=\"LogonGuid\">c4c6d57e-67c1-4d4c-700c-d078b36c742c</Data>\n    <Data Name=\"TargetUserName\">test10</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonGuid\">b1def3be-3614-0b9b-d23b-60c8ff7b760c</Data>\n    <Data Name=\"TargetServerName\">localhost</Data>\n    <Data Name=\"TargetInfo\">localhost</Data>\n    <Data Name=\"ProcessId\">0x9D0</Data>\n    <Data Name=\"ProcessName\">C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe</Data>\n    <Data Name=\"IpAddress\">-</Data>\n    <Data Name=\"IpPort\">-</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4624</EventID>\n    <TimeCreated SystemTime=\"2022-01-07 22:05:07.6400307\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"SubjectUserName\">admmig</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x8B0AAD6</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1299</Data>\n    <Data Name=\"TargetUserName\">test10</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0xF16A5B8</Data>\n    <Data Name=\"LogonType\">3</Data>\n    <Data Name=\"LogonProcessName\">Advapi  </Data>\n    <Data Name=\"AuthenticationPackageName\">Negotiate</Data>\n    <Data Name=\"WorkstationName\">FS03</Data>\n    <Data Name=\"LogonGuid\">b1def3be-3614-0b9b-d23b-60c8ff7b760c</Data>\n    <Data Name=\"TransmittedServices\">-</Data>\n    <Data Name=\"LmPackageName\">-</Data>\n    <Data Name=\"KeyLength\">0</Data>\n    <Data Name=\"ProcessId\">0x9D0</Data>\n    <Data Name=\"ProcessName\">C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe</Data>\n    <Data Name=\"IpAddress\">-</Data>\n    <Data Name=\"IpPort\">-</Data>\n    <Data Name=\"ImpersonationLevel\">%%1833</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2022-01-07 22:05:07.6400307\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS03$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0xD7C</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1936</Data>\n    <Data Name=\"ProcessId\">0x9D0</Data>\n    <Data Name=\"CommandLine\">/c whoami</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">test10</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0xF16A5B8</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2022-01-07 22:05:07.6400307\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1299</Data>\n    <Data Name=\"SubjectUserName\">test10</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0xF16A5B8</Data>\n    <Data Name=\"NewProcessId\">0x438</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\conhost.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1936</Data>\n    <Data Name=\"ProcessId\">0xD7C</Data>\n    <Data Name=\"CommandLine\">\\??\\C:\\Windows\\system32\\conhost.exe 0xffffffff</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2022-01-07 22:05:07.6556554\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1299</Data>\n    <Data Name=\"SubjectUserName\">test10</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0xF16A5B8</Data>\n    <Data Name=\"NewProcessId\">0x234</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\whoami.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1936</Data>\n    <Data Name=\"ProcessId\">0xD7C</Data>\n    <Data Name=\"CommandLine\">whoami</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "1102",
+      "4624",
+      "4648",
+      "4688"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\conhost.exe",
+      "C:\\Windows\\System32\\whoami.exe",
+      "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    ],
+    "accounts": [
+      "admmig",
+      "FS03$",
+      "test10"
+    ],
+    "commands": [
+      "/c whoami",
+      "\\??\\C:\\Windows\\system32\\conhost.exe 0xffffffff",
+      "whoami"
+    ],
+    "network": [
+      "FS03",
+      "localhost"
+    ],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "1102",
+      "4624",
+      "4648",
+      "4688"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\conhost.exe",
+      "C:\\Windows\\System32\\whoami.exe",
+      "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    ],
+    "accounts": [
+      "admmig",
+      "FS03$",
+      "test10"
+    ],
+    "commands": [
+      "/c whoami",
+      "\\??\\C:\\Windows\\system32\\conhost.exe 0xffffffff",
+      "whoami"
+    ],
+    "network": [
+      "FS03",
+      "localhost"
+    ],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "1102",
+      "4648",
+      "4624",
+      "4688"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\conhost.exe",
+      "C:\\Windows\\System32\\whoami.exe"
+    ],
+    "accounts": [
+      "admmig",
+      "test10",
+      "FS03$"
+    ],
+    "commands": [
+      "/c whoami, \\??\\C:\\Windows\\system32\\conhost.exe 0xffffffff, whoami"
+    ],
+    "network": [],
+    "registry": []
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "network": [
+      "FS03",
+      "localhost"
+    ]
+  }
+}

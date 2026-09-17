@@ -1,0 +1,57 @@
+name: test
+
+# Runs on push and PRs to master/main (and on demand via workflow_dispatch).
+# The same checks are the local pre-PR gate (see CONTRIBUTING.md):
+#   ruff check src/ tools/ tests/
+#   forcastl-{detect,compare,benchmark,score,web} --help
+#   pytest -q --cov=forcastl --cov-fail-under=66   (or: pytest -m "not slow")
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,web]"
+      - name: Lint (ruff — pyflakes)
+        run: python -m ruff check src/ tools/ tests/
+      - name: Console-script smoke check
+        run: |
+          forcastl-detect --help > /dev/null
+          forcastl-compare --help > /dev/null
+          forcastl-benchmark --help > /dev/null
+          forcastl-score --help > /dev/null
+          forcastl-web --help > /dev/null
+      - name: Run tests (with coverage floor)
+        # Ratchet floor — currently ~68%; raise as coverage improves. Runs the
+        # full suite incl. @slow corpus tests. Locally: pytest -m "not slow".
+        run: python -m pytest -q --cov=forcastl --cov-report=term-missing:skip-covered --cov-fail-under=66
+
+  audit:
+    # Dependency vulnerability scan — informational, does not block the gate.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: pip-audit
+        continue-on-error: true
+        run: |
+          python -m pip install --upgrade pip pip-audit
+          pip install -e ".[dev,web]"
+          pip-audit

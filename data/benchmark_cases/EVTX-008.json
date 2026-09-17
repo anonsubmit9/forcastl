@@ -1,0 +1,36 @@
+{
+  "id": "EVTX-008",
+  "artefact_type": "EVTX",
+  "difficulty": "Easy",
+  "test_set": "B",
+  "artefact_file": "test_data/evtx/TA0004-Privilege Escalation/T1134.005-Access Token Manipulation SID-History Injection/ID 4765 - SID history added.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of privilege escalation through SID history manipulation. Identify which accounts were involved, what security objects were accessed, and the implications of the activity. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4765: SID History was added to an account",
+      "explanation": "SID History injection allows an attacker to add a privileged SID to a compromised account, granting access to resources without being a direct member of privileged groups.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Accounts: Administrator and Andrei",
+      "explanation": "The SID history operation involved the Administrator account and user Andrei, indicating potential privilege escalation by injecting the Administrator SID into another account.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Process: C:\\Windows\\System32\\lsass.exe",
+      "explanation": "The SID history modification was processed by LSASS (Local Security Authority Subsystem Service), confirming it was a legitimate security operation abused for privilege escalation.",
+      "evidence_type": "process"
+    },
+    {
+      "indicator": "Domain: DC=maincorp,DC=local",
+      "explanation": "The operation occurred within the maincorp.local Active Directory domain, indicating a domain-level privilege escalation attack.",
+      "evidence_type": "registry"
+    }
+  ],
+  "hallucination_traps": [
+    "DomainAdmin_temp",
+    "KerberosHammer",
+    "lsass_monitor\\.dll"
+  ],
+  "notes": "Easy case: 3 events showing clear SID history injection (Event 4765) with supporting audit events (4658, 4661). Well-known privilege escalation technique with obvious indicators."
+}

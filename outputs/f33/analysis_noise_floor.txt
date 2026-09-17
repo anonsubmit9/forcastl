@@ -1,0 +1,29 @@
+paired cases: 120  (model: Qwen3.8-Flash-Next-MLX-Serve-4bit)
+
+metric                    original   perturbed     delta
+recall                       81.67       81.67     +0.00
+fpr                          10.17       10.17     +0.00
+align                        17.37       17.37     +0.00
+hal                           0.88        0.88     +0.00
+fail                          6.00        6.00     +0.00
+recall CI  orig (70.08000677353371, 89.44231096286387)  pert (70.08000677353371, 89.44231096286387)
+FPR CI     orig (4.744732651318249, 20.46404624673654)  pert (4.744732651318249, 20.46404624673654)
+
+paired bootstrap 95% CI of delta (perturbed - original):
+  recall   [+0.00, +0.00]
+  fpr      [+0.00, +0.00]
+  align    [+0.00, +0.00]
+  hal      [+0.00, +0.00]
+
+verdict/status changes: 0 of 120
+by kind: {}
+verdict agreement: 120/120 (100.0%)
+
+Total(20) per-case delta on 114 cases completed in both: mean +0.00, |delta|>=2 on 0 cases, max +0.0 / 0.0
+  Extraction (6)       5.49 -> 5.49 (+0.00)
+  Interpretation (6)   5.10 -> 5.10 (+0.00)
+  NoHallucination (4)  3.96 -> 3.96 (+0.00)
+  Reasoning (4)        2.82 -> 2.82 (+0.00)
+FP on relabelled benign: 6/25 -> 6/25
+FP on native benign: 0/35 -> 0/35
+failures: orig 6  pert 6  same set: True  only-orig []  only-pert []

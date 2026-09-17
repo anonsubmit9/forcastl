@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-006",
+  "artefact_type": "EVTX",
+  "difficulty": "Easy",
+  "test_set": "B",
+  "artefact_file": "test_data/evtx/TA0002-Execution/T1047-Windows Management Instrumentation/ID1-WMIexec process execution.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of remote command execution via WMI (Windows Management Instrumentation). Identify the executed command, the user context, and indicators of lateral movement. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 1: Process creation of cmd.exe executing batch file from TEMP directory",
+      "explanation": "Sysmon Event 1 shows cmd.exe launching C:\\Windows\\TEMP\\execute.bat, a pattern consistent with WMIexec remote execution tools.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Command: C:\\Windows\\system32\\cmd.exe /Q /c C:\\Windows\\TEMP\\execute.bat",
+      "explanation": "The /Q (quiet mode) flag and execution of a batch file from the TEMP directory are hallmarks of WMIexec-style lateral movement.",
+      "evidence_type": "command"
+    },
+    {
+      "indicator": "Account: NT AUTHORITY\\SYSTEM",
+      "explanation": "The command executed under SYSTEM privileges, indicating the attacker had high-privilege access on the target system.",
+      "evidence_type": "account"
+    }
+  ],
+  "hallucination_traps": [
+    "PSExecNG",
+    "dllhost_runtime\\.exe",
+    "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+  ],
+  "notes": "Easy case: single Sysmon event showing classic WMIexec pattern - cmd.exe running a batch file from TEMP as SYSTEM. Unmistakable execution technique (T1047)."
+}

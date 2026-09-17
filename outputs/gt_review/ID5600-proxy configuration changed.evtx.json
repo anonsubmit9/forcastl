@@ -1,0 +1,70 @@
+{
+  "file": "ID5600-proxy configuration changed.evtx",
+  "gt_key": "ID5600-proxy configuration changed.evtx",
+  "malicious": "YES",
+  "alignment_pct": 71.4,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-WinINet-Config\"/>\n    <EventID>5600</EventID>\n    <TimeCreated SystemTime=\"2023-04-14 08:22:34.8335166\"/>\n    <Computer>WIN</Computer>\n    <Channel>Microsoft-Windows-WinINet-Config/ProxyConfigChanged</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"fAutoDetect\">False</Data>\n    <Data Name=\"pwszAutoConfigUrl\"></Data>\n    <Data Name=\"pwszProxy\">http://hacker-proxy.lan:123</Data>\n    <Data Name=\"pwszProxyBypass\"></Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-WinINet-Config\"/>\n    <EventID>5600</EventID>\n    <TimeCreated SystemTime=\"2023-04-14 08:22:34.8359851\"/>\n    <Computer>WIN</Computer>\n    <Channel>Microsoft-Windows-WinINet-Config/ProxyConfigChanged</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"fAutoDetect\">False</Data>\n    <Data Name=\"pwszAutoConfigUrl\"></Data>\n    <Data Name=\"pwszProxy\">http://hacker-proxy.lan:123</Data>\n    <Data Name=\"pwszProxyBypass\"></Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-WinINet-Config\"/>\n    <EventID>5600</EventID>\n    <TimeCreated SystemTime=\"2023-04-14 08:24:15.2119054\"/>\n    <Computer>WIN</Computer>\n    <Channel>Microsoft-Windows-WinINet-Config/ProxyConfigChanged</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"fAutoDetect\">False</Data>\n    <Data Name=\"pwszAutoConfigUrl\"></Data>\n    <Data Name=\"pwszProxy\"></Data>\n    <Data Name=\"pwszProxyBypass\"></Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-WinINet-Config\"/>\n    <EventID>5600</EventID>\n    <TimeCreated SystemTime=\"2023-04-14 08:24:36.0760082\"/>\n    <Computer>WIN</Computer>\n    <Channel>Microsoft-Windows-WinINet-Config/ProxyConfigChanged</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"fAutoDetect\">False</Data>\n    <Data Name=\"pwszAutoConfigUrl\">http://hacker-bypass.com/</Data>\n    <Data Name=\"pwszProxy\"></Data>\n    <Data Name=\"pwszProxyBypass\"></Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-WinINet-Config\"/>\n    <EventID>5600</EventID>\n    <TimeCreated SystemTime=\"2023-04-14 08:24:41.5770445\"/>\n    <Computer>WIN</Computer>\n    <Channel>Microsoft-Windows-WinINet-Config/ProxyConfigChanged</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"fAutoDetect\">False</Data>\n    <Data Name=\"pwszAutoConfigUrl\">http://hacker-bypass.com/</Data>\n    <Data Name=\"pwszProxy\">http://hacker-proxy.lan:123</Data>\n    <Data Name=\"pwszProxyBypass\"></Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-WinINet-Config\"/>\n    <EventID>5600</EventID>\n    <TimeCreated SystemTime=\"2023-04-14 08:24:41.5803444\"/>\n    <Computer>WIN</Computer>\n    <Channel>Microsoft-Windows-WinINet-Config/ProxyConfigChanged</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"fAutoDetect\">False</Data>\n    <Data Name=\"pwszAutoConfigUrl\">http://hacker-bypass.com/</Data>\n    <Data Name=\"pwszProxy\">http://hacker-proxy.lan:123</Data>\n    <Data Name=\"pwszProxyBypass\"></Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-WinINet-Config\"/>\n    <EventID>5600</EventID>\n    <TimeCreated SystemTime=\"2023-04-14 08:24:56.3642876\"/>\n    <Computer>WIN</Computer>\n    <Channel>Microsoft-Windows-WinINet-Config/ProxyConfigChanged</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"fAutoDetect\">False</Data>\n    <Data Name=\"pwszAutoConfigUrl\">http://hacker-bypass.com/</Data>\n    <Data Name=\"pwszProxy\">http://hacker-proxy.lan:123</Data>\n    <Data Name=\"pwszProxyBypass\"></Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-WinINet-Config\"/>\n    <EventID>5600</EventID>\n    <TimeCreated SystemTime=\"2023-04-14 08:24:56.3680739\"/>\n    <Computer>WIN</Computer>\n    <Channel>Microsoft-Windows-WinINet-Config/ProxyConfigChanged</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"fAutoDetect\">False</Data>\n    <Data Name=\"pwszAutoConfigUrl\">http://hacker-bypass.com/</Data>\n    <Data Name=\"pwszProxy\">http://hacker-proxy.lan:123</Data>\n    <Data Name=\"pwszProxyBypass\">&lt;local&gt;</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-WinINet-Config\"/>\n    <EventID>5600</EventID>\n    <TimeCreated SystemTime=\"2023-04-14 08:25:12.2200531\"/>\n    <Computer>WIN</Computer>\n    <Channel>Microsoft-Windows-WinINet-Config/ProxyConfigChanged</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"fAutoDetect\">False</Data>\n    <Data Name=\"pwszAutoConfigUrl\">http://hacker-bypass.com/</Data>\n    <Data Name=\"pwszProxy\">http://hacker-proxy.lan:123</Data>\n    <Data Name=\"pwszProxyBypass\">&lt;local&gt;</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-WinINet-Config\"/>\n    <EventID>5600</EventID>\n    <TimeCreated SystemTime=\"2023-04-14 08:25:12.2234708\"/>\n    <Computer>WIN</Computer>\n    <Channel>Microsoft-Windows-WinINet-Config/ProxyConfigChanged</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"fAutoDetect\">False</Data>\n    <Data Name=\"pwszAutoConfigUrl\">http://hacker-bypass.com/</Data>\n    <Data Name=\"pwszProxy\">http://hacker-proxy.lan:123</Data>\n    <Data Name=\"pwszProxyBypass\">http://internal.lan;&lt;local&gt;</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "5600"
+    ],
+    "processes": [],
+    "accounts": [],
+    "commands": [],
+    "network": [
+      "hacker-bypass.com",
+      "hacker-proxy.lan",
+      "http://hacker-bypass.com/",
+      "http://hacker-proxy.lan:123",
+      "http://internal.lan",
+      "http://internal.lan;<local>",
+      "internal.lan"
+    ],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "5600"
+    ],
+    "processes": [],
+    "accounts": [],
+    "commands": [],
+    "network": [
+      "hacker-bypass.com",
+      "hacker-proxy.lan",
+      "http://hacker-bypass.com/",
+      "http://hacker-proxy.lan:123",
+      "http://internal.lan",
+      "http://internal.lan;<local>",
+      "internal.lan"
+    ],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "5600"
+    ],
+    "processes": [],
+    "accounts": [],
+    "commands": [],
+    "network": [
+      "http://hacker-proxy.lan:123",
+      "http://hacker-bypass.com/",
+      "http://internal.lan;<local>"
+    ],
+    "registry": []
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "network": [
+      "hacker-bypass.com",
+      "hacker-proxy.lan",
+      "http://internal.lan",
+      "internal.lan"
+    ]
+  }
+}

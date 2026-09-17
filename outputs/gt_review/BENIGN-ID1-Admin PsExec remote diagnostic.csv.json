@@ -1,0 +1,103 @@
+{
+  "file": "BENIGN-ID1-Admin PsExec remote diagnostic.csv",
+  "gt_key": "BENIGN-ID1-Admin PsExec remote diagnostic.evtx",
+  "malicious": "NO",
+  "alignment_pct": 83.3,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>1</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 13:02:11\"/>\n    <Computer>win-jump01.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"Image\">C:\\Tools\\PsExec64.exe</Data>\n    <Data Name=\"CommandLine\">PsExec64.exe \\\\SRV05 -accepteula -u OFFSEC\\admmig systeminfo</Data>\n    <Data Name=\"User\">OFFSEC\\admmig</Data>\n    <Data Name=\"IntegrityLevel\">High</Data>\n    <Data Name=\"ParentImage\">C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe</Data>\n    <Data Name=\"ParentCommandLine\">powershell.exe</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4624</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 13:02:12\"/>\n    <Computer>srv05.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserName\">-</Data>\n    <Data Name=\"TargetUserName\">admmig</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"LogonType\">3</Data>\n    <Data Name=\"AuthenticationPackageName\">Kerberos</Data>\n    <Data Name=\"LogonProcessName\">Kerberos</Data>\n    <Data Name=\"IpAddress\">10.23.30.10</Data>\n    <Data Name=\"WorkstationName\">WIN-JUMP01</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>1</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 13:02:12\"/>\n    <Computer>srv05.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"Image\">C:\\Windows\\PSEXESVC.exe</Data>\n    <Data Name=\"CommandLine\">C:\\Windows\\PSEXESVC.exe</Data>\n    <Data Name=\"User\">NT AUTHORITY\\SYSTEM</Data>\n    <Data Name=\"IntegrityLevel\">System</Data>\n    <Data Name=\"ParentImage\">C:\\Windows\\System32\\services.exe</Data>\n    <Data Name=\"ParentCommandLine\">C:\\Windows\\system32\\services.exe</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>1</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 13:02:13\"/>\n    <Computer>srv05.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"Image\">C:\\Windows\\System32\\systeminfo.exe</Data>\n    <Data Name=\"CommandLine\">systeminfo</Data>\n    <Data Name=\"User\">OFFSEC\\admmig</Data>\n    <Data Name=\"IntegrityLevel\">High</Data>\n    <Data Name=\"ParentImage\">C:\\Windows\\PSEXESVC.exe</Data>\n    <Data Name=\"ParentCommandLine\">C:\\Windows\\PSEXESVC.exe</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>5</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 13:02:15\"/>\n    <Computer>srv05.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"Image\">C:\\Windows\\System32\\systeminfo.exe</Data>\n    <Data Name=\"User\">OFFSEC\\admmig</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "1",
+      "5",
+      "4624"
+    ],
+    "processes": [
+      "C:\\Tools\\PsExec64.exe",
+      "C:\\Windows\\PSEXESVC.exe",
+      "C:\\Windows\\System32\\services.exe",
+      "C:\\Windows\\System32\\systeminfo.exe",
+      "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    ],
+    "accounts": [
+      "admmig",
+      "NT AUTHORITY\\SYSTEM",
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "C:\\Windows\\PSEXESVC.exe",
+      "PsExec64.exe \\\\SRV05 -accepteula -u OFFSEC\\admmig systeminfo",
+      "systeminfo"
+    ],
+    "network": [
+      "10.23.30.10",
+      "WIN-JUMP01"
+    ],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "1",
+      "5",
+      "4624"
+    ],
+    "processes": [
+      "C:\\Tools\\PsExec64.exe",
+      "C:\\Windows\\PSEXESVC.exe",
+      "C:\\Windows\\System32\\services.exe",
+      "C:\\Windows\\System32\\systeminfo.exe",
+      "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    ],
+    "accounts": [
+      "admmig",
+      "NT AUTHORITY\\SYSTEM",
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "C:\\Windows\\PSEXESVC.exe",
+      "PsExec64.exe \\\\SRV05 -accepteula -u OFFSEC\\admmig systeminfo",
+      "systeminfo"
+    ],
+    "network": [
+      "10.23.30.10",
+      "WIN-JUMP01"
+    ],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "1",
+      "4624",
+      "5"
+    ],
+    "processes": [
+      "PsExec64.exe",
+      "PSEXESVC.exe",
+      "systeminfo.exe",
+      "powershell.exe",
+      "services.exe"
+    ],
+    "accounts": [
+      "OFFSEC\\admmig",
+      "NT AUTHORITY\\SYSTEM"
+    ],
+    "commands": [
+      "PsExec64.exe \\\\SRV05 -accepteula -u OFFSEC\\admmig systeminfo, C:\\Windows\\PSEXESVC.exe, systeminfo"
+    ],
+    "network": [
+      "10.23.30.10"
+    ],
+    "registry": []
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "accounts": [
+      "admmig"
+    ],
+    "network": [
+      "WIN-JUMP01"
+    ]
+  }
+}

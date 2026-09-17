@@ -1,0 +1,167 @@
+{
+  "ID33205-SQL Server failed login with disabled SA account.evtx": {
+    "ground_truth": {
+      "tactics": ["Initial Access", "Credential Access"],
+      "techniques": ["Valid Accounts", "Brute Force"],
+      "technique_ids": ["T1078", "T1110"],
+      "event_ids": ["33205"],
+      "confidence": "high",
+      "verified_by": "security_analyst",
+      "description": "SQL Server authentication failure with disabled SA account - indicates credential access attempt",
+      "primary_tactic": "Initial Access",
+      "attack_stage": "initial-access"
+    }
+  },
+  "ID1-WMI spwaning PowerShell process - WMImplant.evtx": {
+    "ground_truth": {
+      "tactics": ["Execution", "Lateral Movement"],
+      "techniques": ["Windows Management Instrumentation", "PowerShell"],
+      "technique_ids": ["T1047", "T1059.001"],
+      "event_ids": ["1"],
+      "confidence": "high",
+      "verified_by": "security_analyst",
+      "description": "WMI spawning PowerShell process using WMImplant tool - combines execution and lateral movement capabilities",
+      "primary_tactic": "Execution",
+      "attack_stage": "multi-stage"
+    }
+  },
+  "ID1-WMIexec process execution.evtx": {
+    "ground_truth": {
+      "tactics": ["Execution", "Lateral Movement"],
+      "techniques": ["Windows Management Instrumentation"],
+      "technique_ids": ["T1047"],
+      "event_ids": ["1"],
+      "confidence": "high",
+      "verified_by": "security_analyst",
+      "description": "WMIexec tool used for remote command execution"
+    }
+  },
+  "ID4673-Privilege SeMachineAccountPrivilege called.evtx": {
+    "ground_truth": {
+      "tactics": ["Privilege Escalation"],
+      "techniques": ["Access Token Manipulation"],
+      "technique_ids": ["T1134"],
+      "event_ids": ["4673"],
+      "confidence": "high",
+      "verified_by": "security_analyst",
+      "description": "SeMachineAccountPrivilege usage indicating potential privilege escalation"
+    }
+  },
+  "ID4648-4624-RunAsCS login.evtx": {
+    "ground_truth": {
+      "tactics": ["Privilege Escalation", "Defense Evasion"],
+      "techniques": ["Valid Accounts", "Access Token Manipulation"],
+      "technique_ids": ["T1078", "T1134"],
+      "event_ids": ["4648", "4624"],
+      "confidence": "high",
+      "verified_by": "security_analyst",
+      "description": "RunAsCS tool used for credential manipulation and privilege escalation",
+      "primary_tactic": "Privilege Escalation",
+      "attack_stage": "privilege-escalation"
+    }
+  },
+  "ID1-LSASS dump with LSASSY (SYSMON).evtx": {
+    "ground_truth": {
+      "tactics": ["Credential Access", "Defense Evasion"],
+      "techniques": ["LSASS Memory", "Process Injection"],
+      "technique_ids": ["T1003.001", "T1055"],
+      "event_ids": ["1"],
+      "confidence": "high",
+      "verified_by": "security_analyst",
+      "description": "LSASSY tool used to dump LSASS memory for credential extraction with evasion techniques",
+      "primary_tactic": "Credential Access",
+      "attack_stage": "credential-access"
+    }
+  },
+  "ID4688-Audit policy enumerated.evtx": {
+    "ground_truth": {
+      "tactics": ["Discovery", "Defense Evasion"],
+      "techniques": ["System Information Discovery", "Security Software Discovery"],
+      "technique_ids": ["T1082", "T1518.001"],
+      "event_ids": ["4688"],
+      "confidence": "medium",
+      "verified_by": "security_analyst",
+      "description": "Audit policy enumeration for system reconnaissance and evasion planning",
+      "primary_tactic": "Discovery",
+      "attack_stage": "discovery"
+    }
+  },
+  "ID4688-Firewall configuration enumerated (command).evtx": {
+    "ground_truth": {
+      "tactics": ["Discovery", "Defense Evasion"],
+      "techniques": ["System Network Configuration Discovery", "Security Software Discovery"],
+      "technique_ids": ["T1016", "T1518.001"],
+      "event_ids": ["4688"],
+      "confidence": "medium",
+      "verified_by": "security_analyst",
+      "description": "Firewall configuration enumeration via command line for network discovery and evasion",
+      "primary_tactic": "Discovery",
+      "attack_stage": "discovery"
+    }
+  },
+  "ID4688,4778,4779 RDP hijack direct.evtx": {
+    "ground_truth": {
+      "tactics": ["Lateral Movement", "Persistence"],
+      "techniques": ["Remote Desktop Protocol"],
+      "technique_ids": ["T1021.001"],
+      "event_ids": ["4688", "4778", "4779"],
+      "confidence": "high",
+      "verified_by": "security_analyst",
+      "description": "Direct RDP session hijacking for lateral movement and persistence",
+      "primary_tactic": "Lateral Movement",
+      "attack_stage": "lateral-movement"
+    }
+  },
+  "ID13-RDP shadow session configuration enabled (registry).evtx": {
+    "ground_truth": {
+      "tactics": ["Persistence", "Privilege Escalation"],
+      "techniques": ["Modify Registry"],
+      "technique_ids": ["T1112"],
+      "event_ids": ["13"],
+      "confidence": "high",
+      "verified_by": "security_analyst",
+      "description": "Registry modification to enable RDP shadow sessions for persistence",
+      "primary_tactic": "Persistence",
+      "attack_stage": "persistence"
+    }
+  },
+  "ID5600-proxy configuration changed.evtx": {
+    "ground_truth": {
+      "tactics": ["Command and Control", "Defense Evasion"],
+      "techniques": ["Proxy", "Connection Proxy"],
+      "technique_ids": ["T1090", "T1090.002"],
+      "event_ids": ["5600"],
+      "confidence": "medium",
+      "verified_by": "security_analyst",
+      "description": "Windows proxy configuration modification for C2 communication and traffic evasion",
+      "primary_tactic": "Command and Control",
+      "attack_stage": "command-and-control"
+    }
+  },
+  "ID4688-netsh RDP port forwarding abuse.evtx": {
+    "ground_truth": {
+      "tactics": ["Command and Control", "Defense Evasion"],
+      "techniques": ["Protocol Tunneling"],
+      "technique_ids": ["T1572"],
+      "event_ids": ["4688"],
+      "confidence": "high",
+      "verified_by": "security_analyst",
+      "description": "Netsh used for RDP port forwarding and tunneling for C2 and evasion",
+      "primary_tactic": "Command and Control",
+      "attack_stage": "command-and-control"
+    }
+  },
+  "ID4688-Delete VSS backup (WMI).evtx": {
+    "ground_truth": {
+      "tactics": ["Impact", "Defense Evasion"],
+      "techniques": ["Inhibit System Recovery", "Indicator Removal on Host"],
+      "technique_ids": ["T1490", "T1070"],
+      "event_ids": ["4688"],
+      "confidence": "high",
+      "verified_by": "security_analyst",
+      "description": "Volume Shadow Service backup deletion via WMI to inhibit recovery and remove forensic evidence",
+      "primary_tactic": "Impact",
+      "attack_stage": "impact"
+    }
+  }
+}

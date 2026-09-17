@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Detection benchmark report · {{ model }}</title>
+<style>
+  /* ── page frame ────────────────────────────────────────────────────────── */
+  @page {
+    size: letter;
+    margin: 0.58in 0.58in 0.72in 0.58in;
+    @bottom-left  {
+      content: "FORCAST-L  ·  Run {{ run_id }}  ·  {{ model }}";
+      font-family: var(--sans);
+      font-size: 7.2pt;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: #767676;
+      padding-top: 6pt;
+      border-top: 0.4pt solid #eceae6;
+    }
+    @bottom-right {
+      content: "Page " counter(page) " of 3";
+      font-family: var(--sans);
+      font-size: 7.2pt;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: #767676;
+      padding-top: 6pt;
+      border-top: 0.4pt solid #eceae6;
+    }
+  }
+
+  :root {
+    /* Typography stack — system-only, no network */
+    --serif: "Charter", "Iowan Old Style", "Palatino Linotype", "Cambria", Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Liberation Sans", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Menlo", "Consolas", "Liberation Mono", monospace;
+
+    /* Restrained palette */
+    --ink: #0c0c0c;
+    --text: #1a1a1a;
+    --muted: #595959;
+    --tertiary: #767676;
+    --quaternary: #9a9a9a;
+    --border: #d8d8d8;
+    --border-hair: #eceae6;
+    --soft: #f4f4f2;
+    --soft-cool: #f4f6fb;
+
+    --accent: #3b5ccc;
+    --good: #1a7a5c;
+    --good-soft: #e7f3ef;
+    --warn: #8a6508;
+    --warn-soft: #faf3e0;
+    --bad: #c4342d;
+    --bad-soft: #f9e8e7;
+  }
+
+  /* ── reset + base ─────────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans);
+    font-size: 9pt;
+    line-height: 1.45;
+    color: var(--text);
+    font-feature-settings: "tnum" 1, "lnum" 1, "ss01" 1, "kern" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+    background: #fff;
+  }
+  h1, h2, h3, p, dl, dt, dd, ul, ol { margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; vertical-align: top; padding: 0; }
+
+  /* ── page container ───────────────────────────────────────────────────── */
+  .page {
+    display: block;
+    page-break-inside: avoid;
+  }
+  .page + .page { page-break-before: always; }
+
+  /* ── header band ──────────────────────────────────────────────────────── */
+  .hdr-band {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 10pt;
+    border-bottom: 0.6pt solid var(--border);
+    margin-bottom: 28pt;
+  }
+  .wordmark {
+    font-family: var(--sans);
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+  }
+  .doc-label {
+    font-family: var(--sans);
+    font-size: 7.5pt;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+  }
+
+  /* ── cover title block ────────────────────────────────────────────────── */
+  .doc-title {
+    font-family: var(--serif);
+    font-size: 34pt;
+    line-height: 1.02;
+    letter-spacing: -0.018em;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 0 0 10pt 0;
+    max-width: 6in;
+  }
+  .doc-model {
+    font-family: var(--sans);
+    font-size: 16pt;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    color: var(--accent);
+    margin: 0 0 18pt 0;
+  }
+  .meta-strip {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr auto 1fr;
+    gap: 4pt 10pt;
+    align-items: baseline;
+    padding: 9pt 0 11pt;
+    border-top: 0.4pt solid var(--border-hair);
+    border-bottom: 0.4pt solid var(--border-hair);
+    margin-bottom: 22pt;
+  }
+  .meta-strip dt {
+    font-size: 7pt;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+  }
+  .meta-strip dd {
+    font-size: 9pt;
+    font-weight: 500;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── blocks + section labels ──────────────────────────────────────────── */
+  .block { margin-bottom: 20pt; }
+  .block:last-child { margin-bottom: 0; }
+  .section-label {
+    font-family: var(--sans);
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+    margin: 0 0 8pt 0;
+    padding-bottom: 6pt;
+    border-bottom: 0.4pt solid var(--border-hair);
+  }
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 7pt;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--quaternary);
+    margin: 0 0 4pt 0;
+  }
+  .section-head {
+    font-family: var(--serif);
+    font-size: 18pt;
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 0 0 14pt 0;
+  }
+
+  /* ── verdict banner ───────────────────────────────────────────────────── */
+  .verdict-banner {
+    display: grid;
+    grid-template-columns: 4pt 1fr;
+    margin-bottom: 22pt;
+    page-break-inside: avoid;
+  }
+  .verdict-strip { background: var(--tertiary); }
+  .verdict-body {
+    padding: 12pt 16pt 12pt 14pt;
+    background: var(--soft);
+  }
+  .verdict-headline {
+    font-family: var(--sans);
+    font-size: 13pt;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    margin: 0 0 6pt 0;
+    line-height: 1.2;
+  }
+  .verdict-headline .verdict-sub {
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--muted);
+    font-size: 10.5pt;
+  }
+  .verdict-reasons {
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+  .verdict-reasons li {
+    font-family: var(--sans);
+    font-size: 8.6pt;
+    line-height: 1.55;
+    color: var(--muted);
+    padding-left: 10pt;
+    position: relative;
+    font-variant-numeric: tabular-nums;
+  }
+  .verdict-reasons li::before {
+    content: "·";
+    position: absolute;
+    left: 0;
+    color: var(--quaternary);
+    font-weight: 700;
+  }
+  .verdict-pass         .verdict-strip { background: var(--good); }
+  .verdict-pass         .verdict-body  { background: var(--good-soft); }
+  .verdict-pass         .verdict-headline { color: var(--good); }
+  .verdict-caution      .verdict-strip { background: var(--warn); }
+  .verdict-caution      .verdict-body  { background: var(--warn-soft); }
+  .verdict-caution      .verdict-headline { color: var(--warn); }
+  .verdict-fail         .verdict-strip { background: var(--bad); }
+  .verdict-fail         .verdict-body  { background: var(--bad-soft); }
+  .verdict-fail         .verdict-headline { color: var(--bad); }
+  .verdict-insufficient .verdict-strip { background: var(--tertiary); }
+  .verdict-insufficient .verdict-body  { background: var(--soft); }
+  .verdict-insufficient .verdict-headline { color: var(--muted); }
+
+  /* ── narrative ────────────────────────────────────────────────────────── */
+  .narrative {
+    font-family: var(--serif);
+    font-size: 11.2pt;
+    line-height: 1.52;
+    color: var(--text);
+    max-width: 6.3in;
+    margin: 0;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  .narrative .lead {
+    font-weight: 600;
+    color: var(--ink);
+    margin-right: 0.25em;
+  }
+
+  /* ── scorecard tiles ──────────────────────────────────────────────────── */
+  .tile-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 0.6pt solid var(--border);
+    border-left: 0.6pt solid var(--border);
+  }
+  .tile {
+    padding: 12pt 14pt 12pt;
+    border-right: 0.6pt solid var(--border);
+    border-bottom: 0.6pt solid var(--border);
+    background: #fff;
+    break-inside: avoid;
+  }
+  .tile-value {
+    font-family: var(--sans);
+    font-size: 22pt;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 6pt;
+  }
+  .tile-label {
+    font-family: var(--sans);
+    font-size: 6.8pt;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+  }
+  .tier-good    .tile-value { color: var(--good); }
+  .tier-warn    .tile-value { color: var(--warn); }
+  .tier-bad     .tile-value { color: var(--bad);  }
+  .tier-neutral .tile-value { color: var(--ink);  }
+
+  /* ── grade distribution ───────────────────────────────────────────────── */
+  .grade-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 0.6pt solid var(--border);
+    border-left: 0.6pt solid var(--border);
+  }
+  .grade-cell {
+    padding: 12pt 14pt;
+    border-right: 0.6pt solid var(--border);
+    border-bottom: 0.6pt solid var(--border);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10pt;
+  }
+  .grade-count {
+    font-family: var(--sans);
+    font-size: 22pt;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .grade-meta {
+    text-align: right;
+  }
+  .grade-label {
+    font-family: var(--sans);
+    font-size: 6.8pt;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+  }
+  .grade-share {
+    font-family: var(--sans);
+    font-size: 8.5pt;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    margin-top: 2pt;
+  }
+  .grade-a .grade-count { color: var(--good); }
+  .grade-b .grade-count { color: var(--accent); }
+  .grade-c .grade-count { color: var(--warn); }
+  .grade-d .grade-count { color: var(--bad); }
+  .grade-zero .grade-count { color: var(--quaternary); }
+
+  /* ── Page 2: analysis ─────────────────────────────────────────────────── */
+  .analysis-split {
+    display: grid;
+    grid-template-columns: 1fr 1.55in;
+    gap: 16pt;
+    align-items: start;
+    margin-bottom: 22pt;
+  }
+  .confusion {
+    width: 100%;
+    border: 0.6pt solid var(--border);
+  }
+  .confusion th, .confusion td {
+    padding: 12pt 12pt;
+    border: 0.4pt solid var(--border);
+  }
+  .confusion th {
+    font-family: var(--sans);
+    font-size: 7pt;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+    background: var(--soft);
+  }
+  .confusion td {
+    font-family: var(--sans);
+    font-size: 11pt;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+  .confusion td.row-label {
+    font-family: var(--sans);
+    font-size: 7pt;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+    background: var(--soft);
+    width: 1.25in;
+  }
+  .confusion .cell-tag {
+    font-size: 6.5pt;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+    display: block;
+    margin-bottom: 4pt;
+  }
+  .confusion .cell-value {
+    font-size: 20pt;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .confusion .cell-hit    { background: var(--good-soft); }
+  .confusion .cell-hit .cell-value { color: var(--good); }
+  .confusion .cell-miss   { background: var(--bad-soft); }
+  .confusion .cell-miss .cell-value { color: var(--bad); }
+
+  .derived-stack {
+    display: grid;
+    grid-template-rows: repeat(3, auto);
+    border-top: 0.6pt solid var(--border);
+    border-left: 0.6pt solid var(--border);
+  }
+  .derived-tile {
+    padding: 12pt 14pt;
+    border-right: 0.6pt solid var(--border);
+    border-bottom: 0.6pt solid var(--border);
+  }
+  .derived-value {
+    font-family: var(--sans);
+    font-size: 22pt;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 6pt;
+    color: var(--ink);
+  }
+  .derived-label {
+    font-family: var(--sans);
+    font-size: 6.8pt;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+  }
+  .derived-tile.tier-good .derived-value { color: var(--good); }
+  .derived-tile.tier-warn .derived-value { color: var(--warn); }
+  .derived-tile.tier-bad  .derived-value { color: var(--bad); }
+
+  .no-benign-note {
+    font-family: var(--serif);
+    font-size: 10.5pt;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 6.2in;
+    padding: 12pt 16pt;
+    border-left: 2pt solid var(--border);
+    margin-bottom: 22pt;
+  }
+
+  /* ── findings cards ───────────────────────────────────────────────────── */
+  .findings {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6pt;
+  }
+  .finding {
+    display: grid;
+    grid-template-columns: 3pt 1fr;
+    background: var(--soft);
+    break-inside: avoid;
+  }
+  .finding-strip { background: var(--tertiary); }
+  .finding-body { padding: 8pt 12pt 8pt 11pt; }
+  .finding-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10pt;
+    margin-bottom: 3pt;
+  }
+  .finding-tag {
+    font-family: var(--sans);
+    font-size: 6.5pt;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .finding-title {
+    font-family: var(--sans);
+    font-size: 9.2pt;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.35;
+  }
+  .finding-desc {
+    font-family: var(--sans);
+    font-size: 8.5pt;
+    line-height: 1.45;
+    color: var(--muted);
+    margin-top: 3pt;
+  }
+  .finding-affected {
+    font-family: var(--sans);
+    font-size: 7.2pt;
+    color: var(--tertiary);
+    margin-top: 5pt;
+    font-style: italic;
+  }
+  .finding-affected strong {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--muted);
+    margin-right: 0.4em;
+  }
+  .finding-critical  .finding-strip { background: var(--bad); }
+  .finding-critical  .finding-tag   { color: var(--bad); }
+  .finding-warning   .finding-strip { background: var(--warn); }
+  .finding-warning   .finding-tag   { color: var(--warn); }
+  .finding-info      .finding-strip { background: var(--tertiary); }
+  .finding-info      .finding-tag   { color: var(--tertiary); }
+  .findings-overflow {
+    font-family: var(--sans);
+    font-size: 7.8pt;
+    color: var(--tertiary);
+    margin-top: 7pt;
+    letter-spacing: 0.01em;
+  }
+  .findings-empty {
+    font-family: var(--serif);
+    font-size: 10.5pt;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ── Page 3: per-file table ───────────────────────────────────────────── */
+  .file-table {
+    width: 100%;
+    border-top: 0.6pt solid var(--border);
+    border-bottom: 0.6pt solid var(--border);
+    margin-bottom: 24pt;
+  }
+  .file-table thead th {
+    font-family: var(--sans);
+    font-size: 6.8pt;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+    padding: 7pt 8pt 7pt 0;
+    border-bottom: 0.4pt solid var(--border);
+  }
+  .file-table tbody td {
+    font-size: 8.2pt;
+    line-height: 1.35;
+    padding: 5pt 8pt 5pt 0;
+    border-bottom: 0.3pt solid var(--border-hair);
+    font-variant-numeric: tabular-nums;
+  }
+  .file-table tbody tr:last-child td { border-bottom: 0; }
+  .file-table th.num, .file-table td.num { text-align: right; padding-right: 0; }
+  .file-table th.center, .file-table td.center { text-align: center; }
+  .file-table .col-file {
+    color: var(--text);
+    font-weight: 500;
+    padding-right: 10pt;
+  }
+  .file-table .col-file.file-attention {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .file-table .col-expected {
+    font-size: 7.2pt;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--tertiary);
+  }
+  .verdict {
+    display: inline-block;
+    font-size: 7.6pt;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    font-variant-numeric: tabular-nums;
+  }
+  .verdict-match    { color: var(--good); }
+  .verdict-mismatch { color: var(--bad); }
+  .verdict-error    { color: var(--warn); }
+  .verdict-neutral  { color: var(--text); }
+  .grade-badge {
+    display: inline-block;
+    width: 14pt;
+    height: 14pt;
+    line-height: 14pt;
+    text-align: center;
+    font-size: 7.5pt;
+    font-weight: 700;
+    color: #fff;
+    border-radius: 1.5pt;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+  .grade-badge.g-A { background: var(--good); }
+  .grade-badge.g-B { background: var(--accent); }
+  .grade-badge.g-C { background: var(--warn); }
+  .grade-badge.g-D { background: var(--bad); }
+  .grade-badge.g-empty {
+    background: transparent;
+    color: var(--quaternary);
+    font-weight: 500;
+  }
+
+  /* ── Appendix run config ──────────────────────────────────────────────── */
+  .config-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 28pt;
+    row-gap: 0;
+    border-top: 0.4pt solid var(--border-hair);
+  }
+  .config-row {
+    display: grid;
+    grid-template-columns: 1.35in 1fr;
+    align-items: baseline;
+    padding: 6pt 0;
+    border-bottom: 0.4pt solid var(--border-hair);
+    column-gap: 10pt;
+  }
+  .config-row dt {
+    font-family: var(--sans);
+    font-size: 7pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+  }
+  .config-row dd {
+    font-family: var(--mono);
+    font-size: 8.5pt;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    word-break: break-all;
+  }
+
+  /* ── model row + verdict badge (GUI-style) ────────────────────────────── */
+  .model-row { display: flex; align-items: center; gap: 12px; margin: 2px 0 0; }
+  .vbadge {
+    display: inline-flex; align-items: center;
+    padding: 3px 11px; border-radius: 6px;
+    font-size: 9.5pt; font-weight: 700; letter-spacing: 0.06em;
+  }
+  .vbadge-pass         { background: var(--good-soft); color: var(--good); }
+  .vbadge-caution      { background: var(--warn-soft); color: var(--warn); }
+  .vbadge-fail         { background: var(--bad-soft);  color: var(--bad); }
+  .vbadge-insufficient { background: var(--soft);      color: var(--muted); }
+
+  /* ── primary KPI cards (GUI-style) ─────────────────────────────────────── */
+  .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0 0; }
+  .kpi-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .kpi-value { font-size: 26pt; font-weight: 800; letter-spacing: -0.02em; line-height: 1; color: var(--text); }
+  .kpi-label { font-size: 8pt; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-top: 9px; }
+  .kpi-sub   { font-size: 8.5pt; color: var(--tertiary); margin-top: 4px; }
+  .kpi-card.tier-good .kpi-value { color: var(--good); }
+  .kpi-card.tier-warn .kpi-value { color: var(--warn); }
+  .kpi-card.tier-bad  .kpi-value { color: var(--bad); }
+
+  /* ── compact detail panels (GUI Technical / More details) ──────────────── */
+  .detail-panel { border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; margin: 14px 0 0; background: var(--soft); }
+  .detail-panel-head { font-size: 8pt; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 11px; }
+  .detail-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 26px; }
+  .detail-group-label { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tertiary); margin-bottom: 6px; }
+  .detail-kv { margin: 0; display: grid; grid-template-columns: auto 1fr; column-gap: 12px; }
+  .detail-kv dt { font-size: 8.5pt; color: var(--muted); padding: 2.5px 0; }
+  .detail-kv dd { font-size: 8.5pt; font-weight: 600; color: var(--text); text-align: right; margin: 0; padding: 2.5px 0; font-variant-numeric: tabular-nums; }
+
+  /* ── helpers ──────────────────────────────────────────────────────────── */
+  .pull-accent { color: var(--accent); }
+  .dim { color: var(--muted); }
+  .em-dash::before { content: "—"; }
+</style>
+</head>
+<body>
+
+{# ═══════════════════════════════════════════════════════════════════════ #}
+{# PAGE 1 · COVER + EXECUTIVE SCORECARD                                    #}
+{# ═══════════════════════════════════════════════════════════════════════ #}
+<section class="page page-cover">
+  <header class="hdr-band">
+    <span class="wordmark">FORCAST-L</span>
+    <span class="doc-label">Detection benchmark report</span>
+  </header>
+
+  <h1 class="doc-title">Detection benchmark report</h1>
+  <div class="model-row">
+    <span class="doc-model">{{ model }}</span>
+    {% if verdict %}
+    <span class="vbadge vbadge-{{ 'insufficient' if verdict.insufficient else verdict.tier }}">
+      {%- if verdict.insufficient -%}NEEDS MORE DATA
+      {%- elif verdict.tier == 'pass' -%}PASS
+      {%- elif verdict.tier == 'caution' -%}CAUTION
+      {%- elif verdict.tier == 'fail' -%}FAIL
+      {%- else -%}{{ verdict.tier|upper }}{%- endif -%}
+    </span>
+    {% endif %}
+  </div>
+
+  <dl class="meta-strip">
+    <dt>Run</dt><dd>{{ run_id }}</dd>
+    <dt>Date</dt><dd>{{ started_at }}</dd>
+    <dt>Server</dt><dd>{{ server }}</dd>
+  </dl>
+
+  {# Primary 3-KPI row — Detection / FP / Hallucination #}
+  <div class="kpi-row">
+    {% for c in kpi_cards %}
+    <div class="kpi-card tier-{{ c.tier }}">
+      <div class="kpi-value">{{ c.value }}</div>
+      <div class="kpi-label">{{ c.label }}</div>
+      {% if c.sub %}<div class="kpi-sub">{{ c.sub }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {# Technical details + More details — compact columns #}
+  {% for panel in [{'head': 'Technical details', 'groups': technical_groups}, {'head': 'More details', 'groups': more_groups}] %}
+  {% if panel.groups %}
+  <section class="detail-panel">
+    <div class="detail-panel-head">{{ panel.head }}</div>
+    <div class="detail-cols">
+      {% for g in panel.groups %}
+      <div class="detail-group">
+        <div class="detail-group-label">{{ g.label }}</div>
+        <dl class="detail-kv">
+          {% for row in g.rows %}<dt>{{ row.k }}</dt><dd>{{ row.v }}</dd>{% endfor %}
+        </dl>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+  {% endfor %}
+</section>
+
+{# ═══════════════════════════════════════════════════════════════════════ #}
+{# PAGE 2 · CLASSIFICATION ANALYSIS + FINDINGS                             #}
+{# ═══════════════════════════════════════════════════════════════════════ #}
+<section class="page page-analysis">
+  <p class="eyebrow">Analysis</p>
+  <h2 class="section-head">Classification performance</h2>
+
+  {% if confusion %}
+  <div class="analysis-split">
+    <table class="confusion">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Predicted malicious</th>
+          <th>Predicted benign</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="row-label">Actually attack</td>
+          <td class="cell-hit">
+            <span class="cell-tag">True positive</span>
+            <span class="cell-value">{{ confusion.tp }}</span>
+          </td>
+          <td class="cell-miss">
+            <span class="cell-tag">False negative</span>
+            <span class="cell-value">{{ confusion.fn }}</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="row-label">Actually benign</td>
+          <td class="cell-miss">
+            <span class="cell-tag">False positive</span>
+            <span class="cell-value">{{ confusion.fp }}</span>
+          </td>
+          <td class="cell-hit">
+            <span class="cell-tag">True negative</span>
+            <span class="cell-value">{{ confusion.tn }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="derived-stack">
+      <div class="derived-tile tier-{{ confusion.recall_tier }}">
+        <div class="derived-value">{{ "%.1f"|format(confusion.recall_pct) }}%</div>
+        <div class="derived-label">Detection rate</div>
+      </div>
+      <div class="derived-tile tier-{{ confusion.fp_rate_tier }}">
+        <div class="derived-value">{{ "%.1f"|format(confusion.fp_rate_pct) }}%</div>
+        <div class="derived-label">FP rate</div>
+      </div>
+      <div class="derived-tile tier-{{ confusion.precision_tier }}">
+        <div class="derived-value">{{ "%.1f"|format(confusion.precision_pct) }}%</div>
+        <div class="derived-label">Precision</div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p class="no-benign-note">
+    This run contained no benign (labelled NO) samples; the corpus is entirely
+    malicious. False-positive rate cannot be measured — switch Mode to Mixed
+    (CSV input) to surface FP behaviour and derive precision.
+  </p>
+  {% endif %}
+
+  <p class="eyebrow">Findings &amp; recommendations</p>
+  <h2 class="section-head">What to pay attention to</h2>
+
+  {% if findings %}
+  <div class="findings">
+    {% for f in findings %}
+    <div class="finding finding-{{ f.severity }}">
+      <div class="finding-strip"></div>
+      <div class="finding-body">
+        <div class="finding-head">
+          <span class="finding-tag">{{ f.severity|upper }}</span>
+          <span class="finding-title">{{ f.title }}</span>
+        </div>
+        {% if f.description %}<div class="finding-desc">{{ f.description }}</div>{% endif %}
+        {% if f.affected %}
+        <div class="finding-affected"><strong>Affected</strong>{{ f.affected|join(", ") }}</div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% if hidden_findings_count %}
+  <p class="findings-overflow">
+    +{{ hidden_findings_count }} additional finding{{ "s" if hidden_findings_count != 1 else "" }} omitted — see run manifest for the full list.
+  </p>
+  {% endif %}
+  {% else %}
+  <p class="findings-empty">No issues flagged — all results clean.</p>
+  {% endif %}
+</section>
+
+{# ═══════════════════════════════════════════════════════════════════════ #}
+{# PAGE 3 · PER-FILE DETAILS + APPENDIX                                    #}
+{# ═══════════════════════════════════════════════════════════════════════ #}
+<section class="page page-details">
+  <p class="eyebrow">Details</p>
+  <h2 class="section-head">Per-file results</h2>
+
+  {% if per_file %}
+  <table class="file-table">
+    <thead>
+      <tr>
+        <th class="col-file">File</th>
+        <th class="col-expected">Expected</th>
+        <th class="center">Verdict</th>
+        <th class="center">Grade</th>
+        <th class="num">Align</th>
+        <th class="num">Hall</th>
+        <th class="num">Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in per_file %}
+      {% set attention = row.verdict == "ERROR" or row.is_match == False %}
+      <tr>
+        <td class="col-file{% if attention %} file-attention{% endif %}">{{ row.filename }}</td>
+        <td class="col-expected">{{ row.expected or "—" }}</td>
+        <td class="center">
+          <span class="verdict
+            {%- if row.verdict == 'ERROR' %} verdict-error
+            {%- elif row.is_match == True %} verdict-match
+            {%- elif row.is_match == False %} verdict-mismatch
+            {%- else %} verdict-neutral{% endif %}">{{ row.verdict }}</span>
+        </td>
+        <td class="center">
+          {% if row.grade %}
+          <span class="grade-badge g-{{ row.grade }}">{{ row.grade }}</span>
+          {% else %}
+          <span class="grade-badge g-empty">—</span>
+          {% endif %}
+        </td>
+        <td class="num">{{ row.align_pct if row.align_pct is not none else "—" }}</td>
+        <td class="num">{{ row.hall_pct if row.hall_pct is not none else "—" }}</td>
+        <td class="num">{{ row.score_20 if row.score_20 is not none else "—" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="no-benign-note">No per-file results recorded.</p>
+  {% endif %}
+</section>
+
+</body>
+</html>

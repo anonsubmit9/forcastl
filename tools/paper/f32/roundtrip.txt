@@ -1,0 +1,46 @@
+attack-source cases: 265   native benign (CSV only): 63
+
+== round-trip concordance on the 265 attack-source cases (verdict at threshold) ==
+>= medium      evtx vs flat_ref: agree 262/265 (98.9%)  only-evtx: 2  only-flat_ref: 1
+>= medium      evtx vs flat_csv: agree 254/265 (95.8%)  only-evtx: 10  only-flat_csv: 1
+      evtx-only : ID15457-SQL Server CMDshell enabled | ['MSSQL XPCmdshell Option Change']
+      evtx-only : ID325-327-IFM created - ESENT | ['Ntdsutil Abuse']
+      evtx-only : ID33205-SQL Server  audit object disabled | ['MSSQL Disable Audit Settings']
+      evtx-only : ID33205-SQL Server audit object deleted | ['MSSQL Disable Audit Settings']
+      evtx-only : ID33205-SQL Server audit specification deleted | ['MSSQL Disable Audit Settings']
+      evtx-only : ID33205-SQL Server audit specification disabled | ['MSSQL Disable Audit Settings']
+      evtx-only : ID33205-SQL Server member added to server role | ['MSSQL Add Account To Sysadmin Role']
+      evtx-only : ID4103,4104-DCOMexec native via PowerShell | ['Potentially Malicious PwSh']
+      csv-only  : ID18456-SQL Server failed login because only Windows auth | ['MSSQL Server Failed Logon From External Network']
+>= medium  flat_ref vs flat_csv: agree 255/265 (96.2%)  only-flat_ref: 9  only-flat_csv: 1
+>= high        evtx vs flat_ref: agree 264/265 (99.6%)  only-evtx: 1  only-flat_ref: 0
+>= high        evtx vs flat_csv: agree 257/265 (97.0%)  only-evtx: 8  only-flat_csv: 0
+      evtx-only : ID15457-SQL Server CMDshell enabled | ['MSSQL XPCmdshell Option Change']
+      evtx-only : ID33205-SQL Server  audit object disabled | ['MSSQL Disable Audit Settings']
+      evtx-only : ID33205-SQL Server audit object deleted | ['MSSQL Disable Audit Settings']
+      evtx-only : ID33205-SQL Server audit specification deleted | ['MSSQL Disable Audit Settings']
+      evtx-only : ID33205-SQL Server audit specification disabled | ['MSSQL Disable Audit Settings']
+      evtx-only : ID33205-SQL Server member added to server role | ['MSSQL Add Account To Sysadmin Role']
+      evtx-only : ID6-Failed to install an Exchange transport agent | ['Failed MSExchange Transport Agent Installation']
+      evtx-only : ID7045-Random service installation | ['Important Log File Cleared']
+>= high    flat_ref vs flat_csv: agree 258/265 (97.4%)  only-flat_ref: 7  only-flat_csv: 0
+exact max-level agreement evtx vs flat_csv: 252/265
+
+== native-benign baselines (63, CSV-only, flat_csv path) ==
+>= informational FP 52/63  FPR  82.5%  CI 71.4-90.0
+>= low           FP 16/63  FPR  25.4%  CI 16.3-37.3
+>= medium        FP  1/63  FPR   1.6%  CI 0.3-8.5
+       BENIGN-ID1-mmc-c-windows-system32-gpme-msc | ['Windows Default Domain GPO Modification via GPME']
+>= high          FP  0/63  FPR   0.0%  CI -0.0-5.7
+
+== combined 328-case baseline: evtx path for 265, flat_csv path for 63 native benign ==
+threshold         TP  FN  FP  TN   recall         [CI]   FPR all         [CI]   FPR relab   FPR native    prec
+>= low           158  61  37  72    72.1% [65.9-77.7]     33.9% [25.7-43.2]   21/46  45.7%   16/63  25.4%   81.0%
+>= medium        136  83  16  93    62.1% [55.5-68.3]     14.7% [ 9.2-22.5]   15/46  32.6%    1/63   1.6%   89.5%
+>= high           99 120   8 101    45.2% [38.8-51.8]      7.3% [ 3.8-13.8]    8/46  17.4%    0/63   0.0%   92.5%
+
+== 120-case comparison set, combined baseline (120 cases) ==
+malicious 60, benign 60 (relabelled 25, native 35)
+>= low            55   5  15  45    91.7% [81.9-96.4]     25.0% [15.8-37.2]    7/25  28.0%    8/35  22.9%   78.6%
+>= medium         53   7   5  55    88.3% [77.8-94.2]      8.3% [ 3.6-18.1]    4/25  16.0%    1/35   2.9%   91.4%
+>= high           38  22   0  60    63.3% [50.7-74.4]      0.0% [-0.0- 6.0]    0/25   0.0%    0/35   0.0%  100.0%

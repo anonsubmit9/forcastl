@@ -1,0 +1,224 @@
+# DETECTION BENCHMARK RESULTS - column glossary
+# ----------------------------------------------------------------------
+# Model               LLM model id used to score this run
+# Filename            Source artifact analyzed (EVTX file or CSV stem)
+# Difficulty          Tag from metadata.json: easy / medium / hard
+# Test Set            A=Known Pattern, B=Obfuscated, C=Noise-heavy, D=Benign
+# Status              processed | error | context_exceeded
+# Malicious           Model verdict: YES (attack) or NO (routine/benign)
+# Confidence %        Heuristic confidence from response structure quality, not model-stated (0-100)
+# Alignment %         Share of cited evidence found verbatim in source (0-100)
+# Structure Valid     Response parsed cleanly into the required sections
+# Event IDs           Event IDs extracted from the model's EVIDENCE block
+# Processes           Process names extracted from the model's EVIDENCE block
+# Accounts            Account names extracted from the model's EVIDENCE block
+# Commands            Command lines / script blocks extracted from EVIDENCE
+# Network             IPs / hostnames / shares extracted from EVIDENCE
+# Registry            Registry keys / values extracted from EVIDENCE
+# Hallucination %     Share of cited evidence not found in source events (0-100)
+# Response Time (s)   Wall-clock seconds from prompt sent to response received
+# Extraction (6)      Did the model find the right evidence? (0-6)
+# Interpretation (6)  Did it correctly explain what the evidence implies? (0-6)
+# NoHallucination (4) 4 = no fabricated evidence, 0 = heavy fabrication
+# Reasoning (4)       Quality of the chain of reasoning in EXPLANATION (0-4)
+# Total (20)          Sum of the four criteria above (0-20)
+# Grade               Letter grade from Total: A>=17, B>=14, C>=10, D<10
+# LLM Response        Full raw text the model returned, before any parsing
+#
+# Skip these lines in pandas:  pd.read_csv(path, comment='#')
+# ----------------------------------------------------------------------
+Model,Filename,Difficulty,Test Set,Status,Malicious,Confidence %,Alignment %,Structure Valid,Event IDs,Processes,Accounts,Commands,Network,Registry,Hallucination %,Response Time (s),Extraction (6),Interpretation (6),NoHallucination (4),Reasoning (4),Total (20),Grade,LLM Response
+claude-opus-4-8,ID4103-4104-OpenSSH server activation and config.evtx,hard,A,processed,YES,100.0,100.0,YES,"4103, 4104",C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,OFFSEC\admmig,"Start-Service sshd, Set-Service -Name sshd -StartupType 'Automatic', Get-NetFirewallRule -Name *ssh*, New-NetFirewallRule, Get-NetFirewallRule",,,0.0,19.39,6.0,2.0,4.0,3,15.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4103, 4104
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Start-Service sshd, Set-Service -Name sshd -StartupType 'Automatic', Get-NetFirewallRule -Name *ssh*, New-NetFirewallRule, Get-NetFirewallRule
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The same actor (OFFSEC\admmig) sequentially started the OpenSSH server service, set it to auto-start at boot (persistence), and then enumerated/checked firewall rules for SSH access (OpenSSH-Server-In firewall rule), establishing a persistent remote-access channel. This chain of enabling sshd, ensuring it survives reboot, and validating inbound firewall allowance is a classic remote-access/persistence setup consistent with attacker post-exploitation behavior rather than incidental activity."
+claude-opus-4-8,ID4103-4104-OpenSSH server install.evtx,hard,A,processed,NO,100.0,81.2,YES,"4103, 4104, 40961, 53504, 40962","C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, powershell.exe","OFFSEC\admmig, OFFSEC\SYSTEM","Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0, powershell.exe -ExecutionPolicy Restricted -Command Write-Host 'Final result: 1' | , Set-StrictMode, Export-ModuleMember",,,0.0,7.10,4.9,5.0,4.0,3,16.9,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4103, 4104, 40961, 53504, 40962
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, powershell.exe
+- Accounts: OFFSEC\admmig, OFFSEC\SYSTEM
+- Commands: Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0, powershell.exe -ExecutionPolicy Restricted -Command Write-Host 'Final result: 1';, Set-StrictMode, Export-ModuleMember
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show an administrator (OFFSEC\admmig) installing the OpenSSH.Server Windows capability via Add-WindowsCapability, which loads the standard Dism module and registers its normal command aliases. The subsequent SYSTEM-context ""Write-Host 'Final result: 1'"" with -ExecutionPolicy Restricted is a benign output/status command. These are routine administrative and feature-installation activities with no obfuscation, download cradles, or malicious indicators."
+claude-opus-4-8,ID33205-SQL Server failed login with disabled SA account.evtx,easy,A,processed,YES,100.0,100.0,YES,33205,,sa,,10.23.23.9,,0.0,3.73,6.0,2.0,4.0,3,15.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: sa
+- Commands: None
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+Multiple failed login attempts for the privileged 'sa' SQL Server account originate from the same client IP (10.23.23.9) in rapid succession, consistent with a brute-force or password-guessing attack against the database server. The repeated authentication failures (state 7) targeting the high-value administrative account from a single source indicate malicious credential-attack behavior rather than routine activity."
+claude-opus-4-8,ID4625-failed login with denied access due to account restriction.evtx,easy,A,processed,YES,100.0,100.0,YES,4625,C:\Windows\System32\winlogon.exe,FS03$,,10.23.23.9,,0.0,4.35,6.0,2.0,4.0,3,15.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4625
+- Processes: C:\Windows\System32\winlogon.exe
+- Accounts: FS03$
+- Commands: None
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+Multiple failed RDP logon attempts (LogonType 10) from the same source IP 10.23.23.9 against FS03.offsec.lan within a short time window, with Status 0xC000006E indicating an invalid account or bad credentials. This repeated remote interactive logon failure pattern from a single source is consistent with a brute-force or password-guessing attack over RDP."
+claude-opus-4-8,ID33205-SQL Server member added to database role.evtx,easy,A,processed,NO,100.0,93.8,YES,33205,,"OFFSEC\admmig, test-sql, dbo",ALTER ROLE [db_accessadmin] ADD MEMBER [test-sql,mssql01.offsec.lan,,0.0,5.53,5.6,5.0,4.0,2,16.6,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: OFFSEC\admmig, test-sql, dbo
+- Commands: ALTER ROLE [db_accessadmin] ADD MEMBER [test-sql]
+- Network: mssql01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+This is a SQL Server audit event (action_id:APRL, succeeded:true) showing an administrative account OFFSEC\admmig adding the principal test-sql to the db_accessadmin database role. While role membership changes affecting access administration warrant monitoring, this is a single successful action performed by an admin account with no accompanying privilege-escalation chain, anomalous commands, or suspicious network indicators, consistent with routine database administration."
+claude-opus-4-8,ID33205-SQL Server user linked to a database.evtx,easy,A,processed,NO,100.0,88.9,YES,33205,MSSQL$RADAR,"OFFSEC\admmig, dbo, test-sql",CREATE USER [test-sql] FOR LOGIN [test-sql,mssql01.offsec.lan,,0.0,3.63,5.3,5.0,4.0,2,16.3,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: MSSQL$RADAR
+- Accounts: OFFSEC\admmig, dbo, test-sql
+- Commands: CREATE USER [test-sql] FOR LOGIN [test-sql]
+- Network: mssql01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+This is a SQL Server audit event (action_id:CR, class_type:SU) recording the successful creation of a database user mapped to an existing login, performed by an administrative account (OFFSEC\admmig). The operation is a routine database administration task with no indicators of privilege escalation, suspicious commands, or malicious context."
+claude-opus-4-8,ID4723-5145-password reset with changeNTLM (Mimikatz).evtx,easy,A,processed,NO,100.0,100.0,YES,4723,,"hacker2, admmig",,,,0.0,5.72,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4723
+- Processes: None
+- Accounts: hacker2, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Event ID 4723 indicates an attempt by a user (admmig) to change the password of account hacker2, which is a routine self-service or administrative password change operation. There is no privilege escalation, suspicious process execution, or anomalous network activity present in this single event to indicate malicious behavior."
+claude-opus-4-8,ID4728-Member adding to a group by the same account.evtx,easy,A,processed,NO,100.0,100.0,YES,4728,,"lambda-user, Group02",,,,0.0,4.05,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4728
+- Processes: None
+- Accounts: lambda-user, Group02
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+A single Event ID 4728 records a member (lambda-user) being added to a global security group (Group02), which is routine directory administration activity. There is no paired state change, privilege escalation chain, or sequence of suspicious commands in isolation here to indicate malicious behavior. Without additional context such as repeated additions to privileged groups, this event appears benign."
+claude-opus-4-8,ID4738-Account is sensitive and cannot be delegated.evtx,easy,A,processed,YES,100.0,100.0,YES,4738,,"hack1, admmig",,,,0.0,5.14,6.0,2.0,4.0,4,16.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4738
+- Processes: None
+- Accounts: hack1, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Two rapid back-to-back account modifications (4738) on the same target ""hack1"" by ""admmig"" flip the UserAccountControl from 0x210 to 0x4210 (setting DONT_REQ_PREAUTH) and then revert it to 0x210 within ~4 seconds. Enabling ""Do not require Kerberos preauthentication"" is a classic AS-REP roasting setup, and the immediate revert is an attempt to hide the change after harvesting the crackable hash. This paired state-change pattern on the same account is a strong indicator of credential-harvesting attack activity rather than routine administration."
+claude-opus-4-8,ID4738-Password cannot be changed.evtx,easy,A,processed,YES,100.0,100.0,YES,4738,,"hack1, admmig",,,,0.0,4.96,6.0,2.0,4.0,4,16.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4738
+- Processes: None
+- Accounts: hack1, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Two consecutive Event 4738 (user account changed) events on a domain controller (rootdc1.offsec.lan) target the account ""hack1"" within seconds, performed by ""admmig"". The rapid back-to-back account modifications targeting a suspiciously named account (""hack1"") on a DC suggest unauthorized account tampering/persistence rather than routine administration. The empty/redacted UAC and attribute fields combined with the suspicious target naming and timing pattern warrant treating this as malicious activity."
+claude-opus-4-8,ID4738-Password never expires.evtx,easy,A,processed,YES,100.0,100.0,YES,4738,,"hack1, admmig",,,,0.0,5.32,6.0,1.0,4.0,1,12.0,C,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4738, 4738
+- Processes: None
+- Accounts: hack1, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Within ~2 seconds the same actor (admmig) modified the UAC flags on account hack1, toggling the value to 0x210 (%%2089 enabling ""Don't require preauth"") and immediately back to 0x10 (%%2057). This rapid set-then-revert of DONT_REQ_PREAUTH on a single account is a classic AS-REP roasting / Kerberos preauth manipulation pattern designed to capture a crackable hash while minimizing the window of detection."
+claude-opus-4-8,ID4720-Local user created.evtx,easy,A,processed,YES,100.0,83.3,YES,"4720, 4732",,"hacking-local-acct, admmig",,,,0.0,4.65,5.0,2.0,4.0,4,15.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4720, 4732
+- Processes: None
+- Accounts: hacking-local-acct, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Within the same second, account ""admmig"" created a new local account named ""hacking-local-acct"" (4720) on jump01.offsec.lan and immediately added it to the Builtin Users group (4732). The suspicious account naming combined with rapid creation-then-group-membership changes on a jump host indicates intentional backdoor/persistence account creation rather than routine administration."
+claude-opus-4-8,ID60-High volume file downloaded with BITS.evtx,easy,A,processed,NO,100.0,83.3,YES,"3, 5, 59, 60",,OFFSEC\admmig,,https://releases.ubuntu.com/20.04.3/ubuntu-20.04.3-desktop-amd64.iso,,0.0,5.77,5.0,6.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 3, 5, 59, 60
+- Processes: None
+- Accounts: OFFSEC\admmig
+- Commands: None
+- Network: https://releases.ubuntu.com/20.04.3/ubuntu-20.04.3-desktop-amd64.iso
+- Registry: None
+
+EXPLANATION:
+The logs show BITS Transfer jobs initiated by OFFSEC\admmig downloading an official Ubuntu desktop ISO from the legitimate releases.ubuntu.com domain. The download destination, file size, and file type are consistent with routine, benign software acquisition rather than malicious payload delivery. There is no evidence of suspicious processes, command execution, or connections to untrusted hosts."
+claude-opus-4-8,ID4688-sqlcmd tool abuse in SQL Server.evtx,easy,A,processed,NO,100.0,100.0,YES,4688,"SQLCMD.EXE, cmd.exe",admmig,"sqlcmd  -S .\RADAR,2020",,,0.0,4.13,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4688
+- Processes: SQLCMD.EXE, cmd.exe
+- Accounts: admmig
+- Commands: sqlcmd  -S .\RADAR,2020
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the SQLCMD.EXE client tool being launched from cmd.exe by the account admmig to connect to a local SQL Server instance (.\RADAR on port 2020). This is routine database administration activity with no evidence of malicious commands, escalation chains, or suspicious network connections."
+claude-opus-4-8,ID12-LSA Protect mode enabled RunAsPPL.evtx,easy,D,processed,NO,100.0,100.0,YES,"14, 12",,,,,,0.0,2.93,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 14, 12
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+These are routine Microsoft-Windows-Wininit system events (Event IDs 14 and 12) related to system boot/initialization configuration on WIN10-client01. No suspicious processes, accounts, commands, or network indicators are present, and the events reflect normal Windows startup behavior."
+claude-opus-4-8,"ID7000,7009,7045-Payload deployed via service - Tchopper.evtx",medium,A,processed,YES,100.0,66.7,YES,"7045, 7009, 7000, 7036","cmd.exe, powershell.exe",LocalSystem,"c:\windows\system32\cmd.exe /c powershell -command ""Get-Service ""seg1"" | select -Expand DisplayName |out-file -append tmp_payload.txt""",,,16.7,17.63,4.0,6.0,3.3,4,17.3,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 7045, 7009, 7000, 7036
+- Processes: cmd.exe, powershell.exe
+- Accounts: LocalSystem
+- Commands: c:\windows\system32\cmd.exe /c powershell -command ""Get-Service ""seg1"" | select -Expand DisplayName |out-file -append tmp_payload.txt""
+- Network: None
+- Registry: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Hundreds of services were created in rapid succession (Event 7045) where the ServiceName fields contain sequential base64-encoded chunks (""seg1"" through ""seg245"") that reassemble into a complete PowerShell script, abusing the Windows service control manager as a covert data-smuggling/storage channel. Each service immediately fails (7000 with %%1053 timeout, 7009 timeout) because the ImagePath only runs a harmless Get-Service command, confirming the service registration is being abused purely to stage payload data rather than run a legitimate service. This systematic, automated, high-volume service creation pattern under LocalSystem is consistent with malicious payload staging/exfiltration behavior, not routine administration."

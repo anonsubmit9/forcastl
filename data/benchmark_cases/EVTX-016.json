@@ -1,0 +1,41 @@
+{
+  "id": "EVTX-016",
+  "artefact_type": "EVTX",
+  "difficulty": "Medium",
+  "test_set": "B",
+  "artefact_file": "test_data/evtx/TA0003-Persistence/T1136-Create account/ID472, 4728 Hidden user creation.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of hidden account creation and group membership manipulation. Identify the account created, the tool used, any registry modifications, and the groups the account was added to. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4720: New user account created - 3teamssixf$",
+      "explanation": "A hidden user account named '3teamssixf$' was created. The trailing dollar sign is a technique to hide the account from standard user enumeration commands.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Process: CreateHiddenAccount_upx_v0.2.exe used for account creation",
+      "explanation": "A specialized tool (CreateHiddenAccount) was used to create the hidden account, indicating deliberate persistence activity using purpose-built attack tooling.",
+      "evidence_type": "process"
+    },
+    {
+      "indicator": "Command: CreateHiddenAccount -u 3teamssixf -p Passw0rd",
+      "explanation": "The command line reveals the hidden account was created with a known password (Passw0rd), providing the attacker with persistent credential-based access.",
+      "evidence_type": "command"
+    },
+    {
+      "indicator": "Event IDs 4728/4732: Account added to local and domain groups",
+      "explanation": "The hidden account was added to privileged groups (4728 - global group, 4732 - local group), escalating its privileges beyond a standard user.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Registry manipulation via regedit.exe to conceal the account",
+      "explanation": "The regedit.exe process was used alongside account creation, indicating registry manipulation to further hide the account from user management interfaces.",
+      "evidence_type": "process"
+    }
+  ],
+  "hallucination_traps": [
+    "backup_operator01",
+    "HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\SecurityProviders\\\\WDigest\\\\AutoLogon",
+    "d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9"
+  ],
+  "notes": "Medium case: rich event mix (4656, 4660, 4688, 4720, 4722, 4724, 4726, 4728, 4729, 4732, 4733, 4738, 1102) requires correlating account lifecycle events with group membership changes and registry modifications. Analyst must piece together the full hidden account creation workflow."
+}

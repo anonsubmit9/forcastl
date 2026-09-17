@@ -1,0 +1,67 @@
+{
+  "file": "BENIGN-ID4698-Windows Update scheduled task.csv",
+  "gt_key": "BENIGN-ID4698-Windows Update scheduled task.evtx",
+  "malicious": "NO",
+  "alignment_pct": 87.5,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4698</EventID>\n    <TimeCreated SystemTime=\"2025-09-18 03:00:02.4419871\"/>\n    <Computer>win10-admin.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">SYSTEM</Data>\n    <Data Name=\"SubjectDomainName\">NT AUTHORITY</Data>\n    <Data Name=\"SubjectLogonId\">0x3e7</Data>\n    <Data Name=\"TaskName\">\\Microsoft\\Windows\\UpdateOrchestrator\\Maintenance Install</Data>\n    <Data Name=\"TaskContent\">&lt;?xml version=\"1.0\" encoding=\"UTF-16\"?&gt;&lt;Task version=\"1.4\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\"&gt;&lt;RegistrationInfo&gt;&lt;Author&gt;Microsoft Corporation&lt;/Author&gt;&lt;Description&gt;Performs periodic Windows Update maintenance.&lt;/Description&gt;&lt;URI&gt;\\Microsoft\\Windows\\UpdateOrchestrator\\Maintenance Install&lt;/URI&gt;&lt;/RegistrationInfo&gt;&lt;Principals&gt;&lt;Principal id=\"Author\"&gt;&lt;UserId&gt;S-1-5-18&lt;/UserId&gt;&lt;RunLevel&gt;HighestAvailable&lt;/RunLevel&gt;&lt;/Principal&gt;&lt;/Principals&gt;&lt;Actions Context=\"Author\"&gt;&lt;Exec&gt;&lt;Command&gt;%windir%\\system32\\usoclient.exe&lt;/Command&gt;&lt;Arguments&gt;StartInstall&lt;/Arguments&gt;&lt;/Exec&gt;&lt;/Actions&gt;&lt;/Task&gt;</Data>\n    <Data Name=\"ClientProcessStartKey\">844424930131969</Data>\n    <Data Name=\"ClientProcessId\">2068</Data>\n    <Data Name=\"ParentProcessId\">1104</Data>\n    <Data Name=\"RpcCallClientLocality\">3</Data>\n    <Data Name=\"FQDN\">win10-admin.offsec.lan</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "4698"
+    ],
+    "processes": [
+      "usoclient.exe"
+    ],
+    "accounts": [
+      "SYSTEM"
+    ],
+    "commands": [
+      "%windir%\\system32\\usoclient.exe StartInstall",
+      "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Task version=\"1.4\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\"><RegistrationInfo><Author>Microsoft Corporation</Author><Description>Performs periodic Windows Update maintenance.</Description><URI>\\Microsoft\\Windows\\UpdateOrchestrator\\Maintenance Install</URI></RegistrationInfo><Principals><Principal id=\"Author\"><UserId>S-1-5-18</UserId><RunLevel>HighestAvailable</RunLevel></Principal></Principals><Actions Context=\"Author\"><Exec><Command>%windir%\\system32\\usoclient.exe</Command><Arguments>StartInstall</Arguments></Exec></Actions></Task>"
+    ],
+    "network": [],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "4698"
+    ],
+    "processes": [
+      "usoclient.exe"
+    ],
+    "accounts": [
+      "SYSTEM"
+    ],
+    "commands": [
+      "%windir%\\system32\\usoclient.exe StartInstall",
+      "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Task version=\"1.4\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\"><RegistrationInfo><Author>Microsoft Corporation</Author><Description>Performs periodic Windows Update maintenance.</Description><URI>\\Microsoft\\Windows\\UpdateOrchestrator\\Maintenance Install</URI></RegistrationInfo><Principals><Principal id=\"Author\"><UserId>S-1-5-18</UserId><RunLevel>HighestAvailable</RunLevel></Principal></Principals><Actions Context=\"Author\"><Exec><Command>%windir%\\system32\\usoclient.exe</Command><Arguments>StartInstall</Arguments></Exec></Actions></Task>"
+    ],
+    "network": [],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "4698"
+    ],
+    "processes": [
+      "usoclient.exe"
+    ],
+    "accounts": [
+      "SYSTEM"
+    ],
+    "commands": [
+      "%windir%\\system32\\usoclient.exe StartInstall"
+    ],
+    "network": [],
+    "registry": []
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "commands": [
+      "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Task version=\"1.4\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\"><RegistrationInfo><Author>Microsoft Corporation</Author><Description>Performs periodic Windows Update maintenance.</Description><URI>\\Microsoft\\Windows\\UpdateOrchestrator\\Maintenance Install</URI></RegistrationInfo><Principals><Principal id=\"Author\"><UserId>S-1-5-18</UserId><RunLevel>HighestAvailable</RunLevel></Principal></Principals><Actions Context=\"Author\"><Exec><Command>%windir%\\system32\\usoclient.exe</Command><Arguments>StartInstall</Arguments></Exec></Actions></Task>"
+    ]
+  }
+}

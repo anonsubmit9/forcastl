@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-014",
+  "artefact_type": "EVTX",
+  "difficulty": "Medium",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0005-Defense Evasion/T1562.001-Impair Defenses-Disable or Modify tool/ID4688-Defender critical features disabled (command).evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of security tool tampering or Windows Defender being disabled. Identify the commands used, which Defender features were affected, and the account responsible. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4688: Process creation events showing Defender features being disabled",
+      "explanation": "Process creation events capture commands that disable critical Windows Defender features, a defense evasion technique to allow malicious tools to run undetected.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Processes: cmd.exe used to disable Defender alongside MsMpEng.exe",
+      "explanation": "The cmd.exe command interpreter was used to execute commands that disable Defender while MsMpEng.exe (the Defender antimalware service) is present in the process logs.",
+      "evidence_type": "process"
+    },
+    {
+      "indicator": "Account: admmig performed the Defender tampering",
+      "explanation": "The admmig administrative account was used to disable Defender features, requiring elevated privileges to modify security tool configurations.",
+      "evidence_type": "account"
+    }
+  ],
+  "hallucination_traps": [
+    "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows Defender\\\\Exclusions\\\\ExecutionPaths",
+    "taskmgr_elevated\\.exe",
+    "6281"
+  ],
+  "notes": "Medium case: requires identifying specific Defender features being disabled from process creation command lines. Analyst must correlate multiple 4688 events to understand the full scope of defense evasion, distinguishing legitimate Defender service activity (MsMpEng.exe) from the tampering commands."
+}

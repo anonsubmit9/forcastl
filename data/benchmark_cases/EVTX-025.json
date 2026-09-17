@@ -1,0 +1,41 @@
+{
+  "id": "EVTX-025",
+  "artefact_type": "EVTX",
+  "difficulty": "Hard",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0005-Defense Evasion/T1112-Modify registry/ID4624,4670,4688,4674-Registry permission change via WMI (DAMP).evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of registry permission tampering via WMI, specifically looking for DAMP (Discretionary ACL Modification Project) techniques. Correlate authentication events, process creation, registry permission changes, and privilege usage to identify how registry security descriptors were modified. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4670: Registry object permissions changed via WMI",
+      "explanation": "Permission change events on registry objects indicate DAMP-style attacks where registry ACLs are modified to grant unauthorized access to sensitive keys like SAM or SECURITY hives.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Process: WmiPrvSE.exe performing registry permission modifications",
+      "explanation": "The WMI Provider Host (WmiPrvSE.exe) was used to modify registry permissions remotely, indicating the attacker used WMI as the execution vehicle for the DAMP technique.",
+      "evidence_type": "process"
+    },
+    {
+      "indicator": "Accounts: admmig and hack1 involved in registry ACL manipulation",
+      "explanation": "Both admmig and hack1 accounts appear in the attack chain, with admmig likely being the initial compromise and hack1 being used or created for persistent registry access after ACL modification.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Event ID 4674: Privileged operation on registry security descriptors",
+      "explanation": "Sensitive privilege use events confirm operations on registry security descriptors, corroborating that DACL modifications were made to weaken registry key protections.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 1102: Security log cleared following registry tampering",
+      "explanation": "The security audit log was cleared after the registry permission changes, indicating anti-forensic activity to hide evidence of the DAMP attack.",
+      "evidence_type": "event_log"
+    }
+  ],
+  "hallucination_traps": [
+    "HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Policies\\\\System\\\\EnableLUAOverride",
+    "svc_wmibridge",
+    "CVE-2024-61834"
+  ],
+  "notes": "Hard case: 222 events across 8 event types (1102, 4624, 4670, 4672, 4673, 4674, 4688, 5447). DAMP is an advanced technique that modifies registry DACLs via WMI to establish persistent backdoor access. Analyst must understand the relationship between WmiPrvSE.exe, registry permission changes (4670), and privilege usage (4674) to identify the attack, while filtering out legitimate dllhost.exe activity."
+}

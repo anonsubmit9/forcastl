@@ -1,0 +1,36 @@
+{
+  "id": "EVTX-028",
+  "artefact_type": "EVTX",
+  "difficulty": "Hard",
+  "test_set": "B",
+  "artefact_file": "test_data/evtx/TA0006-Credential Access/T1003-Credential dumping/ID4661-4658 Mimikatz sekurlsa password dump SAM.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of credential dumping through SAM database access or LSASS manipulation. Correlate object access events and handle operations to identify which security objects were targeted, the processes involved, and the accounts responsible. Determine whether this represents Mimikatz-style credential extraction. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4661: SAM object access by WmiPrvSE.exe indicating remote credential dump",
+      "explanation": "Directory service access events show WmiPrvSE.exe accessing SAM (Security Account Manager) objects, indicating Mimikatz sekurlsa credential dumping was performed remotely through WMI.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Process: lsass.exe and WmiPrvSE.exe involved in credential extraction",
+      "explanation": "The combination of lsass.exe (the credential store) and WmiPrvSE.exe (WMI provider) in the access chain indicates credentials were dumped from LSASS memory via a remote WMI-based execution of Mimikatz sekurlsa.",
+      "evidence_type": "process"
+    },
+    {
+      "indicator": "Event ID 4658: Handle closed on SAM objects after credential access",
+      "explanation": "Handle close events (4658) following the SAM object access (4661) confirm that the credential extraction operation completed, with handles being properly closed after data was read.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Account: admmig used for WMI-based credential dumping",
+      "explanation": "The admmig account was used to perform the credential dump via WMI, indicating a compromised administrative account with sufficient privileges to access the SAM database remotely.",
+      "evidence_type": "account"
+    }
+  ],
+  "hallucination_traps": [
+    "b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8",
+    "svc_sshrelay",
+    "CVE-2022-89215"
+  ],
+  "notes": "Hard case: only 80 events but highly ambiguous. Events 4661 and 4658 are generic object access/handle events that require deep analysis to connect to credential dumping. The key difficulty is recognizing that WmiPrvSE.exe accessing SAM objects via lsass.exe represents a remote Mimikatz sekurlsa attack rather than legitimate WMI administration. Analyst must understand the WMI-to-LSASS execution path."
+}

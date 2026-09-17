@@ -1,0 +1,76 @@
+{
+  "file": "BENIGN-ID1-GPO applies registry policy via reg add.csv",
+  "gt_key": "BENIGN-ID1-GPO applies registry policy via reg add.evtx",
+  "malicious": "NO",
+  "alignment_pct": 90.0,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>1</EventID>\n    <TimeCreated SystemTime=\"2025-09-22 08:35:00\"/>\n    <Computer>win10-admin.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"RuleName\">-</Data>\n    <Data Name=\"UtcTime\">2025-09-22 08:35:00</Data>\n    <Data Name=\"ProcessGuid\">{1234aabb-e3139-aabb-cccc-000000930105}</Data>\n    <Data Name=\"ProcessId\">6105</Data>\n    <Data Name=\"Image\">C:\\Windows\\System32\\reg.exe</Data>\n    <Data Name=\"FileVersion\">10.0.19041.5072</Data>\n    <Data Name=\"Description\">Registry Console Tool</Data>\n    <Data Name=\"Product\">Microsoft Windows Operating System</Data>\n    <Data Name=\"Company\">Microsoft Corporation</Data>\n    <Data Name=\"OriginalFileName\">reg.exe</Data>\n    <Data Name=\"CommandLine\">reg.exe add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU\" /v NoAutoUpdate /t REG_DWORD /d 0 /f</Data>\n    <Data Name=\"CurrentDirectory\">C:\\Windows\\system32\\</Data>\n    <Data Name=\"User\">NT AUTHORITY\\SYSTEM</Data>\n    <Data Name=\"LogonGuid\">{1234aabb-0000-0000-0000-000000000000}</Data>\n    <Data Name=\"LogonId\">0x3e7</Data>\n    <Data Name=\"TerminalSessionId\">0</Data>\n    <Data Name=\"IntegrityLevel\">System</Data>\n    <Data Name=\"ParentProcessId\">1024</Data>\n    <Data Name=\"ParentImage\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"ParentCommandLine\">C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s gpsvc</Data>\n    <Data Name=\"ParentUser\">NT AUTHORITY\\SYSTEM</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "1"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\reg.exe",
+      "C:\\Windows\\System32\\svchost.exe"
+    ],
+    "accounts": [
+      "NT AUTHORITY\\SYSTEM"
+    ],
+    "commands": [
+      "reg.exe add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU\" /v NoAutoUpdate /t REG_DWORD /d 0 /f"
+    ],
+    "network": [],
+    "registry": [
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU",
+      "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU"
+    ]
+  },
+  "base_expected": {
+    "event_ids": [
+      "1"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\reg.exe",
+      "C:\\Windows\\System32\\svchost.exe"
+    ],
+    "accounts": [
+      "NT AUTHORITY\\SYSTEM"
+    ],
+    "commands": [
+      "reg.exe add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU\" /v NoAutoUpdate /t REG_DWORD /d 0 /f"
+    ],
+    "network": [],
+    "registry": [
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU",
+      "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU"
+    ]
+  },
+  "model_detected": {
+    "event_ids": [
+      "1"
+    ],
+    "processes": [
+      "reg.exe",
+      "svchost.exe"
+    ],
+    "accounts": [
+      "NT AUTHORITY\\SYSTEM"
+    ],
+    "commands": [
+      "reg.exe add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU\" /v NoAutoUpdate /t REG_DWORD /d 0 /f"
+    ],
+    "network": [],
+    "registry": [
+      "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU"
+    ]
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "registry": [
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU"
+    ]
+  }
+}

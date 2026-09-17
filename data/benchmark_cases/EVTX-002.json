@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-002",
+  "artefact_type": "EVTX",
+  "difficulty": "Easy",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0001-Initial access/T1078-Valid accounts/ID33205-SQL Server failed login with disabled SA account.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of unauthorized access attempts against a SQL Server instance. Identify the targeted account, source of the attack, and nature of the failed logins. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 33205: SQL Server failed login attempts for user 'sa'",
+      "explanation": "Multiple failed login attempts targeting the 'sa' (system administrator) account, which is disabled, indicating a brute-force or credential stuffing attack.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Source IP 10.23.23.9",
+      "explanation": "All failed login attempts originated from client IP 10.23.23.9, identifying the attack source.",
+      "evidence_type": "network"
+    },
+    {
+      "indicator": "Account targeted: sa (disabled)",
+      "explanation": "The attacker targeted the default SQL Server 'sa' account, which is disabled, resulting in password evaluation errors.",
+      "evidence_type": "account"
+    }
+  ],
+  "hallucination_traps": [
+    "svc_sqlbackup",
+    "10\\.99\\.88\\.77",
+    "CVE-2023-81547"
+  ],
+  "notes": "Easy case: only 2 events, clear SQL Server authentication failure pattern. Single event type (33205) with obvious brute-force indicator against disabled sa account."
+}

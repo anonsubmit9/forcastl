@@ -1,0 +1,88 @@
+{
+  "file": "BENIGN-ID1-Authorised MSI install via SCCM.csv",
+  "gt_key": "BENIGN-ID1-Authorised MSI install via SCCM.evtx",
+  "malicious": "NO",
+  "alignment_pct": 80.0,
+  "triage_reasons": [
+    "under_population",
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>1</EventID>\n    <TimeCreated SystemTime=\"2025-09-20 14:22:00\"/>\n    <Computer>win10-admin.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"RuleName\">-</Data>\n    <Data Name=\"UtcTime\">2025-09-20 14:22:00</Data>\n    <Data Name=\"ProcessGuid\">{1234aabb-300b-300c-aabb-300000000001}</Data>\n    <Data Name=\"ProcessId\">7800</Data>\n    <Data Name=\"Image\">C:\\Windows\\System32\\msiexec.exe</Data>\n    <Data Name=\"FileVersion\">5.0.19041.5072</Data>\n    <Data Name=\"Description\">Windows Installer</Data>\n    <Data Name=\"Product\">Windows Installer - Unicode</Data>\n    <Data Name=\"Company\">Microsoft Corporation</Data>\n    <Data Name=\"OriginalFileName\">msiexec.exe</Data>\n    <Data Name=\"CommandLine\">msiexec.exe /i \"\\\\sccm01.offsec.lan\\Apps\\7zip\\7z2408-x64.msi\" /qn</Data>\n    <Data Name=\"CurrentDirectory\">C:\\Windows\\system32\\</Data>\n    <Data Name=\"User\">OFFSEC\\sccm-deploy</Data>\n    <Data Name=\"LogonGuid\">{1234aabb-3000-3000-aabb-300000000000}</Data>\n    <Data Name=\"LogonId\">0x84a23c</Data>\n    <Data Name=\"TerminalSessionId\">0</Data>\n    <Data Name=\"IntegrityLevel\">System</Data>\n    <Data Name=\"ParentProcessId\">1024</Data>\n    <Data Name=\"ParentImage\">C:\\Windows\\CCM\\CcmExec.exe</Data>\n    <Data Name=\"ParentCommandLine\">\"C:\\Windows\\CCM\\CcmExec.exe\"</Data>\n    <Data Name=\"ParentUser\">NT AUTHORITY\\SYSTEM</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"MsiInstaller\"/>\n    <EventID>11707</EventID>\n    <TimeCreated SystemTime=\"2025-09-20 14:22:18\"/>\n    <Computer>win10-admin.offsec.lan</Computer>\n    <Channel>Application</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"Product\">7-Zip 24.08 (x64)</Data>\n    <Data Name=\"Version\">24.08</Data>\n    <Data Name=\"Manufacturer\">Igor Pavlov</Data>\n    <Data Name=\"Status\">1707</Data>\n    <Data Name=\"LanguageId\">1033</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "1",
+      "11707"
+    ],
+    "processes": [
+      "C:\\Windows\\CCM\\CcmExec.exe",
+      "C:\\Windows\\System32\\msiexec.exe"
+    ],
+    "accounts": [
+      "NT AUTHORITY\\SYSTEM",
+      "OFFSEC\\sccm-deploy"
+    ],
+    "commands": [
+      "msiexec.exe /i \"\\\\sccm01.offsec.lan\\Apps\\7zip\\7z2408-x64.msi\" /qn"
+    ],
+    "network": [
+      "sccm01.offsec.lan"
+    ],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "1",
+      "11707"
+    ],
+    "processes": [
+      "C:\\Windows\\CCM\\CcmExec.exe",
+      "C:\\Windows\\System32\\msiexec.exe"
+    ],
+    "accounts": [
+      "NT AUTHORITY\\SYSTEM",
+      "OFFSEC\\sccm-deploy"
+    ],
+    "commands": [
+      "msiexec.exe /i \"\\\\sccm01.offsec.lan\\Apps\\7zip\\7z2408-x64.msi\" /qn"
+    ],
+    "network": [
+      "sccm01.offsec.lan"
+    ],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "1",
+      "11707"
+    ],
+    "processes": [
+      "msiexec.exe",
+      "C:\\Windows\\CCM\\CcmExec.exe"
+    ],
+    "accounts": [
+      "OFFSEC\\sccm-deploy",
+      "NT AUTHORITY\\SYSTEM"
+    ],
+    "commands": [
+      "msiexec.exe /i \"\\\\sccm01.offsec.lan\\Apps\\7zip\\7z2408-x64.msi\" /qn"
+    ],
+    "network": [
+      "\\\\sccm01.offsec.lan\\Apps\\7zip\\7z2408-x64.msi"
+    ],
+    "registry": []
+  },
+  "under_population": {
+    "network": [
+      {
+        "value": "\\\\sccm01.offsec.lan\\Apps\\7zip\\7z2408-x64.msi",
+        "in_artifact": true
+      }
+    ]
+  },
+  "gt_missed_by_model": {
+    "network": [
+      "sccm01.offsec.lan"
+    ]
+  }
+}

@@ -1,0 +1,490 @@
+{
+  "schema_version": 1,
+  "scoring_version": "forcastl_scoring_20pt_dev",
+  "run_id": "20260613_153703",
+  "kind": "detection",
+  "raw_only": true,
+  "server": "http://localhost:1234",
+  "model": "qwen3.6-27b",
+  "input_format": "csv",
+  "csv_dir": "data/csv",
+  "mode": "sample",
+  "sample_size": 5,
+  "max_output_tokens": null,
+  "timeout_s": 300,
+  "delay_s": 0.2,
+  "difficulty_filter": null,
+  "test_set_filter": null,
+  "started_at": "2026-06-13T15:37:03",
+  "finished_at": "2026-06-13T15:59:04",
+  "summary": {
+    "total_files": 16,
+    "processed": 14,
+    "failed": 2,
+    "context_exceeded": 0,
+    "error": 2,
+    "malicious": 6,
+    "benign": 8,
+    "avg_alignment": 90.72420634920636,
+    "avg_confidence": 100.0,
+    "avg_score_20": 15.87142857142857,
+    "avg_hallucination_rate": 0.0,
+    "total_hallucinated_fields": 0,
+    "total_claimed_fields": 67,
+    "grade_dist": {
+      "B": 10,
+      "C": 1,
+      "A": 3
+    },
+    "true_positives": 0,
+    "true_negatives": 8,
+    "false_positives": 6,
+    "false_negatives": 0,
+    "errors_on_malicious": 1,
+    "errors_on_benign": 1,
+    "total_malicious_in_scope": 1,
+    "total_benign_in_scope": 15,
+    "has_benign_samples": true,
+    "recall_pct": 0.0,
+    "recall_ci_pct": {
+      "lo": 0.0,
+      "hi": 79.3
+    },
+    "precision_pct": 0.0,
+    "fp_rate_pct": 42.857142857142854,
+    "fp_rate_ci_pct": {
+      "lo": 21.4,
+      "hi": 67.4
+    },
+    "fp_with_hallucination": 0,
+    "confabulation_rate_pct": 0.0,
+    "verdict": {
+      "tier": "insufficient",
+      "insufficient": true,
+      "headline_sub": "Sample size too small (n=1 attacks, 15 benign)",
+      "reasons": [
+        "Only 1 attack sample(s) tested \u2014 too few for a reliable score. Detection rate could be anywhere from 0% to 79%.",
+        "Only 15 benign sample(s) tested \u2014 false-positive rate is unreliable. FP rate could be anywhere from 20% to 64%.",
+        "Re-run with at least 30 attack and 30 benign samples for a reliable verdict."
+      ],
+      "drivers": {
+        "recall_pct": 0.0,
+        "recall_ci": [
+          0.0,
+          79.34567085261071
+        ],
+        "fp_rate_pct": 42.857142857142854,
+        "fp_rate_ci": [
+          19.824228082594665,
+          64.2535572434923
+        ],
+        "hallucination_pct": 0.0,
+        "n_malicious": 1,
+        "n_benign": 15
+      },
+      "has_benign": true
+    }
+  },
+  "outputs": {
+    "csv_results": "<repo>/outputs/detection_results_qwen3.6-27b_20260613_153703.csv"
+  },
+  "selected_files": [
+    "ID4103-4104-OpenSSH server activation and config.evtx",
+    "ID4103-4104-OpenSSH server install.evtx",
+    "ID33205-SQL Server failed login with disabled SA account.evtx",
+    "ID4625-failed login with denied access due to account restriction.evtx",
+    "ID33205-SQL Server member added to database role.evtx",
+    "ID33205-SQL Server user linked to a database.evtx",
+    "ID4723-5145-password reset with changeNTLM (Mimikatz).evtx",
+    "ID4728-Member adding to a group by the same account.evtx",
+    "ID4738-Account is sensitive and cannot be delegated.evtx",
+    "ID4738-Password cannot be changed.evtx",
+    "ID4738-Password never expires.evtx",
+    "ID4720-Local user created.evtx",
+    "ID60-High volume file downloaded with BITS.evtx",
+    "ID4688-sqlcmd tool abuse in SQL Server.evtx",
+    "ID12-LSA Protect mode enabled RunAsPPL.evtx",
+    "ID7000,7009,7045-Payload deployed via service - Tchopper.evtx"
+  ],
+  "files": [
+    {
+      "filename": "ID4103-4104-OpenSSH server activation and config.evtx",
+      "status": "error",
+      "malicious": null,
+      "confidence_pct": null,
+      "alignment_pct": null,
+      "score_20": null,
+      "grade": null,
+      "hallucination_rate": null,
+      "hallucinated_fields": null,
+      "claimed_fields": null,
+      "response_time_s": 0.4622981548309326
+    },
+    {
+      "filename": "ID4103-4104-OpenSSH server install.evtx",
+      "status": "processed",
+      "malicious": false,
+      "confidence_pct": 100.0,
+      "alignment_pct": 62.5,
+      "score_20": 14.8,
+      "grade": "B",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 9,
+      "response_time_s": 85.20358681678772
+    },
+    {
+      "filename": "ID33205-SQL Server failed login with disabled SA account.evtx",
+      "status": "processed",
+      "malicious": true,
+      "confidence_pct": 100.0,
+      "alignment_pct": 75.0,
+      "score_20": 13.5,
+      "grade": "C",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 4,
+      "response_time_s": 86.1738920211792
+    },
+    {
+      "filename": "ID4625-failed login with denied access due to account restriction.evtx",
+      "status": "processed",
+      "malicious": true,
+      "confidence_pct": 100.0,
+      "alignment_pct": 100.0,
+      "score_20": 15.0,
+      "grade": "B",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 4,
+      "response_time_s": 117.01993489265442
+    },
+    {
+      "filename": "ID33205-SQL Server member added to database role.evtx",
+      "status": "processed",
+      "malicious": false,
+      "confidence_pct": 100.0,
+      "alignment_pct": 93.75,
+      "score_20": 15.6,
+      "grade": "B",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 6,
+      "response_time_s": 108.60488867759705
+    },
+    {
+      "filename": "ID33205-SQL Server user linked to a database.evtx",
+      "status": "processed",
+      "malicious": false,
+      "confidence_pct": 100.0,
+      "alignment_pct": 88.88888888888887,
+      "score_20": 16.3,
+      "grade": "B",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 6,
+      "response_time_s": 77.35812091827393
+    },
+    {
+      "filename": "ID4723-5145-password reset with changeNTLM (Mimikatz).evtx",
+      "status": "processed",
+      "malicious": false,
+      "confidence_pct": 100.0,
+      "alignment_pct": 100.0,
+      "score_20": 20.0,
+      "grade": "A",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 4,
+      "response_time_s": 75.02916622161865
+    },
+    {
+      "filename": "ID4728-Member adding to a group by the same account.evtx",
+      "status": "processed",
+      "malicious": false,
+      "confidence_pct": 100.0,
+      "alignment_pct": 83.33333333333333,
+      "score_20": 16.0,
+      "grade": "B",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 4,
+      "response_time_s": 66.32041001319885
+    },
+    {
+      "filename": "ID4738-Account is sensitive and cannot be delegated.evtx",
+      "status": "processed",
+      "malicious": true,
+      "confidence_pct": 100.0,
+      "alignment_pct": 100.0,
+      "score_20": 16.0,
+      "grade": "B",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 4,
+      "response_time_s": 80.45335698127747
+    },
+    {
+      "filename": "ID4738-Password cannot be changed.evtx",
+      "status": "processed",
+      "malicious": true,
+      "confidence_pct": 100.0,
+      "alignment_pct": 100.0,
+      "score_20": 15.0,
+      "grade": "B",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 4,
+      "response_time_s": 90.12231016159058
+    },
+    {
+      "filename": "ID4738-Password never expires.evtx",
+      "status": "processed",
+      "malicious": true,
+      "confidence_pct": 100.0,
+      "alignment_pct": 100.0,
+      "score_20": 15.0,
+      "grade": "B",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 4,
+      "response_time_s": 116.91818594932556
+    },
+    {
+      "filename": "ID4720-Local user created.evtx",
+      "status": "processed",
+      "malicious": true,
+      "confidence_pct": 100.0,
+      "alignment_pct": 83.33333333333333,
+      "score_20": 14.0,
+      "grade": "B",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 5,
+      "response_time_s": 83.1305341720581
+    },
+    {
+      "filename": "ID60-High volume file downloaded with BITS.evtx",
+      "status": "processed",
+      "malicious": false,
+      "confidence_pct": 100.0,
+      "alignment_pct": 83.33333333333333,
+      "score_20": 16.0,
+      "grade": "B",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 6,
+      "response_time_s": 137.09086203575134
+    },
+    {
+      "filename": "ID4688-sqlcmd tool abuse in SQL Server.evtx",
+      "status": "processed",
+      "malicious": false,
+      "confidence_pct": 100.0,
+      "alignment_pct": 100.0,
+      "score_20": 18.0,
+      "grade": "A",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 5,
+      "response_time_s": 95.45650005340576
+    },
+    {
+      "filename": "ID12-LSA Protect mode enabled RunAsPPL.evtx",
+      "status": "processed",
+      "malicious": false,
+      "confidence_pct": 100.0,
+      "alignment_pct": 100.0,
+      "score_20": 17.0,
+      "grade": "A",
+      "hallucination_rate": 0.0,
+      "hallucinated_fields": 0,
+      "claimed_fields": 2,
+      "response_time_s": 83.22358393669128
+    },
+    {
+      "filename": "ID7000,7009,7045-Payload deployed via service - Tchopper.evtx",
+      "status": "error",
+      "malicious": null,
+      "confidence_pct": null,
+      "alignment_pct": null,
+      "score_20": null,
+      "grade": null,
+      "hallucination_rate": null,
+      "hallucinated_fields": null,
+      "claimed_fields": null,
+      "response_time_s": 0.22306609153747559
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "cfg-files-errored",
+      "category": "configuration",
+      "severity": "warning",
+      "title": "2 file(s) failed to process",
+      "description": "These files produced no verdict and count as missed detections. 2 failed immediately (events likely too large for the model's context window).",
+      "affected_files": [
+        "ID4103-4104-OpenSSH server activation and config.evtx",
+        "ID7000,7009,7045-Payload deployed via service - Tchopper.evtx"
+      ],
+      "data": {
+        "timeouts": [],
+        "oversized": [
+          "ID4103-4104-OpenSSH server activation and config.evtx",
+          "ID7000,7009,7045-Payload deployed via service - Tchopper.evtx"
+        ],
+        "other": [],
+        "timeout_s": 300
+      }
+    },
+    {
+      "id": "file-alert",
+      "category": "per_file",
+      "severity": "warning",
+      "title": "ID33205-SQL Server failed login with disabled SA account.evtx: misclassified (expected benign)",
+      "description": "misclassified (expected benign). Expected benign but classified otherwise.",
+      "affected_files": [
+        "ID33205-SQL Server failed login with disabled SA account.evtx"
+      ],
+      "data": {
+        "misclassified": true,
+        "expected_label": "benign",
+        "got_label": "malicious",
+        "score_20": 13.5,
+        "alignment_pct": 75.0,
+        "explanation": "The logs show two consecutive failed login attempts for the highly privileged 'sa' account originating from a single IP address within a 20-second window. This rapid succession of authentication failures against a default administrative acc\u2026"
+      }
+    },
+    {
+      "id": "file-alert",
+      "category": "per_file",
+      "severity": "warning",
+      "title": "ID4625-failed login with denied access due to account restriction.evtx: misclassified (expected benign)",
+      "description": "misclassified (expected benign). Expected benign but classified otherwise.",
+      "affected_files": [
+        "ID4625-failed login with denied access due to account restriction.evtx"
+      ],
+      "data": {
+        "misclassified": true,
+        "expected_label": "benign",
+        "got_label": "malicious",
+        "score_20": 15.0,
+        "alignment_pct": 100.0,
+        "explanation": "The logs contain two consecutive failed logon events (Event ID 4625) originating from the same source IP address within a two-minute window. This rapid succession of remote interactive (LogonType 10) authentication failures from a single IP\u2026"
+      }
+    },
+    {
+      "id": "file-alert",
+      "category": "per_file",
+      "severity": "warning",
+      "title": "ID4738-Account is sensitive and cannot be delegated.evtx: misclassified (expected benign)",
+      "description": "misclassified (expected benign). Expected benign but classified otherwise.",
+      "affected_files": [
+        "ID4738-Account is sensitive and cannot be delegated.evtx"
+      ],
+      "data": {
+        "misclassified": true,
+        "expected_label": "benign",
+        "got_label": "malicious",
+        "score_20": 16.0,
+        "alignment_pct": 100.0,
+        "explanation": "The logs show a rapid sequence of Event ID 4738 entries where the `admmig` account modifies the UAC flags for `hack1`, toggling the \"password never expires\" attribute (0x4000) on and off within four seconds. This pattern indicates account m\u2026"
+      }
+    },
+    {
+      "id": "file-alert",
+      "category": "per_file",
+      "severity": "warning",
+      "title": "ID4738-Password cannot be changed.evtx: misclassified (expected benign)",
+      "description": "misclassified (expected benign). Expected benign but classified otherwise.",
+      "affected_files": [
+        "ID4738-Password cannot be changed.evtx"
+      ],
+      "data": {
+        "misclassified": true,
+        "expected_label": "benign",
+        "got_label": "malicious",
+        "score_20": 15.0,
+        "alignment_pct": 100.0,
+        "explanation": "The logs show two rapid successive account modification events (Event ID 4738) targeting the suspiciously named user hack1 by the account admmig on a domain controller. This pattern of quick, repeated changes to a high-risk account name str\u2026"
+      }
+    },
+    {
+      "id": "file-alert",
+      "category": "per_file",
+      "severity": "warning",
+      "title": "ID4738-Password never expires.evtx: misclassified (expected benign)",
+      "description": "misclassified (expected benign). Expected benign but classified otherwise.",
+      "affected_files": [
+        "ID4738-Password never expires.evtx"
+      ],
+      "data": {
+        "misclassified": true,
+        "expected_label": "benign",
+        "got_label": "malicious",
+        "score_20": 15.0,
+        "alignment_pct": 100.0,
+        "explanation": "The logs show the `admmig` account rapidly modifying and then immediately reverting the User Account Control (UAC) flags for the `hack1` account within a two-second window. This rapid toggle pattern on the same identifier is highly suspicio\u2026"
+      }
+    },
+    {
+      "id": "file-alert",
+      "category": "per_file",
+      "severity": "warning",
+      "title": "ID4720-Local user created.evtx: misclassified (expected benign)",
+      "description": "misclassified (expected benign). Expected benign but classified otherwise.",
+      "affected_files": [
+        "ID4720-Local user created.evtx"
+      ],
+      "data": {
+        "misclassified": true,
+        "expected_label": "benign",
+        "got_label": "malicious",
+        "score_20": 14.0,
+        "alignment_pct": 83.3,
+        "explanation": "The logs show a local account named \"hacking-local-acct\" being created and immediately added to the Builtin Users group by the account \"admmig\". The explicit inclusion of \"hacking\" in the username, combined with rapid sequential account cre\u2026"
+      }
+    },
+    {
+      "id": "verdict-insufficient-data",
+      "category": "verdict",
+      "severity": "info",
+      "title": "Verdict: insufficient data",
+      "description": "Only 1 attack sample(s) tested \u2014 too few for a reliable score. Detection rate could be anywhere from 0% to 79%. Only 15 benign sample(s) tested \u2014 false-positive rate is unreliable. FP rate could be anywhere from 20% to 64%. Re-run with at least 30 attack and 30 benign samples for a reliable verdict.",
+      "data": {
+        "tier": "insufficient",
+        "reasons": [
+          "Only 1 attack sample(s) tested \u2014 too few for a reliable score. Detection rate could be anywhere from 0% to 79%.",
+          "Only 15 benign sample(s) tested \u2014 false-positive rate is unreliable. FP rate could be anywhere from 20% to 64%.",
+          "Re-run with at least 30 attack and 30 benign samples for a reliable verdict."
+        ],
+        "drivers": {
+          "recall_pct": 0.0,
+          "recall_ci": [
+            0.0,
+            79.34567085261071
+          ],
+          "fp_rate_pct": 42.857142857142854,
+          "fp_rate_ci": [
+            19.824228082594665,
+            64.2535572434923
+          ],
+          "hallucination_pct": 0.0,
+          "n_malicious": 1,
+          "n_benign": 15
+        }
+      }
+    }
+  ],
+  "failure_adjusted": {
+    "total_in_scope": 16,
+    "total_malicious_in_scope": 0,
+    "processed_count": 14,
+    "failed_count": 2,
+    "processed_coverage_pct": 87.5,
+    "failure_rate_pct": 12.5,
+    "malicious_outcome_recall": 0.0,
+    "score20_adjusted_for_failures": 0.0,
+    "alignment_adjusted_for_failures": 0.0
+  }
+}

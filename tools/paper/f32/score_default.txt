@@ -1,0 +1,83 @@
+record keys: ['Timestamp', 'RuleTitle', 'Level', 'Computer', 'Channel', 'EventID', 'OtherTags', 'RecordID', 'Details', 'ExtraFieldInfo', 'RuleFile', 'RuleID', 'EvtxFile']
+detections parsed: 8124; files with >=1 detection: 220
+level vocabulary: ['critical', 'high', 'informational', 'low', 'medium']
+
+== all attack-source EVTX cases: 265 cases (219 malicious, 46 benign; benign by source: {'folder_structure': 46}) ==
+threshold         TP  FN  FP  TN     recall        95% CI       FPR        95% CI     prec
+>= informational 190  29  25  21      86.8%  81.6-90.6      54.3%  40.2-67.8     88.4%
+>= low           158  61  21  25      72.1%  65.9-77.7      45.7%  32.2-59.8     88.3%
+>= medium        136  83  15  31      62.1%  55.5-68.3      32.6%  20.9-47.0     90.1%
+>= high           99 120   8  38      45.2%  38.8-51.8      17.4%   9.1-30.7     92.5%
+>= critical        7 212   0  46       3.2%   1.6-6.4        0.0%  -0.0-7.7     100.0%
+
+(comparison set has 120 cases; 35 native-benign without EVTX excluded)
+
+== comparison-set cases with EVTX: 85 cases (60 malicious, 25 benign; benign by source: {'folder_structure': 25}) ==
+threshold         TP  FN  FP  TN     recall        95% CI       FPR        95% CI     prec
+>= informational  58   2   9  16      96.7%  88.6-99.1      36.0%  20.2-55.5     86.6%
+>= low            55   5   7  18      91.7%  81.9-96.4      28.0%  14.3-47.6     88.7%
+>= medium         53   7   4  21      88.3%  77.8-94.2      16.0%   6.4-34.7     93.0%
+>= high           38  22   0  25      63.3%  50.7-74.4       0.0%   0.0-13.3    100.0%
+>= critical        2  58   0  25       3.3%   0.9-11.4       0.0%   0.0-13.3    100.0%
+
+malicious cases with no detection >= medium: 83
+    ID 4776,4625-AccountRestore local bruteforce | max level: low | difficulty: easy
+    ID 5376, 5379, 5382, 5381, 5382 credential manager and vault | max level: low | difficulty: easy
+    ID11,13-SMBexec service registration | max level: informational | difficulty: easy
+    ID11-Exchange transport config modified | max level: informational | difficulty: easy
+    ID11715-SQL Server started in single mode for psw recovery | max level: none | difficulty: easy
+    ID15457-SQL server CLR lateral movement | max level: none | difficulty: easy
+    ID2004-New firewall rule created by PowerShell | max level: none | difficulty: easy
+    ID3-59-60-BITS job created | max level: low | difficulty: easy
+    ID33205-SQL Server Database audit specification deleted | max level: none | difficulty: easy
+    ID33205-SQL Server Database audit specification disabled | max level: none | difficulty: easy
+    ID33205-SQL Server Disabled SA user activated | max level: none | difficulty: easy
+    ID33205-SQL Server failed login with SA wrong password | max level: none | difficulty: easy
+    ID33205-SQL Server failed login with non existing accounts | max level: none | difficulty: easy
+    ID33205-SQL Server local user created | max level: none | difficulty: easy
+    ID4-OpenSSH brutforce with non existing users (sshd logs) | max level: none | difficulty: easy
+    ID4-OpenSSH brutforce with valid users | max level: none | difficulty: easy
+    ID400-800-CrackMapExec payload execution | max level: informational | difficulty: easy
+    ID4103-4104 - SPN discovery (moder nPowerShell) | max level: informational | difficulty: hard
+    ID4616-system time changed | max level: low | difficulty: easy
+    ID4624-Success login with Golden ticket | max level: informational | difficulty: easy
+    ID4625-OpenSSH brutforce with valid users | max level: low | difficulty: easy
+    ID4662-Domain group enumeration CME | max level: none | difficulty: easy
+    ID4663-Task Manager used to dump LSASS process | max level: none | difficulty: easy
+    ID4688-4648 Lateral movement with net use | max level: low | difficulty: easy
+    ID4688-Command SC to create service on remote host | max level: low | difficulty: easy
+    ID4688-Defender critical features disabled (command) | max level: low | difficulty: easy
+    ID4688-Obfuscated payload transfer via service name - Tchopper | max level: low | difficulty: easy
+    ID4688-SQL Server started in single mode for psw recovery | max level: low | difficulty: easy
+    ID4688-Scheduled task creation | max level: low | difficulty: easy
+    ID4688-Service created (command) | max level: low | difficulty: easy
+    ID4688-Service permissions modified (registry) | max level: low | difficulty: easy
+    ID4688-Task Manager access indicator for potential LSASS dump | max level: low | difficulty: easy
+    ID4698-4699-Fast created & deleted task by ATexec (susp. arg.) | max level: low | difficulty: easy
+    ID4698-4699-Fast created & deleted task by SMBexec (sups. arg.) | max level: low | difficulty: easy
+    ID4704-4705-User righ assigned to account | max level: none | difficulty: easy
+    ID4719-Audit policy deactivation | max level: low | difficulty: easy
+    ID4720,4698-Fortinet APT group abuse on Windows | max level: low | difficulty: medium
+    ID4720-4726 Fast created-deleted user | max level: low | difficulty: easy
+    ID4720-Admin like user created | max level: low | difficulty: easy
+    ID4722-Guest account activated | max level: none | difficulty: easy
+
+relabelled-benign cases with a detection >= medium: 15
+    ID4-OpenSSH server listening | OpenSSH Server Listening On Socket
+    ID4103-4104-OpenSSH server activation and config | Local Firewall Rules Enumeration Via NetFirewallRule Cmdlet, Potentially Malicious PwSh, PwSh Pipeline Exec, PwSh Script
+    ID4103-4104-OpenSSH server install | Add Windows Capability Via PowerShell Script, PwSh Pipeline Exec, PwSh Scriptblock
+    ID4661-Suspicious SAM access to password attributes by LSASS (Dcshadow) | Password Policy Enumerated
+    ID4688-Audit policy enumerated | Log Cleared, Proc Exec
+    ID4688-Firewall configuration enumerated (command) | Log Cleared, Possible LOLBIN, Proc Exec
+    ID4688-Group discovery via commandline | Log Cleared, Net.EXE Execution, Proc Exec, Suspicious Group And Account Reconnaissance Activity Using Net.EXE
+    ID4688-Network share discovery or connection via commandline | Log Cleared, Net.EXE Execution, Proc Exec, Share And Session Enumeration Using Net.EXE, System Network Connections Disco
+    ID4688-Network share manipulation via commandline | Log Cleared, Net.EXE Execution, Proc Exec
+    ID4688-Password policy discovery via commandline | Log Cleared, Net.EXE Execution, Proc Exec, Suspicious Group And Account Reconnaissance Activity Using Net.EXE
+    ID4688-Scheduled task configuration enumeration | Log Cleared, NetShare File Access, Possible LOLBIN, Proc Exec
+    ID4688-User enumeration via command | Local Accounts Discovery, Net.EXE Execution, Proc Exec, Suspicious Manipulation Of Default Accounts Via Net.EXE
+    ID4723-5145-password reset with changeNTLM (Mimikatz) | User Password Changed
+    ID4728-Member adding to a group by the same account | A Member Was Added to a Security-Enabled Global Group, User Added To Global Security Grp, User Added To Non-Admin Global
+    ID4825-Denied RDP connection with valid credentials | Denied Access To Remote Desktop, RDP Denied
+Claude: comparison-set FPs on relabelled cases = 10; also Sigma>=medium FP = 1
+GPT: comparison-set FPs on relabelled cases = 9; also Sigma>=medium FP = 3
+Qwen27B: comparison-set FPs on relabelled cases = 7; also Sigma>=medium FP = 0

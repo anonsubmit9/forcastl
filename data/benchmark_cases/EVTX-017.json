@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-017",
+  "artefact_type": "EVTX",
+  "difficulty": "Medium",
+  "test_set": "B",
+  "artefact_file": "test_data/evtx/TA0003-Persistence/T1098.xxx-Account manipulation/ID4756-Exchange admin group change.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of privilege escalation through Exchange administrative group manipulation. Identify which accounts were involved, what group changes occurred, and the security implications. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4756: Member added to universal security group",
+      "explanation": "Event 4756 records a member being added to a universal security-enabled group, which in an Exchange environment grants significant administrative privileges.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Account admin-hacker added to Exchange administrative group",
+      "explanation": "The account 'admin-hacker' was added to an Exchange management group (Compliance Management), granting it elevated Exchange administrative capabilities for persistence.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Account admmig performed the group membership change",
+      "explanation": "The admmig account was used to add admin-hacker to the privileged group, indicating the attacker used an already-compromised admin account to elevate another account.",
+      "evidence_type": "account"
+    }
+  ],
+  "hallucination_traps": [
+    "HealthMailbox7f3a2c",
+    "PowerSploitKit",
+    "8844"
+  ],
+  "notes": "Medium case: requires understanding Exchange security group semantics. Event 4756 alone does not scream malicious without context - analyst must recognize that adding 'admin-hacker' to Compliance Management is a privilege escalation and persistence technique via account manipulation."
+}

@@ -1,0 +1,95 @@
+{
+  "file": "ID1-WMIexec process execution.evtx",
+  "gt_key": "ID1-WMIexec process execution.evtx",
+  "malicious": "YES",
+  "alignment_pct": 100.0,
+  "triage_reasons": [
+    "under_population"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>1</EventID>\n    <TimeCreated SystemTime=\"2021-04-26 15:03:05.9922307\"/>\n    <Computer>fs02.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"RuleName\">technique_id=T1015,technique_name=Accessibility Features</Data>\n    <Data Name=\"UtcTime\">2021-04-26 15:03:05.976</Data>\n    <Data Name=\"ProcessGuid\">7cf65fc7-d629-6086-b80a-000000002000</Data>\n    <Data Name=\"ProcessId\">3068</Data>\n    <Data Name=\"Image\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"FileVersion\">6.3.9600.17415 (winblue_r4.141028-1500)</Data>\n    <Data Name=\"Description\">Windows Command Processor</Data>\n    <Data Name=\"Product\">Microsoft\u00ae Windows\u00ae Operating System</Data>\n    <Data Name=\"Company\">Microsoft Corporation</Data>\n    <Data Name=\"OriginalFileName\">Cmd.Exe</Data>\n    <Data Name=\"CommandLine\">C:\\Windows\\system32\\cmd.exe  /Q /c C:\\Windows\\TEMP\\execute.bat </Data>\n    <Data Name=\"CurrentDirectory\">C:\\Windows\\system32\\</Data>\n    <Data Name=\"User\">NT AUTHORITY\\SYSTEM</Data>\n    <Data Name=\"LogonGuid\">7cf65fc7-2e59-6080-e703-000000000000</Data>\n    <Data Name=\"LogonId\">0x3E7</Data>\n    <Data Name=\"TerminalSessionId\">0</Data>\n    <Data Name=\"IntegrityLevel\">System</Data>\n    <Data Name=\"Hashes\">SHA1=7C3D7281E1151FE4127923F4B4C3CD36438E1A12,MD5=F5AE03DE0AD60F5B17B82F2CD68402FE,SHA256=6F88FB88FFB0F1D5465C2826E5B4F523598B1B8378377C8378FFEBC171BAD18B,IMPHASH=77AED1ADAF24B344F08C8AD1432908C3</Data>\n    <Data Name=\"ParentProcessGuid\">7cf65fc7-d629-6086-b70a-000000002000</Data>\n    <Data Name=\"ParentProcessId\">3492</Data>\n    <Data Name=\"ParentImage\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"ParentCommandLine\">C:\\Windows\\system32\\cmd.exe /Q /c echo cd  ^&gt; \\\\127.0.0.1\\C$\\__output 2^&gt;^&amp;1 &gt; C:\\Windows\\TEMP\\execute.bat &amp; C:\\Windows\\system32\\cmd.exe /Q /c C:\\Windows\\TEMP\\execute.bat &amp; del C:\\Windows\\TEMP\\execute.bat</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "1"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\cmd.exe"
+    ],
+    "accounts": [
+      "NT AUTHORITY\\SYSTEM"
+    ],
+    "commands": [
+      "C:\\Windows\\system32\\cmd.exe  /Q /c C:\\Windows\\TEMP\\execute.bat"
+    ],
+    "network": [
+      "127.0.0.1",
+      "\\\\127.0.0.1\\C$\\__output"
+    ],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "1"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\cmd.exe"
+    ],
+    "accounts": [
+      "NT AUTHORITY\\SYSTEM"
+    ],
+    "commands": [
+      "C:\\Windows\\system32\\cmd.exe  /Q /c C:\\Windows\\TEMP\\execute.bat"
+    ],
+    "network": [
+      "127.0.0.1",
+      "\\\\127.0.0.1\\C$\\__output"
+    ],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "1"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\cmd.exe"
+    ],
+    "accounts": [
+      "NT AUTHORITY\\SYSTEM"
+    ],
+    "commands": [
+      "C:\\Windows\\system32\\cmd.exe  /Q /c C:\\Windows\\TEMP\\execute.bat, C:\\Windows\\system32\\cmd.exe /Q /c echo cd  ^&gt",
+      "\\\\127.0.0.1\\C$\\__output 2^&gt",
+      "^&amp",
+      "1 &gt",
+      "C:\\Windows\\TEMP\\execute.bat &amp",
+      "C:\\Windows\\system32\\cmd.exe /Q /c C:\\Windows\\TEMP\\execute.bat &amp",
+      "del C:\\Windows\\TEMP\\execute.bat"
+    ],
+    "network": [
+      "127.0.0.1",
+      "\\\\127.0.0.1\\C$\\__output"
+    ],
+    "registry": []
+  },
+  "under_population": {
+    "commands": [
+      {
+        "value": "\\\\127.0.0.1\\C$\\__output 2^&gt",
+        "in_artifact": true
+      },
+      {
+        "value": "^&amp",
+        "in_artifact": false
+      },
+      {
+        "value": "1 &gt",
+        "in_artifact": false
+      },
+      {
+        "value": "C:\\Windows\\TEMP\\execute.bat &amp",
+        "in_artifact": true
+      }
+    ]
+  },
+  "gt_missed_by_model": {}
+}

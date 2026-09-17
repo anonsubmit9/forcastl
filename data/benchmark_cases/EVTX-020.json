@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-020",
+  "artefact_type": "EVTX",
+  "difficulty": "Medium",
+  "test_set": "C",
+  "artefact_file": "test_data/evtx/TA0007-Discovery/T1087-Account discovery/ID4769-Kerberos TGS host enumeration (Bloodhound).evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of Kerberos-based host enumeration or Active Directory reconnaissance. Identify the account performing the enumeration, the pattern of service ticket requests, and the network source. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4769: High volume of Kerberos TGS requests for host enumeration",
+      "explanation": "A large number of Kerberos service ticket (TGS) requests targeting different hosts indicates systematic enumeration of Active Directory computer objects, consistent with tools like BloodHound/SharpHound.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Account: admmig@OFFSEC.LAN performing the enumeration",
+      "explanation": "The admmig account in the OFFSEC.LAN domain was used to request service tickets for multiple hosts, indicating AD reconnaissance with a compromised privileged account.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Source network address: ::ffff:10.23.23.9",
+      "explanation": "All Kerberos TGS requests originated from the IPv4-mapped IPv6 address ::ffff:10.23.23.9, identifying the host running the enumeration tool.",
+      "evidence_type": "network"
+    }
+  ],
+  "hallucination_traps": [
+    "BloodHound\\-CE",
+    "CONTOSO\\\\m\\.kowalski",
+    "5523"
+  ],
+  "notes": "Medium case: all events are 4769 (Kerberos TGS requests), but analyst must recognize the enumeration pattern - rapid, systematic TGS requests to many different service principal names from a single source. Requires understanding Kerberos authentication flows and AD reconnaissance techniques."
+}

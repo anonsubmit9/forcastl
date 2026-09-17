@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-015",
+  "artefact_type": "EVTX",
+  "difficulty": "Medium",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0005-Defense Evasion/T1070.001-Clear Windows event logs/ID4688-Clear event log attempt (native).evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of anti-forensic activity, specifically attempts to clear event logs using native Windows utilities. Identify the tool used, the specific logs targeted, and the account responsible. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4688: Process creation of wevtutil.exe for log clearing",
+      "explanation": "Process creation events show wevtutil.exe being launched, a native Windows utility capable of clearing event logs as an anti-forensic technique.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Command: wevtutil cl \"Windows PowerShell\" targeting PowerShell logs",
+      "explanation": "The wevtutil cl command was used specifically to clear the Windows PowerShell event log, which would destroy evidence of any malicious PowerShell commands that were executed.",
+      "evidence_type": "command"
+    },
+    {
+      "indicator": "Account: admmig executed the log clearing command",
+      "explanation": "The admmig administrative account was used to clear logs, requiring elevated privileges and indicating a compromised admin account performing anti-forensic operations.",
+      "evidence_type": "account"
+    }
+  ],
+  "hallucination_traps": [
+    "CVE-2021-93188",
+    "spoolsvc_agent\\.exe",
+    "3347"
+  ],
+  "notes": "Medium case: although the technique is straightforward (wevtutil cl), the analyst must extract the specific targeted log channel from the command line and correlate the 4688 process creation event with the anti-forensic intent. The use of a native utility (living off the land) adds complexity compared to simple log-cleared events like 1102."
+}

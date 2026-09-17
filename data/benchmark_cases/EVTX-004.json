@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-004",
+  "artefact_type": "EVTX",
+  "difficulty": "Easy",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0009-Collection/T1125-Video capture/ID13-RDP shadow session configuration enabled (registry).evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of RDP configuration tampering or surveillance capability being enabled. Identify the registry changes and what tool was used. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 12: Registry key created under HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services",
+      "explanation": "A Sysmon registry event shows the creation of Terminal Services policy keys, which control RDP shadow session behavior.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Process: C:\\Windows\\system32\\reg.exe",
+      "explanation": "The reg.exe command-line tool was used to modify the RDP shadow session registry configuration, enabling remote session monitoring.",
+      "evidence_type": "process"
+    },
+    {
+      "indicator": "Registry path: HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services",
+      "explanation": "This registry path controls Terminal Services policies including RDP shadow sessions, which allow an attacker to silently monitor or control active user sessions.",
+      "evidence_type": "registry"
+    }
+  ],
+  "hallucination_traps": [
+    "HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Winlogon\\\\CredentialHelper",
+    "CVE-2024-44238",
+    "winlogon_service\\.exe"
+  ],
+  "notes": "Easy case: single event, clear registry modification by reg.exe to enable RDP shadow session. Obvious Collection technique (T1125) with a well-known registry path."
+}

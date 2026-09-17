@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-007",
+  "artefact_type": "EVTX",
+  "difficulty": "Easy",
+  "test_set": "B",
+  "artefact_file": "test_data/evtx/TA0003-Persistence/T1543.003-Create or Modify System Process-Windows Service/ID13-New service for Mimikatz.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of malicious service installation or persistence mechanisms. Identify the service name, associated registry changes, and any known attack tool indicators. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Registry: HKLM\\System\\CurrentControlSet\\Services\\mimidrv\\ImagePath",
+      "explanation": "A new service named 'mimidrv' was registered via registry, which is the Mimikatz kernel-mode driver used for credential access and privilege escalation.",
+      "evidence_type": "registry"
+    },
+    {
+      "indicator": "Registry: HKLM\\System\\CurrentControlSet\\Services\\mimidrv\\Start",
+      "explanation": "The service start type was configured in the registry, establishing persistence for the Mimikatz driver.",
+      "evidence_type": "registry"
+    },
+    {
+      "indicator": "Process: C:\\Windows\\system32\\services.exe",
+      "explanation": "The Windows Service Control Manager (services.exe) processed the new service registration, confirming the service was installed through normal Windows service APIs.",
+      "evidence_type": "process"
+    }
+  ],
+  "hallucination_traps": [
+    "MimikatzPro",
+    "HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\ShellServiceObjectDelayLoad\\\\NetHelper",
+    "CVE-2022-67012"
+  ],
+  "notes": "Easy case: 2 events showing Mimikatz driver service installation via registry. The 'mimidrv' service name is an obvious indicator of the well-known credential dumping tool."
+}

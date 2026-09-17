@@ -1,0 +1,36 @@
+{
+  "id": "EVTX-021",
+  "artefact_type": "EVTX",
+  "difficulty": "Medium",
+  "test_set": "C",
+  "artefact_file": "test_data/evtx/TA0040-Impact/T1490-Inhibit System Recovery/ID4688-Delete VSS backup (WMI).evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of backup deletion or system recovery inhibition. Identify the commands and processes used to delete shadow copies, the account responsible, and the impact on system recovery capability. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Process: WMIC.exe used to delete Volume Shadow Copies",
+      "explanation": "WMIC.exe was executed to delete Volume Shadow Service (VSS) shadow copies, a technique commonly used by ransomware and destructive malware to prevent system recovery.",
+      "evidence_type": "process"
+    },
+    {
+      "indicator": "Event ID 4688: Process creation chain showing VSS deletion workflow",
+      "explanation": "Process creation events reveal the execution chain involving WMIC.exe for shadow copy deletion and VSSVC.exe (Volume Shadow Copy Service) responding to the deletion commands.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Account: admmig executed the VSS deletion commands",
+      "explanation": "The admmig administrative account was used to delete shadow copies, requiring elevated privileges to modify VSS backups.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Process: VSSVC.exe and svchost.exe activity confirming shadow copy manipulation",
+      "explanation": "The Volume Shadow Copy Service (VSSVC.exe) and svchost.exe activity confirm that VSS operations were triggered by the WMIC deletion commands, validating the impact on system recovery.",
+      "evidence_type": "process"
+    }
+  ],
+  "hallucination_traps": [
+    "CVE-2023-60247",
+    "wininit_loader\\.dll",
+    "7762"
+  ],
+  "notes": "Medium case: requires correlating 4688 process creation events for WMIC.exe, VSSVC.exe, and svchost.exe to reconstruct the VSS deletion workflow. Analyst must recognize the WMI-based shadow copy deletion pattern and understand its impact on system recovery capabilities."
+}

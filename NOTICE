@@ -1,0 +1,44 @@
+FORCAST-L
+Copyright 2026 FORCAST-L maintainers
+The original FORCAST-L source code and documentation are licensed under the
+Apache License, Version 2.0 (see LICENSE).
+
+Third-party materials retain their respective upstream licenses. The
+top-level Apache-2.0 license does not relicense those materials.
+
+Third-Party Data Attribution
+============================
+
+This project's CSV/EVTX detection corpus is built on third-party data.
+
+Attack corpus (the 271 malicious .evtx and the CSVs derived from them)
+----------------------------------------------------------------------
+Source : mdecrevoisier — "EVTX-to-MITRE-Attack"
+URL    : https://github.com/mdecrevoisier/EVTX-to-MITRE-Attack
+License: Creative Commons Zero v1.0 Universal (CC0 1.0) — public domain dedication
+
+The upstream README and LICENSE ship under `data/evtx/`. In `metadata.json`
+these files are marked `source: folder_structure`. The binary .evtx were
+transformed to the scored CSV corpus with EvtxECmd (Eric Zimmerman's EZ Tools,
+https://ericzimmerman.github.io/). CC0 imposes no legal attribution requirement;
+this notice is provided as a matter of academic and ethical practice.
+
+Benign corpus (the .csv under `data/csv/_benign`)
+----------------------------------------------------------------
+Source : NextronSystems — "evtx-baseline" (goodware Windows event logs)
+URL    : https://github.com/NextronSystems/evtx-baseline
+License: Apache License 2.0
+
+The benign samples are REAL Windows baseline activity (admin process execution,
+account/group changes, logons, PowerShell, registry, file ops) drawn from the
+evtx-baseline `.evtx`, transformed to CSV with EvtxECmd and sliced into single-
+technique benign near-misses. In `metadata.json` they are marked
+`source: evtx-baseline`. The upstream Apache-2.0 license text ships under
+`data/evtx/evtx-baseline-LICENSE`.
+
+(2026-06-12: the corpus was reset to be 100% real — the prior hand-authored
+synthetic benign controls were removed.)
+
+Tooling
+-------
+EvtxECmd / EZ Tools — Eric Zimmerman — https://ericzimmerman.github.io/

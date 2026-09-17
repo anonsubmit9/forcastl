@@ -1,0 +1,73 @@
+{
+  "file": "ID4728-4756-Member added to sensitive domain groups.evtx",
+  "gt_key": "ID4728-4756-Member added to sensitive domain groups.evtx",
+  "malicious": "YES",
+  "alignment_pct": 92.9,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4728</EventID>\n    <TimeCreated SystemTime=\"2020-07-12 06:01:13.7587346\"/>\n    <Computer>rootdc1.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"MemberName\">CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan</Data>\n    <Data Name=\"MemberSid\">S-1-5-21-4230534742-2542757381-3142984815-1159</Data>\n    <Data Name=\"TargetUserName\">Domain Admins</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetSid\">S-1-5-21-4230534742-2542757381-3142984815-512</Data>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1158</Data>\n    <Data Name=\"SubjectUserName\">lambda-user</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x80E25B9</Data>\n    <Data Name=\"PrivilegeList\">-</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4756</EventID>\n    <TimeCreated SystemTime=\"2020-07-12 06:01:13.7655726\"/>\n    <Computer>rootdc1.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"MemberName\">CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan</Data>\n    <Data Name=\"MemberSid\">S-1-5-21-4230534742-2542757381-3142984815-1159</Data>\n    <Data Name=\"TargetUserName\">Enterprise Admins</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetSid\">S-1-5-21-4230534742-2542757381-3142984815-519</Data>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1158</Data>\n    <Data Name=\"SubjectUserName\">lambda-user</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x80E25B9</Data>\n    <Data Name=\"PrivilegeList\">-</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4756</EventID>\n    <TimeCreated SystemTime=\"2020-07-12 06:01:13.7677497\"/>\n    <Computer>rootdc1.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"MemberName\">CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan</Data>\n    <Data Name=\"MemberSid\">S-1-5-21-4230534742-2542757381-3142984815-1159</Data>\n    <Data Name=\"TargetUserName\">Enterprise Key Admins</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetSid\">S-1-5-21-4230534742-2542757381-3142984815-527</Data>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1158</Data>\n    <Data Name=\"SubjectUserName\">lambda-user</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x80E25B9</Data>\n    <Data Name=\"PrivilegeList\">-</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4756</EventID>\n    <TimeCreated SystemTime=\"2020-07-12 06:01:13.7699394\"/>\n    <Computer>rootdc1.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"MemberName\">CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan</Data>\n    <Data Name=\"MemberSid\">S-1-5-21-4230534742-2542757381-3142984815-1159</Data>\n    <Data Name=\"TargetUserName\">Schema Admins</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetSid\">S-1-5-21-4230534742-2542757381-3142984815-518</Data>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1158</Data>\n    <Data Name=\"SubjectUserName\">lambda-user</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x80E25B9</Data>\n    <Data Name=\"PrivilegeList\">-</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "4728",
+      "4756"
+    ],
+    "processes": [],
+    "accounts": [
+      "CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan",
+      "Domain Admins",
+      "Enterprise Admins",
+      "Enterprise Key Admins",
+      "honey-pot1",
+      "lambda-user",
+      "Schema Admins"
+    ],
+    "commands": [],
+    "network": [],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "4728",
+      "4756"
+    ],
+    "processes": [],
+    "accounts": [
+      "CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan",
+      "Domain Admins",
+      "Enterprise Admins",
+      "Enterprise Key Admins",
+      "honey-pot1",
+      "lambda-user",
+      "Schema Admins"
+    ],
+    "commands": [],
+    "network": [],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "4728",
+      "4756"
+    ],
+    "processes": [],
+    "accounts": [
+      "lambda-user",
+      "honey-pot1",
+      "Domain Admins",
+      "Enterprise Admins",
+      "Enterprise Key Admins",
+      "Schema Admins"
+    ],
+    "commands": [],
+    "network": [],
+    "registry": []
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "accounts": [
+      "CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan"
+    ]
+  }
+}

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/static/favicon.svg">
+<title>FORCAST-L · Ground-Truth Explorer</title>
+<style>
+  :root{
+    --c-event_ids:#9ca3af; --c-processes:#f59e0b; --c-accounts:#3b82f6;
+    --c-commands:#14b8a6; --c-network:#22c55e; --c-registry:#a855f7;
+    --bg:#0f1115; --panel:#171a21; --line:#272b34; --txt:#e6e8eb; --mut:#9aa3af;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt)}
+  header{display:flex;align-items:center;gap:16px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+  header h1{font-size:15px;margin:0;font-weight:600}
+  header a{color:#7dd3fc;text-decoration:none;font-size:13px}
+  .wrap{display:flex;height:calc(100vh - 49px)}
+  aside{width:320px;min-width:320px;border-right:1px solid var(--line);overflow:auto;background:var(--panel)}
+  aside #search{width:100%;padding:8px 10px;border:0;border-bottom:1px solid var(--line);background:#11141a;color:var(--txt);outline:none}
+  .frow{padding:7px 10px;border-bottom:1px solid #1d2128;cursor:pointer;font-size:12.5px}
+  .frow:hover{background:#1d222b}
+  .frow.sel{background:#223043}
+  .frow.reviewed{opacity:.5}
+  .frow .rv{color:#22c55e;font-weight:800;margin-right:3px}
+  #reviewbar{padding:6px 10px;border-bottom:1px solid var(--line);font-size:12px;color:var(--mut);display:flex;align-items:center;gap:10px}
+  #reviewbar label{display:flex;align-items:center;gap:4px;cursor:pointer}
+  .revtoggle{border:1px solid var(--line);background:#11141a;color:var(--txt);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700}
+  .revtoggle.on{background:#14532d;color:#bbf7d0;border-color:#16633a}
+  .frow .nm{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .frow .meta{color:var(--mut);font-size:11px}
+  .badge{display:inline-block;padding:0 6px;border-radius:8px;font-size:10px;font-weight:700}
+  .badge.YES{background:#7f1d1d;color:#fecaca}.badge.NO{background:#14532d;color:#bbf7d0}
+  main{flex:1;overflow:auto;padding:14px 18px}
+  #fileheader{margin-bottom:10px}
+  #fileheader .path{color:var(--mut);font-size:12px}
+  #toolbar{position:sticky;top:0;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line);z-index:5;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .fld{border:1px solid var(--line);background:#11141a;color:var(--txt);padding:4px 9px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600}
+  .fld .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .fld.active{outline:2px solid #fff;background:#222834}
+  #status{font-size:12px;color:var(--mut);max-width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .verdict{border:1px solid var(--line);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:800}
+  .verdict.YES{background:#7f1d1d;color:#fecaca}
+  .verdict.NO{background:#14532d;color:#bbf7d0}
+  .verdict.pending{box-shadow:0 0 0 2px #facc15}
+  #status.err{color:#fca5a5}#status.ok{color:#86efac}
+  #evidence{margin:10px 0;display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:11px;padding:2px 7px;border-radius:10px;display:inline-flex;align-items:center;gap:5px;color:#0b0d10}
+  .chip .x{cursor:pointer;font-weight:800;opacity:.7}.chip .x:hover{opacity:1}
+  .ev{border:1px solid var(--line);border-radius:7px;margin:8px 0;background:var(--panel)}
+  .ev .eh{padding:5px 9px;border-bottom:1px solid var(--line);font-size:12px;color:var(--mut)}
+  .ev .eh b{color:var(--txt)}
+  .kv{display:grid;grid-template-columns:200px 1fr;gap:0}
+  .kv>div{padding:4px 9px;border-top:1px solid #1d2128;white-space:pre-wrap;word-break:break-word}
+  .kv .k{color:var(--mut);font-size:12px}
+  .kv .v{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+  mark{border-radius:3px;padding:0 1px;color:#0b0d10;cursor:pointer}
+  mark.f-event_ids{background:var(--c-event_ids)}mark.f-processes{background:var(--c-processes)}
+  mark.f-accounts{background:var(--c-accounts)}mark.f-commands{background:var(--c-commands)}
+  mark.f-network{background:var(--c-network)}mark.f-registry{background:var(--c-registry)}
+  /* staged (unsaved) states */
+  mark.st-add{box-shadow:0 0 0 2px #facc15;outline:1px dashed #111}
+  mark.st-remove{opacity:.4;text-decoration:line-through}
+  .chip.st-add{box-shadow:0 0 0 2px #facc15}
+  .chip.st-remove{opacity:.5;text-decoration:line-through}
+  #savebar{display:flex;gap:8px;align-items:center}
+  #savebar .dirty{color:#facc15;font-weight:700;font-size:12px}
+  #savebar button{border:0;border-radius:6px;padding:5px 12px;font-weight:700;cursor:pointer;font-size:12px}
+  #savebar .save{background:#16a34a;color:#fff}
+  #savebar .revert{background:#374151;color:#e6e8eb}
+  #savebar button:disabled{opacity:.4;cursor:default}
+  .hint{color:var(--mut);font-size:12px;margin:18px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>FORCAST-L · Ground-Truth Explorer</h1>
+  <a href="/">← Back to runner</a>
+  <span style="color:var(--mut);font-size:12px">view source CSV · highlight = ground truth · select text + a field to add</span>
+</header>
+<div class="wrap">
+  <aside>
+    <input id="search" placeholder="filter files…" autocomplete="off">
+    <div id="reviewbar"></div>
+    <div id="files"></div>
+  </aside>
+  <main>
+    <div id="fileheader"><div class="hint">Select a file on the left to view its source and ground truth.</div></div>
+    <div id="toolbar" hidden></div>
+    <div id="evidence"></div>
+    <div id="events"></div>
+  </main>
+</div>
+<script src="/static/gt.js" defer></script>
+</body>
+</html>

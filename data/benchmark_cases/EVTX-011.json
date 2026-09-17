@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-011",
+  "artefact_type": "EVTX",
+  "difficulty": "Easy",
+  "test_set": "C",
+  "artefact_file": "test_data/evtx/TA0007-Discovery/T1046-Network Service Scanning/ID4624-Anonymous login with domain specified (DonPapi).evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of reconnaissance or enumeration activity using anonymous or suspicious logon sessions. Identify the accounts involved, the source network address, and the logon patterns. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4624: Successful logon events including ANONYMOUS LOGON",
+      "explanation": "Multiple successful logon events include ANONYMOUS LOGON sessions, which are commonly used by enumeration tools like DonPAPI for network service discovery.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Account: ANONYMOUS LOGON alongside admmig",
+      "explanation": "The presence of both ANONYMOUS LOGON and the admmig administrative account suggests an enumeration tool cycling through authentication methods to discover accessible services.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Source IP: 10.23.123.11",
+      "explanation": "All logon attempts originated from 10.23.123.11, identifying the host running the network scanning or enumeration tool.",
+      "evidence_type": "network"
+    }
+  ],
+  "hallucination_traps": [
+    "SharpHound4\\.exe",
+    "CONTOSO\\\\j\\.hutchinson",
+    "10\\.77\\.66\\.55"
+  ],
+  "notes": "Easy case: 15 events all of type 4624, showing anonymous logon with domain specified alongside legitimate account. Clear network service scanning pattern (T1046) with single source IP."
+}

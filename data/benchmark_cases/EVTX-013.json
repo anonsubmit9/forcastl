@@ -1,0 +1,36 @@
+{
+  "id": "EVTX-013",
+  "artefact_type": "EVTX",
+  "difficulty": "Medium",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0002-Execution/T1053.005-Scheduled Task/ID4688-4698 Persistent scheduled task with SYSTEM privileges creation.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of persistence through scheduled task creation. Identify the task details, the processes involved, the account used, and the scheduling parameters. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4698: Scheduled task created with SYSTEM privileges",
+      "explanation": "A scheduled task was registered with SYSTEM-level privileges, establishing persistence that survives reboots and runs with the highest privilege level.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 4688: Process creation showing schtasks /create /sc minute",
+      "explanation": "Process creation events reveal the use of schtasks.exe with /create /sc minute parameters, creating a task that executes at minute-level frequency for persistent execution.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Processes: MonitoringHost.exe and cscript.exe involved in task creation",
+      "explanation": "MonitoringHost.exe and cscript.exe appear in the process chain, indicating script-based task creation possibly leveraging monitoring infrastructure.",
+      "evidence_type": "process"
+    },
+    {
+      "indicator": "Account: admmig used to create the persistent scheduled task",
+      "explanation": "The admmig administrative account was used to create the scheduled task, indicating a compromised privileged account establishing persistence.",
+      "evidence_type": "account"
+    }
+  ],
+  "hallucination_traps": [
+    "CVE-2024-72304",
+    "svc_netmon",
+    "HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Explorer\\\\StartupApproved\\\\RunEx"
+  ],
+  "notes": "Medium case: requires correlating 4688 process creation with 4698 task registration events. Analyst must connect the schtasks command line with the resulting scheduled task and identify the SYSTEM privilege escalation through the task scheduling mechanism."
+}

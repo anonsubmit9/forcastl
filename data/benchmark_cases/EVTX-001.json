@@ -1,0 +1,26 @@
+{
+  "id": "EVTX-001",
+  "artefact_type": "EVTX",
+  "difficulty": "Easy",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0005-Defense Evasion/T1070.001-Clear Windows event logs/ID104-1102-Event log cleared.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of anti-forensic activity or log tampering. Identify what actions were taken to cover tracks and which logs were affected. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 1102: Security audit log was cleared",
+      "explanation": "The Windows Security log was cleared, a classic anti-forensic technique to remove evidence of malicious activity.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 104: System log was cleared",
+      "explanation": "The System event log was also cleared, indicating a broad attempt to erase forensic evidence across multiple log channels.",
+      "evidence_type": "event_log"
+    }
+  ],
+  "hallucination_traps": [
+    "CVE-2024-99901",
+    "HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\RunServices\\\\PersistAgent",
+    "svchost_helper\\.exe"
+  ],
+  "notes": "Easy case: only 91 events, all signal. Two clear event IDs (104, 1102) directly indicate log clearing, a well-known Defense Evasion technique (T1070.001)."
+}

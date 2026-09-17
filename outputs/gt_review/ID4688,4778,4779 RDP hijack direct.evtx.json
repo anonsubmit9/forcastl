@@ -1,0 +1,139 @@
+{
+  "file": "ID4688,4778,4779 RDP hijack direct.evtx",
+  "gt_key": "ID4688,4778,4779 RDP hijack direct.evtx",
+  "malicious": "YES",
+  "alignment_pct": 69.6,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:01:05.3522301\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0x378</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1936</Data>\n    <Data Name=\"ProcessId\">0x13E8</Data>\n    <Data Name=\"CommandLine\">cmd  /k tscon 2 /dest:rdp-tcp#8</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-16384</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:01:05.3588944\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0x6E8</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\tscon.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1936</Data>\n    <Data Name=\"ProcessId\">0x378</Data>\n    <Data Name=\"CommandLine\">tscon  2 /dest:rdp-tcp#8</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-16384</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4779</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:01:05.3700303\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"AccountName\">admmig</Data>\n    <Data Name=\"AccountDomain\">OFFSEC</Data>\n    <Data Name=\"LogonID\">0x13B5E1E</Data>\n    <Data Name=\"SessionName\">RDP-Tcp#8</Data>\n    <Data Name=\"ClientName\">JUMP01</Data>\n    <Data Name=\"ClientAddress\">10.23.23.9</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:01:05.5727118\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0x714</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\TSTheme.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1938</Data>\n    <Data Name=\"ProcessId\">0x28C</Data>\n    <Data Name=\"CommandLine\">C:\\Windows\\system32\\TSTheme.exe -Embedding</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"TargetUserName\">admmig</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0x13B5E1E</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-8192</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:01:05.7445062\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0x17A8</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\TSTheme.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1938</Data>\n    <Data Name=\"ProcessId\">0x28C</Data>\n    <Data Name=\"CommandLine\">C:\\Windows\\system32\\TSTheme.exe -Embedding</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1180</Data>\n    <Data Name=\"TargetUserName\">admmarsid</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0x6A423</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-8192</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4778</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:01:05.8317487\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"AccountName\">admmarsid</Data>\n    <Data Name=\"AccountDomain\">OFFSEC</Data>\n    <Data Name=\"LogonID\">0x6A423</Data>\n    <Data Name=\"SessionName\">RDP-Tcp#8</Data>\n    <Data Name=\"ClientName\">JUMP01</Data>\n    <Data Name=\"ClientAddress\">10.23.23.9</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:01:06.2032818\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0xC14</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\AtBroker.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1938</Data>\n    <Data Name=\"ProcessId\">0xD5C</Data>\n    <Data Name=\"CommandLine\">atbroker.exe</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1180</Data>\n    <Data Name=\"TargetUserName\">admmarsid</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0x6A423</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\winlogon.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-8192</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:01:06.2061179\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-20</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E4</Data>\n    <Data Name=\"NewProcessId\">0x438</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\rdpclip.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1938</Data>\n    <Data Name=\"ProcessId\">0x33C</Data>\n    <Data Name=\"CommandLine\">rdpclip</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1180</Data>\n    <Data Name=\"TargetUserName\">admmarsid</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0x6A423</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-8192</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:01:07.0512821\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0x110C</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\taskhostw.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1936</Data>\n    <Data Name=\"ProcessId\">0x430</Data>\n    <Data Name=\"CommandLine\">taskhostw.exe</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-16384</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:01:07.1508264\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0x460</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\dllhost.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1936</Data>\n    <Data Name=\"ProcessId\">0x28C</Data>\n    <Data Name=\"CommandLine\">C:\\Windows\\system32\\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-16384</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:01:37.1112946\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0x1548</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\dllhost.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1938</Data>\n    <Data Name=\"ProcessId\">0x28C</Data>\n    <Data Name=\"CommandLine\">C:\\Windows\\system32\\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"TargetUserName\">admmig</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0x13B5E1E</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-8192</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:02:14.7898832\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0x5E8</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\dllhost.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1938</Data>\n    <Data Name=\"ProcessId\">0x28C</Data>\n    <Data Name=\"CommandLine\">C:\\Windows\\system32\\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"TargetUserName\">admmig</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0x13B5E1E</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-8192</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:02:35.0895205\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0x16C4</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\taskhostw.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1936</Data>\n    <Data Name=\"ProcessId\">0x430</Data>\n    <Data Name=\"CommandLine\">taskhostw.exe U</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-16384</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-05-14 21:02:35.2084322\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0x5B8</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\dllhost.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1936</Data>\n    <Data Name=\"ProcessId\">0x28C</Data>\n    <Data Name=\"CommandLine\">C:\\Windows\\system32\\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-16384</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "4688",
+      "4778",
+      "4779"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\AtBroker.exe",
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\dllhost.exe",
+      "C:\\Windows\\System32\\rdpclip.exe",
+      "C:\\Windows\\System32\\svchost.exe",
+      "C:\\Windows\\System32\\taskhostw.exe",
+      "C:\\Windows\\System32\\tscon.exe",
+      "C:\\Windows\\System32\\TSTheme.exe",
+      "C:\\Windows\\System32\\winlogon.exe"
+    ],
+    "accounts": [
+      "admmarsid",
+      "admmig",
+      "FS01$"
+    ],
+    "commands": [
+      "atbroker.exe",
+      "C:\\Windows\\system32\\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}",
+      "C:\\Windows\\system32\\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}",
+      "C:\\Windows\\system32\\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}",
+      "C:\\Windows\\system32\\TSTheme.exe -Embedding",
+      "cmd  /k tscon 2 /dest:rdp-tcp#8",
+      "rdpclip",
+      "taskhostw.exe",
+      "taskhostw.exe U",
+      "tscon  2 /dest:rdp-tcp#8"
+    ],
+    "network": [
+      "10.23.23.9",
+      "JUMP01"
+    ],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "4688",
+      "4778",
+      "4779"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\AtBroker.exe",
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\dllhost.exe",
+      "C:\\Windows\\System32\\rdpclip.exe",
+      "C:\\Windows\\System32\\svchost.exe",
+      "C:\\Windows\\System32\\taskhostw.exe",
+      "C:\\Windows\\System32\\tscon.exe",
+      "C:\\Windows\\System32\\TSTheme.exe",
+      "C:\\Windows\\System32\\winlogon.exe"
+    ],
+    "accounts": [
+      "admmarsid",
+      "admmig",
+      "FS01$"
+    ],
+    "commands": [
+      "atbroker.exe",
+      "C:\\Windows\\system32\\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}",
+      "C:\\Windows\\system32\\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}",
+      "C:\\Windows\\system32\\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}",
+      "C:\\Windows\\system32\\TSTheme.exe -Embedding",
+      "cmd  /k tscon 2 /dest:rdp-tcp#8",
+      "rdpclip",
+      "taskhostw.exe",
+      "taskhostw.exe U",
+      "tscon  2 /dest:rdp-tcp#8"
+    ],
+    "network": [
+      "10.23.23.9",
+      "JUMP01"
+    ],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "4688",
+      "4779",
+      "4778"
+    ],
+    "processes": [
+      "cmd.exe",
+      "tscon.exe",
+      "TSTheme.exe",
+      "AtBroker.exe",
+      "rdpclip.exe",
+      "taskhostw.exe",
+      "dllhost.exe"
+    ],
+    "accounts": [
+      "FS01$",
+      "admmig",
+      "admmarsid"
+    ],
+    "commands": [
+      "cmd  /k tscon 2 /dest:rdp-tcp#8, tscon  2 /dest:rdp-tcp#8"
+    ],
+    "network": [
+      "10.23.23.9"
+    ],
+    "registry": []
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "processes": [
+      "C:\\Windows\\System32\\svchost.exe",
+      "C:\\Windows\\System32\\winlogon.exe"
+    ],
+    "commands": [
+      "atbroker.exe",
+      "C:\\Windows\\system32\\DllHost.exe /Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}",
+      "C:\\Windows\\system32\\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}",
+      "C:\\Windows\\system32\\DllHost.exe /Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}",
+      "C:\\Windows\\system32\\TSTheme.exe -Embedding",
+      "rdpclip",
+      "taskhostw.exe",
+      "taskhostw.exe U"
+    ],
+    "network": [
+      "JUMP01"
+    ]
+  }
+}

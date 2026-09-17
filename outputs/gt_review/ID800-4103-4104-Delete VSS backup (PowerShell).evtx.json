@@ -1,0 +1,76 @@
+{
+  "file": "ID800-4103-4104-Delete VSS backup (PowerShell).evtx",
+  "gt_key": "ID800-4103-4104-Delete VSS backup (PowerShell).evtx",
+  "malicious": "YES",
+  "alignment_pct": 91.7,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"PowerShell\"/>\n    <EventID>800</EventID>\n    <TimeCreated SystemTime=\"2021-12-19 15:13:49.0000000\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Windows PowerShell</Channel>\n  </System>\n  <EventData>\n    <Data>Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}, \tDetailSequence=1\n\tDetailTotal=1\n\n\tSequenceNumber=53\n\n\tUserId=OFFSEC\\admmig\n\tHostName=ConsoleHost\n\tHostVersion=4.0\n\tHostId=e16c2105-d67f-4bd5-b52f-ba22bff6ffac\n\tHostApplication=C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\n\tEngineVersion=4.0\n\tRunspaceId=20dcb711-97b2-47ff-9947-2c346e212ef7\n\tPipelineId=25\n\tScriptName=\n\tCommandLine=Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}, CommandInvocation(Get-WmiObject): \"Get-WmiObject\"\nParameterBinding(Get-WmiObject): name=\"Class\"; value=\"Win32_Shadowcopy\"\nCommandInvocation(ForEach-Object): \"ForEach-Object\"\nParameterBinding(ForEach-Object): name=\"Process\"; value=\"$_.Delete();\"\n</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"PowerShell\"/>\n    <EventID>800</EventID>\n    <TimeCreated SystemTime=\"2021-12-19 15:13:49.0000000\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Windows PowerShell</Channel>\n  </System>\n  <EventData>\n    <Data>\tDetailSequence=1\n\tDetailTotal=1\n\n\tSequenceNumber=55\n\n\tUserId=OFFSEC\\admmig\n\tHostName=ConsoleHost\n\tHostVersion=4.0\n\tHostId=e16c2105-d67f-4bd5-b52f-ba22bff6ffac\n\tHostApplication=C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\n\tEngineVersion=4.0\n\tRunspaceId=20dcb711-97b2-47ff-9947-2c346e212ef7\n\tPipelineId=25\n\tScriptName=\n\tCommandLine=, CommandInvocation(Out-Default): \"Out-Default\"\n</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-PowerShell\"/>\n    <EventID>4104</EventID>\n    <TimeCreated SystemTime=\"2021-12-19 15:13:49.0104042\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-PowerShell/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"MessageNumber\">1</Data>\n    <Data Name=\"MessageTotal\">1</Data>\n    <Data Name=\"ScriptBlockText\">Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}</Data>\n    <Data Name=\"ScriptBlockId\">faaeba08-01f0-4a32-ba48-bd65b24afd28</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-PowerShell\"/>\n    <EventID>4104</EventID>\n    <TimeCreated SystemTime=\"2021-12-19 15:13:49.0104042\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-PowerShell/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"MessageNumber\">1</Data>\n    <Data Name=\"MessageTotal\">1</Data>\n    <Data Name=\"ScriptBlockText\">{$_.Delete();}</Data>\n    <Data Name=\"ScriptBlockId\">512e0891-2689-4d75-94ff-a6f555300962</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-PowerShell\"/>\n    <EventID>4103</EventID>\n    <TimeCreated SystemTime=\"2021-12-19 15:13:49.0260228\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-PowerShell/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"ContextInfo\">        Severity = Informational,         Host Name = ConsoleHost,         Host Version = 4.0,         Host ID = e16c2105-d67f-4bd5-b52f-ba22bff6ffac,         Host Application = C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe,         Engine Version = 4.0,         Runspace ID = 20dcb711-97b2-47ff-9947-2c346e212ef7,         Pipeline ID = 25,         Command Name = Get-WmiObject,         Command Type = Cmdlet,         Script Name = ,         Command Path = ,         Sequence Number = 54,         User = OFFSEC\\admmig,         Shell ID = Microsoft.PowerShell, </Data>\n    <Data Name=\"UserData\"></Data>\n    <Data Name=\"Payload\">CommandInvocation(Get-WmiObject): \"Get-WmiObject\", ParameterBinding(Get-WmiObject): name=\"Class\"; value=\"Win32_Shadowcopy\", CommandInvocation(ForEach-Object): \"ForEach-Object\", ParameterBinding(ForEach-Object): name=\"Process\"; value=\"$_.Delete();\", </Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-PowerShell\"/>\n    <EventID>4103</EventID>\n    <TimeCreated SystemTime=\"2021-12-19 15:13:49.0260228\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-PowerShell/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"ContextInfo\">        Severity = Informational,         Host Name = ConsoleHost,         Host Version = 4.0,         Host ID = e16c2105-d67f-4bd5-b52f-ba22bff6ffac,         Host Application = C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe,         Engine Version = 4.0,         Runspace ID = 20dcb711-97b2-47ff-9947-2c346e212ef7,         Pipeline ID = 25,         Command Name = ,         Command Type = Script,         Script Name = ,         Command Path = ,         Sequence Number = 56,         User = OFFSEC\\admmig,         Shell ID = Microsoft.PowerShell, </Data>\n    <Data Name=\"UserData\"></Data>\n    <Data Name=\"Payload\">CommandInvocation(Out-Default): \"Out-Default\", </Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-PowerShell\"/>\n    <EventID>4104</EventID>\n    <TimeCreated SystemTime=\"2021-12-19 15:13:49.0416503\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-PowerShell/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"MessageNumber\">1</Data>\n    <Data Name=\"MessageTotal\">1</Data>\n    <Data Name=\"ScriptBlockText\">prompt</Data>\n    <Data Name=\"ScriptBlockId\">b18ebe4a-db7d-42a9-beb9-8474de0a6d67</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "800",
+      "4103",
+      "4104"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    ],
+    "accounts": [
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}",
+      "prompt",
+      "{$_.Delete();}"
+    ],
+    "network": [],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "800",
+      "4103",
+      "4104"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    ],
+    "accounts": [
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}",
+      "prompt",
+      "{$_.Delete();}"
+    ],
+    "network": [],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "800",
+      "4104",
+      "4103"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    ],
+    "accounts": [
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete()",
+      "}"
+    ],
+    "network": [],
+    "registry": []
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "commands": [
+      "prompt"
+    ]
+  }
+}

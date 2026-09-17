@@ -1,0 +1,79 @@
+[
+ {
+  "file": "ID33205-SQL Server failed login with disabled SA account.evtx",
+  "gt": "NO",
+  "label_review": "In-artifact intent audit 2026-06-12: 2x 33205 failed login against a DISABLED SA account \u2014 2 attempts is noise, not credential guessing (mirrors the 4625 2-failure relabel). No in-artifact attack intent.",
+  "opus_expl": "Multiple failed login attempts (action_id LGIF, succeeded:false) for the privileged 'sa' account originate from the same client IP 10.23.23.9 in rapid succession, indicating a brute-force or password-",
+  "csv": "data/csv/TA0001-Initial access/T1078-Valid accounts/ID33205-SQL Server failed login with disabled SA account.csv"
+ },
+ {
+  "file": "ID4103-4104-OpenSSH server install.evtx",
+  "gt": "NO",
+  "label_review": "In-artifact intent audit 2026-06-12: slice shows only admmig running the official 'Add-WindowsCapability -Online -Name OpenSSH.Server' plus PSReadLine/Dism module noise. No authorized_keys, no sshd_config tampering, no non-standard port, no payload \u2014 installing a signed Windows optional feature is indistinguishable from routine admin in-artifact. The prior YES rested on attack-scenario provenance, not the artifact. Relabeled benign for consistency with the admin-shaped near-miss controls (cf. 4625/4661/5136 relabels).",
+  "opus_expl": "The admmig account uses PowerShell to install OpenSSH.Server via Add-WindowsCapability, which establishes a remote-access service that can serve as a persistence and remote-entry backdoor on the host.",
+  "csv": "data/csv/TA0008-Lateral Movement/T1021.004-Remote Service SSH/ID4103-4104-OpenSSH server install.csv"
+ },
+ {
+  "file": "ID4625-failed login with denied access due to account restriction.evtx",
+  "gt": "NO",
+  "label_review": "v3 audit borderline review: 2x 4625 LogonType 10 (RDP) Status 0xC000006E from 10.23.23.9, no success. Two failed logons is not, in-artifact, a brute-force; the prior YES rested on 10.23.23.9 being a known-attacker host across the corpus \u2014 cross-file attribution the per-artifact benchmark does not expose (same basis on which ID4825 was relabeled benign).",
+  "opus_expl": "Two failed RDP logons (LogonType 10) occurred within roughly two minutes from the same source IP 10.23.23.9 against FS03, with Status 0xC000006E indicating invalid credentials/account restrictions. Th",
+  "csv": "data/csv/TA0001-Initial access/T1078-Valid accounts/ID4625-failed login with denied access due to account restriction.csv"
+ },
+ {
+  "file": "ID4720-Local user created.evtx",
+  "gt": "NO",
+  "label_review": "In-artifact intent audit 2026-06-12: admmig creates hacking-local-acct (NORMAL_ACCOUNT 0x15) added only to non-privileged Users \u2014 routine non-privileged provisioning, identical in-artifact to the benign 4720 near-miss; name aside, no privilege grant.",
+  "opus_expl": "A new local account named \"hacking-local-acct\" was created (4720) on jump01.offsec.lan and immediately added to the Builtin Users group (4732) by the same actor \"admmig\" within the same fraction of a ",
+  "csv": "data/csv/TA0003-Persistence/T1136-Create account/ID4720-Local user created.csv"
+ },
+ {
+  "file": "ID4738-Account is sensitive and cannot be delegated.evtx",
+  "gt": "NO",
+  "label_review": "In-artifact intent audit 2026-06-12: admmig sets NOT_DELEGATED (0x4210) on hack1 \u2014 a DEFENSIVE hardening flag (protects against delegation abuse), the opposite of a security-weakening change.",
+  "opus_expl": "Two rapid 4738 user-account-change events on the same target (hack1) by admmig flipped the UserAccountControl flag to 0x4210 and then immediately back to 0x210 within ~4 seconds, indicating the \"DONT_",
+  "csv": "data/csv/TA0003-Persistence/T1098.xxx-Account manipulation/ID4738-Account is sensitive and cannot be delegated.csv"
+ },
+ {
+  "file": "ID4738-Password cannot be changed.evtx",
+  "gt": "NO",
+  "label_review": "In-artifact intent audit 2026-06-12: admmig sets PASSWD_CANT_CHANGE on hack1 \u2014 routine admin account policy; no in-artifact attack impact.",
+  "opus_expl": "Two rapid, back-to-back EID 4738 (user account changed) events on the domain controller rootdc1.offsec.lan target a suspiciously named account \"hack1\" modified by \"admmig\" within ~1.7 seconds. The red",
+  "csv": "data/csv/TA0003-Persistence/T1098.xxx-Account manipulation/ID4738-Password cannot be changed.csv"
+ },
+ {
+  "file": "ID4738-Password never expires.evtx",
+  "gt": "NO",
+  "label_review": "In-artifact intent audit 2026-06-12: admmig sets DONT_EXPIRE_PASSWORD (0x210) \u2014 one of the most common routine admin/service-account policy settings; no in-artifact security weakening.",
+  "opus_expl": "Two paired 4738 account-change events on the same target (hack1) by the same actor (admmig) within ~2 seconds show the UAC flag being set (0x10 \u2192 0x210, enabling DONT_REQUIRE_PREAUTH / %%2089) and the",
+  "csv": "data/csv/TA0003-Persistence/T1098.xxx-Account manipulation/ID4738-Password never expires.csv"
+ },
+ {
+  "file": "ID4908-Special group table changed.evtx",
+  "gt": "NO",
+  "label_review": "v3 audit, human tiebreak 2026-06-10: 4908 events ADDING SIDs to the Special Groups table \u2014 equally consistent with routine audit configuration. Kept as the BENIGN anchor; the malicious sibling shows reg.exe CLEARING the watchlist to suppress 4964 privileged-logon alerts.",
+  "opus_expl": "Event 4908 indicates changes to the \"Special Groups\" logon table on the domain controller rootdc1.offsec.lan, and the repeated modifications show new SIDs being progressively added (1613, 1614, then 1",
+  "csv": "data/csv/TA0005-Defense Evasion/T1562.002-Disable Windows Event Logging/ID4908-Special group table changed.csv"
+ },
+ {
+  "file": "ID4964-Login of a member of a special group.evtx",
+  "gt": "NO",
+  "label_review": "v3 audit borderline review: 8x 4964 special-group logon notifications for admmig/ROOTDC1$/LOCAL SERVICE. 4964 is an informational watchlist alert that a special-group member authenticated \u2014 the logon itself carries no in-artifact malicious indicator (no failure, no anomalous source, no follow-on).",
+  "opus_expl": "Event 4964 (\"Special groups have been assigned to a new logon\") repeatedly fires for the account admmig with the same monitored SID (S-1-5-21-4230534742-2542757381-3142984815-1613) appearing in the Si",
+  "csv": "data/csv/TA0005-Defense Evasion/T1078.002-Valid accounts-Domain accounts/ID4964-Login of a member of a special group.csv"
+ },
+ {
+  "file": "ID5136-4662 sensitive GPO edited.evtx",
+  "gt": "NO",
+  "label_review": "v3 audit, human tiebreak 2026-06-10: a groupPolicyContainer versionNumber bump (1->2) by admmig with the actual change not shown in the artifact. Kept as the BENIGN anchor; the malicious sibling shows a Run-key persistence pushed via Set-GPRegistryValue.",
+  "opus_expl": "The account admmig modified a groupPolicyContainer object's versionNumber (5136 events incrementing 1 to 2) under CN=POLICIES,CN=SYSTEM,DC=OFFSEC,DC=LAN, indicating a GPO change on the domain controll",
+  "csv": "data/csv/TA0004-Privilege Escalation/T1484.001-Domain Policy Modification-Group Policy Modification/ID5136-4662 sensitive GPO edited.csv"
+ },
+ {
+  "file": "ID4717-4718-System security granded to account.evtx",
+  "gt": "YES",
+  "label_review": null,
+  "opus_expl": "These paired events show the same actor (admmig) first assigning (4717) and then removing (4718) the SeDenyServiceLogonRight on the same target SID (...-1158), which is consistent with routine user ri",
+  "csv": "data/csv/TA0004-Privilege Escalation/T1134-Access Token Manipulation/ID4717-4718-System security granded to account.csv"
+ }
+]

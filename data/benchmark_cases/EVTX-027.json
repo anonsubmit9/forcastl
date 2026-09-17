@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-027",
+  "artefact_type": "EVTX",
+  "difficulty": "Hard",
+  "test_set": "B",
+  "artefact_file": "test_data/evtx/TA0006-Credential Access/T1555-Credentials from Password Stores/ID5145-user file-credentials-browser dump via network share.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of credential harvesting from user profile directories and browser password stores via network share access. Identify the targeted file paths, the account used, the access patterns, and what types of credentials were being exfiltrated. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 5145: Network share access targeting browser credential stores",
+      "explanation": "Detailed share access audit events show systematic access to browser profile directories (e.g., Chrome, Firefox credential databases) via network shares, indicating remote credential harvesting from password stores.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "File paths targeting user profile credential files via C$ share",
+      "explanation": "The attacker accessed user profile directories through the administrative C$ share to reach browser credential databases, cookie stores, and saved password files.",
+      "evidence_type": "network"
+    },
+    {
+      "indicator": "Account: admmig used for remote credential file access",
+      "explanation": "The admmig administrative account was used to access credential files over the network, leveraging admin share access for remote credential harvesting without executing tools on the target.",
+      "evidence_type": "account"
+    }
+  ],
+  "hallucination_traps": [
+    "CredNinja",
+    "172\\.20\\.88\\.19",
+    "CONTOSO\\\\r\\.tanaka"
+  ],
+  "notes": "Hard case: 181 events all of type 5145 (detailed file share audit). Analyst must examine the file paths in share access events to identify browser credential store locations (Login Data, cookies.sqlite, etc.) and recognize the pattern as credential harvesting rather than routine file access. The subtle indicator is the systematic targeting of specific credential-bearing files across user profiles."
+}

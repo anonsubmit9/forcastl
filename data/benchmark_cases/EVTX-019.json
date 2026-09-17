@@ -1,0 +1,36 @@
+{
+  "id": "EVTX-019",
+  "artefact_type": "EVTX",
+  "difficulty": "Medium",
+  "test_set": "C",
+  "artefact_file": "test_data/evtx/TA0008-Lateral Movement/T1550-Use Alternate Authentication Material/ID4624-Mimikatz Pass the hash.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of pass-the-hash or alternate authentication material being used for lateral movement. Identify the authentication anomalies, accounts involved, network indicators, and any post-exploitation activity. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4624: Logon with NTLM authentication indicating pass-the-hash",
+      "explanation": "Successful logon events using NTLM authentication from a specific source may indicate pass-the-hash, where stolen NTLM hashes are used instead of plaintext passwords.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Account: admmig used for lateral movement via pass-the-hash",
+      "explanation": "The admmig account credentials were used for authentication, likely via a stolen NTLM hash rather than interactive logon with a password.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Network access to \\\\*\\C$ administrative share from 10.23.23.9",
+      "explanation": "Event ID 5145 shows access to the C$ administrative share from 10.23.23.9, a classic lateral movement indicator following pass-the-hash authentication.",
+      "evidence_type": "network"
+    },
+    {
+      "indicator": "Event ID 1102: Security log cleared after lateral movement",
+      "explanation": "The security audit log was cleared following the pass-the-hash activity, indicating anti-forensic measures to cover the lateral movement tracks.",
+      "evidence_type": "event_log"
+    }
+  ],
+  "hallucination_traps": [
+    "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+    "10\\.200\\.150\\.33",
+    "InvokeObfuscator"
+  ],
+  "notes": "Medium case: multiple event types (1102, 4624, 4672, 4688, 4964, 5145) must be correlated. Analyst needs to recognize NTLM-based authentication patterns as pass-the-hash, link them to share access for lateral movement, and identify the post-exploitation log clearing."
+}

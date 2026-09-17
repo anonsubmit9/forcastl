@@ -1,0 +1,118 @@
+{
+  "file": "ID4688-netsh RDP port forwarding abuse.evtx",
+  "gt_key": "ID4688-netsh RDP port forwarding abuse.evtx",
+  "malicious": "YES",
+  "alignment_pct": 100.0,
+  "triage_reasons": [
+    "under_population"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Eventlog\"/>\n    <EventID>1102</EventID>\n    <TimeCreated SystemTime=\"2021-06-03 12:17:56.9882215\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-06-03 12:17:58.5827126\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"SubjectUserName\">admmig</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x46B7B4</Data>\n    <Data Name=\"NewProcessId\">0x578</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\netsh.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1937</Data>\n    <Data Name=\"ProcessId\">0xA38</Data>\n    <Data Name=\"CommandLine\">netsh  I p a v l=8001 listena=0.0.0.0 connectp=3389 c=1.1.1.1</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-12288</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-06-03 12:18:04.3122222\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"SubjectUserName\">admmig</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x46B7B4</Data>\n    <Data Name=\"NewProcessId\">0x1048</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\netsh.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1937</Data>\n    <Data Name=\"ProcessId\">0xA38</Data>\n    <Data Name=\"CommandLine\">netsh  interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=48333 connectaddress=127.0.0.1 connectport=80</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-12288</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-06-03 12:18:06.9403837\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"SubjectUserName\">admmig</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x46B7B4</Data>\n    <Data Name=\"NewProcessId\">0x46C</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\netsh.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1937</Data>\n    <Data Name=\"ProcessId\">0xA38</Data>\n    <Data Name=\"CommandLine\">netsh  interface portproxy reset</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n    <Data Name=\"ParentProcessName\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"MandatoryLabel\">S-1-16-12288</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4964</EventID>\n    <TimeCreated SystemTime=\"2021-06-03 12:18:12.9418805\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-20</Data>\n    <Data Name=\"SubjectUserName\">FS01$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E4</Data>\n    <Data Name=\"LogonGuid\">00000000-0000-0000-0000-000000000000</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"TargetUserName\">admmig</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0x322E5B7</Data>\n    <Data Name=\"TargetLogonGuid\">00000000-0000-0000-0000-000000000000</Data>\n    <Data Name=\"SidList\">, %{S-1-5-21-4230534742-2542757381-3142984815-1613}</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4672</EventID>\n    <TimeCreated SystemTime=\"2021-06-03 12:18:12.9418865\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"SubjectUserName\">admmig</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x322E5B7</Data>\n    <Data Name=\"PrivilegeList\">SeSecurityPrivilege, SeBackupPrivilege, SeRestorePrivilege, SeTakeOwnershipPrivilege, SeDebugPrivilege, SeSystemEnvironmentPrivilege, SeLoadDriverPrivilege, SeImpersonatePrivilege, SeDelegateSessionUserImpersonatePrivilege</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4624</EventID>\n    <TimeCreated SystemTime=\"2021-06-03 12:18:12.9428758\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-0-0</Data>\n    <Data Name=\"SubjectUserName\">-</Data>\n    <Data Name=\"SubjectDomainName\">-</Data>\n    <Data Name=\"SubjectLogonId\">0x0</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"TargetUserName\">admmig</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC.LAN</Data>\n    <Data Name=\"TargetLogonId\">0x322E5B7</Data>\n    <Data Name=\"LogonType\">3</Data>\n    <Data Name=\"LogonProcessName\">Kerberos</Data>\n    <Data Name=\"AuthenticationPackageName\">Kerberos</Data>\n    <Data Name=\"WorkstationName\">-</Data>\n    <Data Name=\"LogonGuid\">f2a542f7-28fc-3528-08f8-42515e717312</Data>\n    <Data Name=\"TransmittedServices\">-</Data>\n    <Data Name=\"LmPackageName\">-</Data>\n    <Data Name=\"KeyLength\">0</Data>\n    <Data Name=\"ProcessId\">0x0</Data>\n    <Data Name=\"ProcessName\">-</Data>\n    <Data Name=\"IpAddress\">10.23.23.9</Data>\n    <Data Name=\"IpPort\">56061</Data>\n    <Data Name=\"ImpersonationLevel\">%%1832</Data>\n    <Data Name=\"RestrictedAdminMode\">-</Data>\n    <Data Name=\"TargetOutboundUserName\">-</Data>\n    <Data Name=\"TargetOutboundDomainName\">-</Data>\n    <Data Name=\"VirtualAccount\">%%1843</Data>\n    <Data Name=\"TargetLinkedLogonId\">0x0</Data>\n    <Data Name=\"ElevatedToken\">%%1842</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4627</EventID>\n    <TimeCreated SystemTime=\"2021-06-03 12:18:12.9429103\"/>\n    <Computer>fs01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-0-0</Data>\n    <Data Name=\"SubjectUserName\">-</Data>\n    <Data Name=\"SubjectDomainName\">-</Data>\n    <Data Name=\"SubjectLogonId\">0x0</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"TargetUserName\">admmig</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC.LAN</Data>\n    <Data Name=\"TargetLogonId\">0x322E5B7</Data>\n    <Data Name=\"LogonType\">3</Data>\n    <Data Name=\"EventIdx\">1</Data>\n    <Data Name=\"EventCountTotal\">1</Data>\n    <Data Name=\"GroupMembership\">, %{S-1-5-21-4230534742-2542757381-3142984815-513}, %{S-1-1-0}, %{S-1-5-32-545}, %{S-1-5-32-544}, %{S-1-5-2}, %{S-1-5-11}, %{S-1-5-15}, %{S-1-5-21-4230534742-2542757381-3142984815-1605}, %{S-1-5-21-4230534742-2542757381-3142984815-1613}, %{S-1-5-21-4230534742-2542757381-3142984815-1172}, %{S-1-5-21-4230534742-2542757381-3142984815-512}, %{S-1-5-21-4230534742-2542757381-3142984815-1190}, %{S-1-5-21-4230534742-2542757381-3142984815-518}, %{S-1-5-21-4230534742-2542757381-3142984815-1198}, %{S-1-5-21-4230534742-2542757381-3142984815-519}, %{S-1-18-1}, %{S-1-5-21-4230534742-2542757381-3142984815-572}, %{S-1-16-12288}</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "1102",
+      "4624",
+      "4627",
+      "4672",
+      "4688",
+      "4964"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\netsh.exe"
+    ],
+    "accounts": [
+      "admmig",
+      "FS01$"
+    ],
+    "commands": [
+      "netsh  I p a v l=8001 listena=0.0.0.0 connectp=3389 c=1.1.1.1",
+      "netsh  interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=48333 connectaddress=127.0.0.1 connectport=80",
+      "netsh  interface portproxy reset"
+    ],
+    "network": [
+      "1.1.1.1",
+      "10.23.23.9",
+      "127.0.0.1"
+    ],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "1102",
+      "4624",
+      "4627",
+      "4672",
+      "4688",
+      "4964"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\netsh.exe"
+    ],
+    "accounts": [
+      "admmig",
+      "FS01$"
+    ],
+    "commands": [
+      "netsh  I p a v l=8001 listena=0.0.0.0 connectp=3389 c=1.1.1.1",
+      "netsh  interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=48333 connectaddress=127.0.0.1 connectport=80",
+      "netsh  interface portproxy reset"
+    ],
+    "network": [
+      "1.1.1.1",
+      "10.23.23.9",
+      "127.0.0.1"
+    ],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "1102",
+      "4688",
+      "4964",
+      "4672",
+      "4624",
+      "4627"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\netsh.exe",
+      "C:\\Windows\\System32\\cmd.exe"
+    ],
+    "accounts": [
+      "admmig",
+      "OFFSEC",
+      "FS01$"
+    ],
+    "commands": [
+      "netsh  I p a v l=8001 listena=0.0.0.0 connectp=3389 c=1.1.1.1, netsh  interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=48333 connectaddress=127.0.0.1 connectport=80, netsh  interface portproxy reset"
+    ],
+    "network": [
+      "0.0.0.0",
+      "3389",
+      "1.1.1.1",
+      "127.0.0.1",
+      "10.23.23.9"
+    ],
+    "registry": []
+  },
+  "under_population": {
+    "accounts": [
+      {
+        "value": "OFFSEC",
+        "in_artifact": true
+      }
+    ],
+    "network": [
+      {
+        "value": "0.0.0.0",
+        "in_artifact": true
+      },
+      {
+        "value": "3389",
+        "in_artifact": true
+      }
+    ]
+  },
+  "gt_missed_by_model": {}
+}

@@ -1,0 +1,35 @@
+paired cases: 120  (model: Qwen3.8-Flash-Next-MLX-Serve-4bit)
+
+metric                    original   perturbed     delta
+recall                       81.67       76.67     -5.00
+fpr                          10.17        5.08     -5.08
+align                        17.37       17.32     -0.05
+hal                           0.88        1.03     +0.15
+fail                          6.00        7.00     +1.00
+recall CI  orig (70.08000677353371, 89.44231096286387)  pert (64.563488659608, 85.56056838156894)
+FPR CI     orig (4.744732651318249, 20.46404624673654)  pert (1.7442401159453307, 13.91672332228667)
+
+paired bootstrap 95% CI of delta (perturbed - original):
+  recall   [-11.11, +0.00]
+  fpr      [-11.32, +0.00]
+  align    [-0.35, +0.24]
+  hal      [-0.46, +0.79]
+
+verdict/status changes: 6 of 120
+   [YES folder_structure] ID4103-4104-CrackMapExec payload execution                   True -> None
+   [YES folder_structure] ID4624-Anonymous login with domain specified (DonPapi)       True -> False
+   [YES folder_structure] ID4674,5142-Mimikatz print spool privileges requested        True -> False
+   [NO folder_structure] ID4738-Account is sensitive and cannot be delegated          True -> False
+   [NO folder_structure] ID4738-Password never expires                                True -> False
+   [NO folder_structure] ID5136-4662 sensitive GPO edited                             True -> False
+by kind: {'mal/folder_structure: True -> None': 1, 'mal/folder_structure: True -> False': 2, 'ben/folder_structure: True -> False': 3}
+verdict agreement: 114/120 (95.0%)
+
+Total(20) per-case delta on 113 cases completed in both: mean -0.06, |delta|>=2 on 26 cases, max +5.0 / -7.0
+  Extraction (6)       5.50 -> 5.48 (-0.02)
+  Interpretation (6)   5.09 -> 5.12 (+0.04)
+  NoHallucination (4)  3.96 -> 3.96 (-0.01)
+  Reasoning (4)        2.82 -> 2.75 (-0.07)
+FP on relabelled benign: 6/25 -> 3/25
+FP on native benign: 0/35 -> 0/35
+failures: orig 6  pert 7  same set: False  only-orig []  only-pert ['ID4103-4104-CrackMapExec payload execution']

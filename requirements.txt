@@ -1,0 +1,12 @@
+# Core dependencies
+# (the tool operates on the EvtxECmd CSV corpus only; binary EVTX is never parsed,
+#  so python-evtx / xmltodict are no longer required)
+requests>=2.31.0
+anthropic>=0.40.0
+openai>=1.50.0
+openpyxl>=3.1.0
+jinja2>=3.1.0
+
+# UI
+tqdm>=4.65.0
+colorama>=0.4.6

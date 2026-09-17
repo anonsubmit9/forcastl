@@ -1,0 +1,36 @@
+{
+  "id": "EVTX-026",
+  "artefact_type": "EVTX",
+  "difficulty": "Hard",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0002-Execution/T1569.002-Service execution/ID7000,7009,7045-Payload deployed via service - Tchopper.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of malicious payload deployment through Windows service creation and execution. Identify new service installations, service execution failures, base64-encoded payloads, and the overall service-based attack chain. Determine whether the payload was successfully deployed and what technique was used. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 7045: New service installed with base64-encoded payload in service binary path",
+      "explanation": "New service installation events reveal services created with base64-encoded command-line payloads in the binary path field, a technique used by Tchopper to deliver encoded malicious code via service creation.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 7000/7009: Service start failures indicating payload execution attempts",
+      "explanation": "Service Control Manager errors (7000) and timeout events (7009) indicate the malicious services failed to start properly, which is expected behavior for services created solely as payload delivery mechanisms.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Base64-encoded payloads embedded in service configurations",
+      "explanation": "Multiple services were created with base64-encoded command strings in their binary paths, indicating the attacker used service creation as a payload delivery and execution mechanism rather than for persistent service operation.",
+      "evidence_type": "command"
+    },
+    {
+      "indicator": "Account: LocalSystem context for service execution",
+      "explanation": "The malicious services were configured to run under the LocalSystem account, providing the highest possible privilege level for payload execution on the local system.",
+      "evidence_type": "account"
+    }
+  ],
+  "hallucination_traps": [
+    "HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\WinSock2\\\\Parameters\\\\AutoTuning",
+    "SecretsDumpPro",
+    "1188"
+  ],
+  "notes": "Hard case: 493 events across service lifecycle events (7000, 7009, 7036, 7045). The challenge is recognizing base64-encoded payloads in service binary paths and understanding that service start failures are expected behavior for this attack technique. Analyst must decode the intent behind seemingly broken services and connect the Tchopper tool's service-name payload transfer technique to the execution chain."
+}

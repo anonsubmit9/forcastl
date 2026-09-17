@@ -1,0 +1,45 @@
+{
+  "models": [
+    "claude-opus-4-8",
+    "gpt-5.5-2026-04-23"
+  ],
+  "scoring_versions": [
+    "forcastl_scoring_20pt_v3"
+  ],
+  "files_compared": 65,
+  "min_models": 2,
+  "verdict_disagreements": [
+    {
+      "file": "BENIGN-ID1-Helpdesk audits Domain Admins membership.csv",
+      "gt_label": "NO",
+      "model_verdicts": {
+        "claude-opus-4-8": "YES",
+        "gpt-5.5-2026-04-23": "YES"
+      }
+    },
+    {
+      "file": "ID4825-Denied RDP connection with valid credentials.evtx",
+      "gt_label": "YES",
+      "model_verdicts": {
+        "claude-opus-4-8": "NO",
+        "gpt-5.5-2026-04-23": "NO"
+      }
+    }
+  ],
+  "hallucination_consensus": [
+    {
+      "file": "ID1-CrackMapExec payload execution.evtx",
+      "models": [
+        "claude-opus-4-8",
+        "gpt-5.5-2026-04-23"
+      ]
+    },
+    {
+      "file": "ID1-WMIexec process execution.evtx",
+      "models": [
+        "claude-opus-4-8",
+        "gpt-5.5-2026-04-23"
+      ]
+    }
+  ]
+}

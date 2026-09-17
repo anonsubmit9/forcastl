@@ -1,0 +1,16 @@
+[0mTotal event log files: [0m271
+[0mExcluded rules: [0m26
+[0mNoisy rules: [0m12 (Disabled)
+[0mDeprecated rules: [0m230 (4.95%) (Disabled)
+[0mExperimental rules: [0m357 (7.68%)
+[0mStable rules: [0m244 (5.25%)
+[0mTest rules: [0m4,047 (87.07%)
+[0mUnsupported rules: [0m42 (0.90%) (Disabled)
+[0mHayabusa rules: [0m181
+[0mSigma rules: [0m4,467
+[0mTotal detection rules: [0m4,648
+[0mEvents with hits[0m / [0mTotal events[0m: [0m3,087[0m / [0m10,125[0m ([0mData reduction: 7,038 events (69.51%)[0m)
+[0mElapsed time: [0m00:00:04.878
+[0mPlease report any issues with Hayabusa rules to: [0mhttps://github.com/Yamato-Security/hayabusa-rules/issues
+[0mPlease report any false positives with Sigma rules to: [0mhttps://github.com/SigmaHQ/sigma/issues
+[0mPlease submit new Sigma rules with pull requests to: [0mhttps://github.com/SigmaHQ/sigma/pulls

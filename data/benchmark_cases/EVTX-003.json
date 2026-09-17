@@ -1,0 +1,26 @@
+{
+  "id": "EVTX-003",
+  "artefact_type": "EVTX",
+  "difficulty": "Easy",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0040-Impact/T1565-Data manipulation/ID11-DNS hosts files modified.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of hosts file tampering or DNS manipulation. Identify what process modified the file and what the implications are. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 11: File creation event for hosts file",
+      "explanation": "Sysmon Event ID 11 recorded a file modification to the DNS hosts file, which can be used to redirect network traffic or block security updates.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Process: C:\\Program Files (x86)\\Notepad++\\notepad++.exe",
+      "explanation": "The hosts file was modified using Notepad++, indicating manual or scripted tampering with DNS resolution.",
+      "evidence_type": "process"
+    }
+  ],
+  "hallucination_traps": [
+    "csrss_worker\\.exe",
+    "10\\.250\\.13\\.42",
+    "9999"
+  ],
+  "notes": "Easy case: single event showing hosts file modification by notepad++.exe. Clear data manipulation indicator (T1565) with a single Sysmon event."
+}

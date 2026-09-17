@@ -1,0 +1,112 @@
+{
+  "file": "ID4688,4648,4624-Runas execution with different user.evtx",
+  "gt_key": "ID4688,4648,4624-Runas execution with different user.evtx",
+  "malicious": "YES",
+  "alignment_pct": 81.7,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Eventlog\"/>\n    <EventID>1102</EventID>\n    <TimeCreated SystemTime=\"2021-11-13 14:30:53.6382851\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-11-13 14:30:56.0991053\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"SubjectUserName\">admmig</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x123550</Data>\n    <Data Name=\"NewProcessId\">0x85C</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\runas.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1937</Data>\n    <Data Name=\"ProcessId\">0x408</Data>\n    <Data Name=\"CommandLine\">runas  /user:offsec\\hack1 cmd.exe </Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4648</EventID>\n    <TimeCreated SystemTime=\"2021-11-13 14:30:58.2269250\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"SubjectUserName\">admmig</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x123550</Data>\n    <Data Name=\"LogonGuid\">64b4aedd-47c8-c360-ddb7-5d7b77226ddc</Data>\n    <Data Name=\"TargetUserName\">hack1</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonGuid\">4babbe7b-f9b1-d738-99c3-c3388f497347</Data>\n    <Data Name=\"TargetServerName\">localhost</Data>\n    <Data Name=\"TargetInfo\">localhost</Data>\n    <Data Name=\"ProcessId\">0x2F0</Data>\n    <Data Name=\"ProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"IpAddress\">::1</Data>\n    <Data Name=\"IpPort\">0</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4624</EventID>\n    <TimeCreated SystemTime=\"2021-11-13 14:30:58.2269250\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"SubjectUserName\">admmig</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x123550</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1234</Data>\n    <Data Name=\"TargetUserName\">hack1</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0xA6F5FA4</Data>\n    <Data Name=\"LogonType\">2</Data>\n    <Data Name=\"LogonProcessName\">seclogo</Data>\n    <Data Name=\"AuthenticationPackageName\">Negotiate</Data>\n    <Data Name=\"WorkstationName\">FS03</Data>\n    <Data Name=\"LogonGuid\">4babbe7b-f9b1-d738-99c3-c3388f497347</Data>\n    <Data Name=\"TransmittedServices\">-</Data>\n    <Data Name=\"LmPackageName\">-</Data>\n    <Data Name=\"KeyLength\">0</Data>\n    <Data Name=\"ProcessId\">0x2F0</Data>\n    <Data Name=\"ProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"IpAddress\">::1</Data>\n    <Data Name=\"IpPort\">0</Data>\n    <Data Name=\"ImpersonationLevel\">%%1833</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4624</EventID>\n    <TimeCreated SystemTime=\"2021-11-13 14:30:58.2269250\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1111</Data>\n    <Data Name=\"SubjectUserName\">admmig</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x123550</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1234</Data>\n    <Data Name=\"TargetUserName\">hack1</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0xA6F5FC2</Data>\n    <Data Name=\"LogonType\">2</Data>\n    <Data Name=\"LogonProcessName\">seclogo</Data>\n    <Data Name=\"AuthenticationPackageName\">Negotiate</Data>\n    <Data Name=\"WorkstationName\">FS03</Data>\n    <Data Name=\"LogonGuid\">00000000-0000-0000-0000-000000000000</Data>\n    <Data Name=\"TransmittedServices\">-</Data>\n    <Data Name=\"LmPackageName\">-</Data>\n    <Data Name=\"KeyLength\">0</Data>\n    <Data Name=\"ProcessId\">0x2F0</Data>\n    <Data Name=\"ProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n    <Data Name=\"IpAddress\">::1</Data>\n    <Data Name=\"IpPort\">0</Data>\n    <Data Name=\"ImpersonationLevel\">%%1833</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4672</EventID>\n    <TimeCreated SystemTime=\"2021-11-13 14:30:58.2269250\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1234</Data>\n    <Data Name=\"SubjectUserName\">hack1</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0xA6F5FA4</Data>\n    <Data Name=\"PrivilegeList\">SeSecurityPrivilege, SeTakeOwnershipPrivilege, SeLoadDriverPrivilege, SeBackupPrivilege, SeRestorePrivilege, SeDebugPrivilege, SeSystemEnvironmentPrivilege, SeImpersonatePrivilege</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-11-13 14:30:58.2269250\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-18</Data>\n    <Data Name=\"SubjectUserName\">FS03$</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0x3E7</Data>\n    <Data Name=\"NewProcessId\">0x1C4</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1938</Data>\n    <Data Name=\"ProcessId\">0x85C</Data>\n    <Data Name=\"CommandLine\">cmd.exe</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1234</Data>\n    <Data Name=\"TargetUserName\">hack1</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0xA6F5FC2</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-11-13 14:30:58.2269250\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1234</Data>\n    <Data Name=\"SubjectUserName\">hack1</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0xA6F5FC2</Data>\n    <Data Name=\"NewProcessId\">0xAF0</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\conhost.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1938</Data>\n    <Data Name=\"ProcessId\">0x1C4</Data>\n    <Data Name=\"CommandLine\">\\??\\C:\\Windows\\system32\\conhost.exe 0xffffffff</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4688</EventID>\n    <TimeCreated SystemTime=\"2021-11-13 14:30:58.2581661\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1234</Data>\n    <Data Name=\"SubjectUserName\">hack1</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"SubjectLogonId\">0xA6F5FC2</Data>\n    <Data Name=\"NewProcessId\">0x3F4</Data>\n    <Data Name=\"NewProcessName\">C:\\Windows\\System32\\ctfmon.exe</Data>\n    <Data Name=\"TokenElevationType\">%%1938</Data>\n    <Data Name=\"ProcessId\">0xAF0</Data>\n    <Data Name=\"CommandLine\">ctfmon.exe</Data>\n    <Data Name=\"TargetUserSid\">S-1-0-0</Data>\n    <Data Name=\"TargetUserName\">-</Data>\n    <Data Name=\"TargetDomainName\">-</Data>\n    <Data Name=\"TargetLogonId\">0x0</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "1102",
+      "4624",
+      "4648",
+      "4672",
+      "4688"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\conhost.exe",
+      "C:\\Windows\\System32\\ctfmon.exe",
+      "C:\\Windows\\System32\\runas.exe",
+      "C:\\Windows\\System32\\svchost.exe"
+    ],
+    "accounts": [
+      "admmig",
+      "FS03$",
+      "hack1"
+    ],
+    "commands": [
+      "\\??\\C:\\Windows\\system32\\conhost.exe 0xffffffff",
+      "cmd.exe",
+      "ctfmon.exe",
+      "runas  /user:offsec\\hack1 cmd.exe "
+    ],
+    "network": [
+      "::1",
+      "FS03",
+      "localhost"
+    ],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "1102",
+      "4624",
+      "4648",
+      "4672",
+      "4688"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\conhost.exe",
+      "C:\\Windows\\System32\\ctfmon.exe",
+      "C:\\Windows\\System32\\runas.exe",
+      "C:\\Windows\\System32\\svchost.exe"
+    ],
+    "accounts": [
+      "admmig",
+      "FS03$",
+      "hack1"
+    ],
+    "commands": [
+      "\\??\\C:\\Windows\\system32\\conhost.exe 0xffffffff",
+      "cmd.exe",
+      "ctfmon.exe",
+      "runas  /user:offsec\\hack1 cmd.exe "
+    ],
+    "network": [
+      "::1",
+      "FS03",
+      "localhost"
+    ],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "1102",
+      "4688",
+      "4648",
+      "4624",
+      "4672"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\runas.exe",
+      "C:\\Windows\\System32\\svchost.exe",
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\conhost.exe",
+      "C:\\Windows\\System32\\ctfmon.exe"
+    ],
+    "accounts": [
+      "admmig",
+      "hack1",
+      "FS03$"
+    ],
+    "commands": [
+      "runas  /user:offsec\\hack1 cmd.exe, cmd.exe, \\??\\C:\\Windows\\system32\\conhost.exe 0xffffffff, ctfmon.exe"
+    ],
+    "network": [
+      "::1"
+    ],
+    "registry": []
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "network": [
+      "FS03",
+      "localhost"
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "file": "ID4-OpenSSH server listening.evtx",
+  "gt_key": "ID4-OpenSSH server listening.evtx",
+  "malicious": "NO",
+  "alignment_pct": 100.0,
+  "triage_reasons": [
+    "under_population"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"OpenSSH\"/>\n    <EventID>4</EventID>\n    <TimeCreated SystemTime=\"2021-04-22 10:10:37.0417973\"/>\n    <Computer>win10-02.offsec.lan</Computer>\n    <Channel>OpenSSH/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"process\">sshd</Data>\n    <Data Name=\"payload\">Server listening on :: port 22.</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"OpenSSH\"/>\n    <EventID>4</EventID>\n    <TimeCreated SystemTime=\"2021-04-22 10:10:37.0418938\"/>\n    <Computer>win10-02.offsec.lan</Computer>\n    <Channel>OpenSSH/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"process\">sshd</Data>\n    <Data Name=\"payload\">Server listening on 0.0.0.0 port 22.</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"OpenSSH\"/>\n    <EventID>4</EventID>\n    <TimeCreated SystemTime=\"2021-04-22 10:19:29.7928953\"/>\n    <Computer>win10-02.offsec.lan</Computer>\n    <Channel>OpenSSH/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"process\">sshd</Data>\n    <Data Name=\"payload\">Server listening on :: port 22.</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"OpenSSH\"/>\n    <EventID>4</EventID>\n    <TimeCreated SystemTime=\"2021-04-22 10:19:29.7930041\"/>\n    <Computer>win10-02.offsec.lan</Computer>\n    <Channel>OpenSSH/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"process\">sshd</Data>\n    <Data Name=\"payload\">Server listening on 0.0.0.0 port 22.</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"OpenSSH\"/>\n    <EventID>4</EventID>\n    <TimeCreated SystemTime=\"2021-04-27 10:40:45.2847566\"/>\n    <Computer>win10-02.offsec.lan</Computer>\n    <Channel>OpenSSH/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"process\">sshd</Data>\n    <Data Name=\"payload\">Server listening on :: port 22.</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"OpenSSH\"/>\n    <EventID>4</EventID>\n    <TimeCreated SystemTime=\"2021-04-27 10:40:45.2848393\"/>\n    <Computer>win10-02.offsec.lan</Computer>\n    <Channel>OpenSSH/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"process\">sshd</Data>\n    <Data Name=\"payload\">Server listening on 0.0.0.0 port 22.</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "4"
+    ],
+    "processes": [],
+    "accounts": [],
+    "commands": [],
+    "network": [],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "4"
+    ],
+    "processes": [],
+    "accounts": [],
+    "commands": [],
+    "network": [],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "4"
+    ],
+    "processes": [
+      "sshd"
+    ],
+    "accounts": [],
+    "commands": [],
+    "network": [
+      ":: port 22",
+      "0.0.0.0 port 22"
+    ],
+    "registry": []
+  },
+  "under_population": {
+    "processes": [
+      {
+        "value": "sshd",
+        "in_artifact": true
+      }
+    ],
+    "network": [
+      {
+        "value": ":: port 22",
+        "in_artifact": true
+      },
+      {
+        "value": "0.0.0.0 port 22",
+        "in_artifact": true
+      }
+    ]
+  },
+  "gt_missed_by_model": {}
+}

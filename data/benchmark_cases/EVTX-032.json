@@ -1,0 +1,41 @@
+{
+  "id": "EVTX-032",
+  "artefact_type": "EVTX",
+  "difficulty": "Hard",
+  "test_set": "C",
+  "artefact_file": "test_data/evtx/TA0004-Privilege Escalation/T1574-DLL side-loading/ID4688,6416,4648-SystemNightMare.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of the PrintNightmare (CVE-2021-34527) or SystemNightmare privilege escalation exploit. Correlate process creation events, device installation events, explicit credential usage, and object access to reconstruct the exploit chain. Identify the vulnerable component, accounts involved, and the privilege escalation mechanism. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 6416: New device/driver installation related to print spooler exploitation",
+      "explanation": "Device installation events indicate a new printer driver was loaded, consistent with the SystemNightmare/PrintNightmare exploit that abuses the Windows Print Spooler service to load malicious DLLs.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 4688: cmd.exe and drvinst.exe process creation in exploit chain",
+      "explanation": "Process creation events show cmd.exe and drvinst.exe (driver installation utility) being executed as part of the SystemNightmare exploit, where a malicious printer driver achieves code execution with SYSTEM privileges.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Accounts: admmig and gentilguest involved in privilege escalation",
+      "explanation": "Both admmig and the low-privilege gentilguest account appear in the exploit chain, indicating the gentilguest account exploited the Print Spooler vulnerability to escalate from limited user to SYSTEM-level access.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Event ID 4648: Explicit credential logon during exploit execution",
+      "explanation": "Explicit credential usage events during the exploit indicate credentials were used to authenticate for the printer driver installation, part of the DLL side-loading privilege escalation path.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 1102: Security log cleared post-exploitation",
+      "explanation": "The security audit log was cleared after the privilege escalation exploit, indicating anti-forensic activity to remove evidence of the SystemNightmare attack.",
+      "evidence_type": "event_log"
+    }
+  ],
+  "hallucination_traps": [
+    "HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Print\\\\Monitors\\\\RedirPort",
+    "CVE-2024-38576",
+    "rdpclip_helper\\.exe"
+  ],
+  "notes": "Hard case: only 31 events but involves a complex exploit chain across 7 event types (1102, 4648, 4656, 4658, 4688, 4690, 6416). Analyst must connect printer driver installation (6416), process creation (4688), explicit credentials (4648), and object access (4656/4658) to recognize the SystemNightmare/PrintNightmare exploit. The presence of both a privileged (admmig) and unprivileged (gentilguest) account is key to identifying the privilege escalation."
+}

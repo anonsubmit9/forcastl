@@ -1,0 +1,67 @@
+{
+  "file": "BENIGN-ID4624-Admin RDP from corporate jumpbox.csv",
+  "gt_key": "BENIGN-ID4624-Admin RDP from corporate jumpbox.evtx",
+  "malicious": "NO",
+  "alignment_pct": 87.5,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4624</EventID>\n    <TimeCreated SystemTime=\"2025-09-22 09:13:47\"/>\n    <Computer>win10-admin.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserSid\">S-1-0-0</Data>\n    <Data Name=\"SubjectUserName\">-</Data>\n    <Data Name=\"SubjectDomainName\">-</Data>\n    <Data Name=\"SubjectLogonId\">0x0</Data>\n    <Data Name=\"TargetUserSid\">S-1-5-21-4230534742-2542757381-3142984815-1010</Data>\n    <Data Name=\"TargetUserName\">admin</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"TargetLogonId\">0xc44d12e</Data>\n    <Data Name=\"LogonType\">10</Data>\n    <Data Name=\"LogonProcessName\">User32 </Data>\n    <Data Name=\"AuthenticationPackageName\">Negotiate</Data>\n    <Data Name=\"WorkstationName\">JUMP01</Data>\n    <Data Name=\"ProcessId\">0x4a8</Data>\n    <Data Name=\"ProcessName\">C:\\Windows\\System32\\winlogon.exe</Data>\n    <Data Name=\"IpAddress\">10.23.50.10</Data>\n    <Data Name=\"IpPort\">51422</Data>\n    <Data Name=\"ImpersonationLevel\">%%1833</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "4624"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\winlogon.exe"
+    ],
+    "accounts": [
+      "admin"
+    ],
+    "commands": [],
+    "network": [
+      "10.23.50.10",
+      "JUMP01"
+    ],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "4624"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\winlogon.exe"
+    ],
+    "accounts": [
+      "admin"
+    ],
+    "commands": [],
+    "network": [
+      "10.23.50.10",
+      "JUMP01"
+    ],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "4624"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\winlogon.exe"
+    ],
+    "accounts": [
+      "admin"
+    ],
+    "commands": [],
+    "network": [
+      "10.23.50.10"
+    ],
+    "registry": []
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "network": [
+      "JUMP01"
+    ]
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "file": "ID1-12-13-Wdigest authentication activation.evtx",
+  "gt_key": "ID1-12-13-Wdigest authentication activation.evtx",
+  "malicious": "YES",
+  "alignment_pct": 90.0,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>1</EventID>\n    <TimeCreated SystemTime=\"2022-01-26 09:20:49.1010819\"/>\n    <Computer>fs03vuln.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"RuleName\">technique_id=T1112,technique_name=Modify Registry</Data>\n    <Data Name=\"UtcTime\">2022-01-26 09:20:49.101</Data>\n    <Data Name=\"ProcessGuid\">a57649d1-1271-61f1-315a-8e1500000000</Data>\n    <Data Name=\"ProcessId\">1524</Data>\n    <Data Name=\"Image\">C:\\Windows\\System32\\reg.exe</Data>\n    <Data Name=\"FileVersion\">6.3.9600.17415 (winblue_r4.141028-1500)</Data>\n    <Data Name=\"Description\">Registry Console Tool</Data>\n    <Data Name=\"Product\">Microsoft\u00ae Windows\u00ae Operating System</Data>\n    <Data Name=\"Company\">Microsoft Corporation</Data>\n    <Data Name=\"OriginalFileName\">reg.exe</Data>\n    <Data Name=\"CommandLine\">reg  add HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest /v UseLogonCredential /t REG_DWORD /d 1</Data>\n    <Data Name=\"CurrentDirectory\">C:\\Windows\\system32\\</Data>\n    <Data Name=\"User\">OFFSEC\\admmig</Data>\n    <Data Name=\"LogonGuid\">a57649d1-1238-61f1-b2d8-861500000000</Data>\n    <Data Name=\"LogonId\">0x1586D8B2</Data>\n    <Data Name=\"TerminalSessionId\">2</Data>\n    <Data Name=\"IntegrityLevel\">High</Data>\n    <Data Name=\"Hashes\">SHA1=0873F40DE395DE017495ED5C7E693AFB55E9F867,MD5=A3F446F1E2B8C6ECE56F608FB32B8DC6,SHA256=849F54DC526EA18D59ABAF4904CB11BC15B982D2952B971F2E1B6FBF8C974B39,IMPHASH=A069A88BBB8016324D7EC0A0EEC459EB</Data>\n    <Data Name=\"ParentProcessGuid\">a57649d1-124e-61f1-503d-8e1500000000</Data>\n    <Data Name=\"ParentProcessId\">4924</Data>\n    <Data Name=\"ParentImage\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"ParentCommandLine\">\"C:\\Windows\\system32\\cmd.exe\" </Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>12</EventID>\n    <TimeCreated SystemTime=\"2022-01-26 09:20:49.1010819\"/>\n    <Computer>fs03vuln.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"RuleName\">technique_id=T1003,technique_name=Credential Dumping</Data>\n    <Data Name=\"EventType\">CreateKey</Data>\n    <Data Name=\"UtcTime\">2022-01-26 09:20:49.101</Data>\n    <Data Name=\"ProcessGuid\">a57649d1-1271-61f1-315a-8e1500000000</Data>\n    <Data Name=\"ProcessId\">1524</Data>\n    <Data Name=\"Image\">C:\\Windows\\system32\\reg.exe</Data>\n    <Data Name=\"TargetObject\">HKLM\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>13</EventID>\n    <TimeCreated SystemTime=\"2022-01-26 09:20:52.8113839\"/>\n    <Computer>fs03vuln.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"RuleName\">technique_id=T1003,technique_name=Credential Dumping</Data>\n    <Data Name=\"EventType\">SetValue</Data>\n    <Data Name=\"UtcTime\">2022-01-26 09:20:52.811</Data>\n    <Data Name=\"ProcessGuid\">a57649d1-1271-61f1-315a-8e1500000000</Data>\n    <Data Name=\"ProcessId\">1524</Data>\n    <Data Name=\"Image\">C:\\Windows\\system32\\reg.exe</Data>\n    <Data Name=\"TargetObject\">HKLM\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest\\UseLogonCredential</Data>\n    <Data Name=\"Details\">DWORD (0x00000001)</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "1",
+      "12",
+      "13"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\reg.exe",
+      "C:\\Windows\\system32\\reg.exe"
+    ],
+    "accounts": [
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "reg  add HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest /v UseLogonCredential /t REG_DWORD /d 1"
+    ],
+    "network": [],
+    "registry": [
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest",
+      "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest",
+      "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest\\UseLogonCredential",
+      "HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest",
+      "HKLM\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest",
+      "HKLM\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest\\UseLogonCredential"
+    ]
+  },
+  "base_expected": {
+    "event_ids": [
+      "1",
+      "12",
+      "13"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\System32\\reg.exe",
+      "C:\\Windows\\system32\\reg.exe"
+    ],
+    "accounts": [
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "reg  add HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest /v UseLogonCredential /t REG_DWORD /d 1"
+    ],
+    "network": [],
+    "registry": [
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest",
+      "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest",
+      "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest\\UseLogonCredential",
+      "HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest",
+      "HKLM\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest",
+      "HKLM\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest\\UseLogonCredential"
+    ]
+  },
+  "model_detected": {
+    "event_ids": [
+      "1",
+      "12",
+      "13"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\reg.exe",
+      "C:\\Windows\\System32\\cmd.exe"
+    ],
+    "accounts": [
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "reg  add HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest /v UseLogonCredential /t REG_DWORD /d 1"
+    ],
+    "network": [],
+    "registry": [
+      "HKLM\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest, HKLM\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest\\UseLogonCredential"
+    ]
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "registry": [
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest",
+      "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest",
+      "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\SecurityProviders\\WDigest\\UseLogonCredential"
+    ]
+  }
+}

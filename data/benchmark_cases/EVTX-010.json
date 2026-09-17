@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-010",
+  "artefact_type": "EVTX",
+  "difficulty": "Easy",
+  "test_set": "C",
+  "artefact_file": "test_data/evtx/TA0008-Lateral Movement/T1021.002-SMB Windows Admin Shares/ID5142- New file share created.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of unauthorized file share creation or SMB-based lateral movement. Identify the shares involved, the account used, and the source of the activity. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 5142: A new network share was created (hidden-share$)",
+      "explanation": "A hidden file share named 'hidden-share$' was created, which is a technique used to establish covert file access during lateral movement.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Account: admmig",
+      "explanation": "The admmig account was used to create the share and access administrative shares, indicating a compromised administrative account.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Network share access: \\\\*\\C$ and \\\\*\\hidden-share$ from 10.23.23.9",
+      "explanation": "The C$ administrative share and the newly created hidden share were accessed from IP 10.23.23.9, indicating remote lateral movement via SMB.",
+      "evidence_type": "network"
+    }
+  ],
+  "hallucination_traps": [
+    "HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\LanmanServer\\\\ShareSecurity",
+    "admin_deploy",
+    "172\\.16\\.99\\.254"
+  ],
+  "notes": "Easy case: 4 events showing share creation (5142) and access (5145) with obvious hidden share name. Clear lateral movement (T1021.002) indicators with named account and source IP."
+}

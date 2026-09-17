@@ -1,0 +1,37 @@
+{
+  "id": "EVTX-022",
+  "artefact_type": "EVTX",
+  "difficulty": "Medium",
+  "test_set": "B",
+  "artefact_file": "test_data/evtx/TA0006-Credential Access/T1110.xxx-Brut force/ID4768-4771-Kerberos brutforce with non existing users.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of Kerberos brute force activity or credential stuffing against Active Directory. Identify the targeted accounts, the authentication failure patterns, the source of the attack, and whether any attempts succeeded. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4771: Kerberos pre-authentication failures for non-existing users",
+      "explanation": "Multiple Kerberos pre-authentication failure events (4771) indicate brute force attempts using account names that do not exist in Active Directory, suggesting a credential stuffing or user enumeration attack.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 4768: Kerberos TGT requests with failure codes",
+      "explanation": "Kerberos authentication service requests (4768) show failed TGT requests for non-existent accounts, confirming brute force attempts against the KDC.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Targeted accounts: accrt, admin-hacker, admin-test",
+      "explanation": "Multiple account names were targeted in the brute force attack, including accrt, admin-hacker, and admin-test, indicating the attacker was spraying credentials across potential administrative account names.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Source addresses: ::ffff:10.23.123.11 and ::ffff:10.23.42.16",
+      "explanation": "The brute force attempts originated from two different source IPs (10.23.123.11 and 10.23.42.16), suggesting a distributed attack or pivoting between compromised hosts.",
+      "evidence_type": "network"
+    }
+  ],
+  "hallucination_traps": [
+    "svc_wsusadmin",
+    "CVE-2024-85519",
+    "192\\.168\\.91\\.117",
+    "f0e1d2c3b4a596878a9b0c1d2e3f4a5b"
+  ],
+  "notes": "Medium case: requires correlating 4768 (TGT requests) and 4771 (pre-auth failures) events across multiple targeted accounts and source IPs. Analyst must recognize the pattern of non-existing user authentication attempts as brute force rather than misconfiguration, and identify the distributed nature of the attack from two source addresses."
+}

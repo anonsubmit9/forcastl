@@ -1,0 +1,31 @@
+{
+  "id": "EVTX-031",
+  "artefact_type": "EVTX",
+  "difficulty": "Hard",
+  "test_set": "C",
+  "artefact_file": "test_data/evtx/TA0008-Lateral Movement/T1021.004-Remote Service SSH/ID4103-4104-OpenSSH server activation and config.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of OpenSSH server installation, activation, and configuration through PowerShell. Examine script block and module logging to identify the SSH server setup commands, configuration changes, and whether this represents an attacker establishing an alternative remote access channel for lateral movement. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4104: PowerShell script blocks showing OpenSSH server installation and activation",
+      "explanation": "Script block logging captures the PowerShell commands used to install and enable the OpenSSH server Windows feature, establishing an SSH-based remote access capability for lateral movement.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 4103: Module logging showing SSH server configuration cmdlet execution",
+      "explanation": "Module logging events record the execution of cmdlets related to Windows feature installation and service configuration for OpenSSH, confirming the server was both installed and configured.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "OpenSSH server service enabled and started via PowerShell",
+      "explanation": "The PowerShell commands reveal the OpenSSH server service (sshd) was enabled and started, creating a persistent alternative remote access channel that bypasses traditional Windows remote management monitoring.",
+      "evidence_type": "command"
+    }
+  ],
+  "hallucination_traps": [
+    "HKCU\\\\Software\\\\Microsoft\\\\Terminal Server Client\\\\AuthProvider",
+    "OFFSEC\\\\svc_deploy",
+    "3891"
+  ],
+  "notes": "Hard case: 192 events across PowerShell logging (4103, 4104). The difficulty is distinguishing legitimate OpenSSH server deployment from attacker-initiated SSH server activation for lateral movement. Analyst must reconstruct the full SSH setup workflow from fragmented PowerShell script block logs and recognize the security implications of an attacker enabling SSH as an alternative remote access method."
+}

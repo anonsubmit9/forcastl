@@ -1,0 +1,36 @@
+{
+  "id": "EVTX-009",
+  "artefact_type": "EVTX",
+  "difficulty": "Easy",
+  "test_set": "C",
+  "artefact_file": "test_data/evtx/TA0006-Credential Access/T1003-Credential dumping/ID10-Mimikatz LSASS process dump.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of credential dumping or LSASS memory access. Identify the attack tool used, the targeted process, and the user context of the attack. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Process: C:\\TOOLS\\Mimikatzx64\\mimikatz.exe",
+      "explanation": "The well-known credential dumping tool Mimikatz was executed from a TOOLS directory, indicating deliberate credential theft activity.",
+      "evidence_type": "process"
+    },
+    {
+      "indicator": "Event ID 10: Process access targeting lsass.exe",
+      "explanation": "Sysmon Event 10 records cross-process access to LSASS, which stores Windows credentials in memory. This is the primary technique for credential dumping.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Target process: C:\\Windows\\system32\\lsass.exe",
+      "explanation": "LSASS (Local Security Authority Subsystem Service) was accessed by Mimikatz to extract credentials from memory.",
+      "evidence_type": "process"
+    },
+    {
+      "indicator": "Account: OFFSEC\\admmig running as NT AUTHORITY\\SYSTEM",
+      "explanation": "The attack was conducted by the admmig account in the OFFSEC domain with SYSTEM-level privileges, providing full access to credential stores.",
+      "evidence_type": "account"
+    }
+  ],
+  "hallucination_traps": [
+    "LaZagne\\.NET",
+    "9f8e7d6c5b4a39281706f5e4d3c2b1a0",
+    "ntoskrnl_debug\\.sys"
+  ],
+  "notes": "Easy case: Mimikatz.exe is explicitly named in the process path, and Sysmon Event 10 clearly shows LSASS access. Unmistakable credential dumping (T1003) with named tool."
+}

@@ -1,0 +1,82 @@
+{
+  "file": "BENIGN-ID5145-Veeam backup reads files over backup share.csv",
+  "gt_key": "BENIGN-ID5145-Veeam backup reads files over backup share.evtx",
+  "malicious": "NO",
+  "alignment_pct": 83.3,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4624</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 01:30:04\"/>\n    <Computer>fileserver01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserName\">-</Data>\n    <Data Name=\"TargetUserName\">svc_veeam</Data>\n    <Data Name=\"TargetDomainName\">OFFSEC</Data>\n    <Data Name=\"LogonType\">3</Data>\n    <Data Name=\"AuthenticationPackageName\">Kerberos</Data>\n    <Data Name=\"LogonProcessName\">Kerberos</Data>\n    <Data Name=\"IpAddress\">10.23.50.20</Data>\n    <Data Name=\"WorkstationName\">BKP01</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4672</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 01:30:04\"/>\n    <Computer>fileserver01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserName\">svc_veeam</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"PrivilegeList\">SeBackupPrivilege\n\t\t\tSeSecurityPrivilege\n\t\t\tSeRestorePrivilege</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>5140</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 01:30:05\"/>\n    <Computer>fileserver01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserName\">svc_veeam</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"ShareName\">\\\\*\\Backups$</Data>\n    <Data Name=\"IpAddress\">10.23.50.20</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>5145</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 01:30:06\"/>\n    <Computer>fileserver01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserName\">svc_veeam</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"ShareName\">\\\\*\\Backups$</Data>\n    <Data Name=\"RelativeTargetName\">SQL01\\Full\\sql01_2025-09-23.vbk</Data>\n    <Data Name=\"AccessMask\">0x1</Data>\n    <Data Name=\"AccessList\">%%4416</Data>\n    <Data Name=\"IpAddress\">10.23.50.20</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>5145</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 01:30:07\"/>\n    <Computer>fileserver01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserName\">svc_veeam</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"ShareName\">\\\\*\\Backups$</Data>\n    <Data Name=\"RelativeTargetName\">FS01\\Incremental\\fs01_2025-09-23.vib</Data>\n    <Data Name=\"AccessMask\">0x1</Data>\n    <Data Name=\"AccessList\">%%4416</Data>\n    <Data Name=\"IpAddress\">10.23.50.20</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>5145</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 01:30:08\"/>\n    <Computer>fileserver01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserName\">svc_veeam</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"ShareName\">\\\\*\\Backups$</Data>\n    <Data Name=\"RelativeTargetName\">DC01\\Full\\dc01_systemstate_2025-09-23.vbk</Data>\n    <Data Name=\"AccessMask\">0x1</Data>\n    <Data Name=\"AccessList\">%%4416</Data>\n    <Data Name=\"IpAddress\">10.23.50.20</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>5145</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 01:30:09\"/>\n    <Computer>fileserver01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserName\">svc_veeam</Data>\n    <Data Name=\"SubjectDomainName\">OFFSEC</Data>\n    <Data Name=\"ShareName\">\\\\*\\Backups$</Data>\n    <Data Name=\"RelativeTargetName\">APP01\\Incremental\\app01_2025-09-23.vib</Data>\n    <Data Name=\"AccessMask\">0x1</Data>\n    <Data Name=\"AccessList\">%%4416</Data>\n    <Data Name=\"IpAddress\">10.23.50.20</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Security-Auditing\"/>\n    <EventID>4673</EventID>\n    <TimeCreated SystemTime=\"2025-09-23 01:31:02\"/>\n    <Computer>fileserver01.offsec.lan</Computer>\n    <Channel>Security</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"SubjectUserName\">svc_veeam</Data>\n    <Data Name=\"PrivilegeList\">SeBackupPrivilege</Data>\n    <Data Name=\"ProcessName\">C:\\Windows\\System32\\svchost.exe</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "4624",
+      "4672",
+      "4673",
+      "5140",
+      "5145"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\svchost.exe"
+    ],
+    "accounts": [
+      "svc_veeam"
+    ],
+    "commands": [],
+    "network": [
+      "10.23.50.20",
+      "\\\\*\\Backups$",
+      "BKP01"
+    ],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "4624",
+      "4672",
+      "4673",
+      "5140",
+      "5145"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\svchost.exe"
+    ],
+    "accounts": [
+      "svc_veeam"
+    ],
+    "commands": [],
+    "network": [
+      "10.23.50.20",
+      "\\\\*\\Backups$",
+      "BKP01"
+    ],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "4624",
+      "4672",
+      "5140",
+      "5145",
+      "4673"
+    ],
+    "processes": [
+      "C:\\Windows\\System32\\svchost.exe"
+    ],
+    "accounts": [
+      "svc_veeam"
+    ],
+    "commands": [],
+    "network": [
+      "10.23.50.20"
+    ],
+    "registry": []
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "network": [
+      "\\\\*\\Backups$",
+      "BKP01"
+    ]
+  }
+}

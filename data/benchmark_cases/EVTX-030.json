@@ -1,0 +1,36 @@
+{
+  "id": "EVTX-030",
+  "artefact_type": "EVTX",
+  "difficulty": "Hard",
+  "test_set": "C",
+  "artefact_file": "test_data/evtx/TA0007-Discovery/T1069-Permission Groups Discovery/ID4661-Local group enumeration with RID brutforce with CME.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of local group enumeration through RID brute-forcing. Identify the object access patterns, the enumeration technique, the account performing the discovery, and whether this is consistent with automated tooling such as CrackMapExec. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4661: Systematic SAM object access indicating RID brute-force enumeration",
+      "explanation": "Directory service access events show sequential access to SAM objects with incrementing RIDs (Relative Identifiers), a technique used by CrackMapExec (CME) to enumerate local groups and their memberships.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Process: lsass.exe handling the RID enumeration requests",
+      "explanation": "LSASS processes the SAM lookups during RID brute-forcing, confirming the enumeration is occurring through the Security Account Manager interface.",
+      "evidence_type": "process"
+    },
+    {
+      "indicator": "Account: admmig performing the group enumeration",
+      "explanation": "The admmig account was used for the RID brute-force enumeration, requiring authenticated access to query SAM objects for local group information.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Event ID 4662: Object access confirming systematic group membership queries",
+      "explanation": "Object operation events (4662) complement the 4661 events, confirming that the enumeration involved reading properties of SAM group objects in a systematic brute-force pattern.",
+      "evidence_type": "event_log"
+    }
+  ],
+  "hallucination_traps": [
+    "WinPEAS\\-ng",
+    "10\\.151\\.62\\.38",
+    "admin_recovery\\$"
+  ],
+  "notes": "Hard case: only 45 events but extremely subtle. Events 4661 and 4662 are generic directory service access events that could appear benign. The key challenge is recognizing the sequential RID access pattern as brute-force enumeration rather than legitimate SAM queries. Analyst must understand RID-based enumeration mechanics and connect the pattern to CrackMapExec (CME) tooling behavior."
+}

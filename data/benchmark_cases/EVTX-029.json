@@ -1,0 +1,36 @@
+{
+  "id": "EVTX-029",
+  "artefact_type": "EVTX",
+  "difficulty": "Hard",
+  "test_set": "B",
+  "artefact_file": "test_data/evtx/TA0007-Discovery/T1016-System Network Configuration Discovery/ID800-4103-4104-Firewall configuration enumerated (PowerShell).evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of network configuration reconnaissance via PowerShell. Examine PowerShell script block logging, module logging, and operational events to identify what network and firewall information was enumerated, the specific cmdlets or commands used, and the intent behind the discovery activity. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4104: PowerShell script block logging capturing firewall enumeration commands",
+      "explanation": "Script block logging events record the exact PowerShell commands used to enumerate firewall rules and network configuration, providing full visibility into the reconnaissance activity.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 4103: PowerShell module logging showing network configuration cmdlet execution",
+      "explanation": "Module logging events capture the execution of networking-related PowerShell cmdlets (e.g., Get-NetFirewallRule, Get-NetIPConfiguration) used for system network configuration discovery.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 800: PowerShell pipeline execution details for firewall enumeration",
+      "explanation": "PowerShell operational events (800) provide pipeline execution details that corroborate the firewall configuration enumeration captured in script block and module logs.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Firewall rules and network adapter configurations systematically enumerated",
+      "explanation": "The PowerShell commands reveal systematic enumeration of firewall rules, network adapters, and IP configurations, indicating pre-attack reconnaissance to identify network segmentation and defensive controls.",
+      "evidence_type": "command"
+    }
+  ],
+  "hallucination_traps": [
+    "NetcatSharp",
+    "192\\.168\\.201\\.77",
+    "2299"
+  ],
+  "notes": "Hard case: 409 events across three PowerShell logging channels (800, 4103, 4104). The difficulty lies in correlating verbose PowerShell logging output to extract the actual reconnaissance commands from the noise of module loading, pipeline execution, and script block fragmentation. Analyst must reconstruct the complete firewall enumeration workflow from scattered log entries across multiple event types."
+}

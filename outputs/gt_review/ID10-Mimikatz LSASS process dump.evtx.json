@@ -1,0 +1,83 @@
+{
+  "file": "ID10-Mimikatz LSASS process dump.evtx",
+  "gt_key": "ID10-Mimikatz LSASS process dump.evtx",
+  "malicious": "YES",
+  "alignment_pct": 80.0,
+  "triage_reasons": [
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>1</EventID>\n    <TimeCreated SystemTime=\"2021-10-21 20:40:12.8678222\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"RuleName\">technique_id=T1059,technique_name=Command-Line Interface</Data>\n    <Data Name=\"UtcTime\">2021-10-21 20:40:12.867</Data>\n    <Data Name=\"ProcessGuid\">7cf65fc7-d02c-6171-1203-000000001200</Data>\n    <Data Name=\"ProcessId\">2032</Data>\n    <Data Name=\"Image\">C:\\TOOLS\\Mimikatzx64\\mimikatz.exe</Data>\n    <Data Name=\"FileVersion\">2.2.0.0</Data>\n    <Data Name=\"Description\">mimikatz for Windows</Data>\n    <Data Name=\"Product\">mimikatz</Data>\n    <Data Name=\"Company\">gentilkiwi (Benjamin DELPY)</Data>\n    <Data Name=\"OriginalFileName\">mimikatz.exe</Data>\n    <Data Name=\"CommandLine\">mimikatz.exe</Data>\n    <Data Name=\"CurrentDirectory\">C:\\TOOLS\\Mimikatzx64\\</Data>\n    <Data Name=\"User\">OFFSEC\\admmig</Data>\n    <Data Name=\"LogonGuid\">7cf65fc7-7abf-616e-5fc6-f40100000000</Data>\n    <Data Name=\"LogonId\">0x1F4C65F</Data>\n    <Data Name=\"TerminalSessionId\">2</Data>\n    <Data Name=\"IntegrityLevel\">High</Data>\n    <Data Name=\"Hashes\">SHA1=D241DF7B9D2EC0B8194751CD5CE153E27CC40FA4,MD5=A3CB3B02A683275F7E0A0F8A9A5C9E07,SHA256=31EB1DE7E840A342FD468E558E5AB627BCB4C542A8FE01AEC4D5BA01D539A0FC,IMPHASH=DBDEA7B557F0E6B5D9E18ABE9CE5220A</Data>\n    <Data Name=\"ParentProcessGuid\">7cf65fc7-886c-616e-b201-000000001200</Data>\n    <Data Name=\"ParentProcessId\">2908</Data>\n    <Data Name=\"ParentImage\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"ParentCommandLine\">\"C:\\Windows\\system32\\cmd.exe\" </Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>1</EventID>\n    <TimeCreated SystemTime=\"2021-10-21 20:40:43.1204864\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"RuleName\">technique_id=T1059,technique_name=Command-Line Interface</Data>\n    <Data Name=\"UtcTime\">2021-10-21 20:40:43.120</Data>\n    <Data Name=\"ProcessGuid\">7cf65fc7-d04b-6171-1303-000000001200</Data>\n    <Data Name=\"ProcessId\">5040</Data>\n    <Data Name=\"Image\">C:\\Windows\\System32\\cmd.exe</Data>\n    <Data Name=\"FileVersion\">6.3.9600.17415 (winblue_r4.141028-1500)</Data>\n    <Data Name=\"Description\">Windows Command Processor</Data>\n    <Data Name=\"Product\">Microsoft\u00ae Windows\u00ae Operating System</Data>\n    <Data Name=\"Company\">Microsoft Corporation</Data>\n    <Data Name=\"OriginalFileName\">Cmd.Exe</Data>\n    <Data Name=\"CommandLine\">cmd.exe</Data>\n    <Data Name=\"CurrentDirectory\">C:\\Windows\\system32\\</Data>\n    <Data Name=\"User\">NT AUTHORITY\\SYSTEM</Data>\n    <Data Name=\"LogonGuid\">7cf65fc7-d04b-6171-a4de-e60200000000</Data>\n    <Data Name=\"LogonId\">0x2E6DEA4</Data>\n    <Data Name=\"TerminalSessionId\">2</Data>\n    <Data Name=\"IntegrityLevel\">System</Data>\n    <Data Name=\"Hashes\">SHA1=7C3D7281E1151FE4127923F4B4C3CD36438E1A12,MD5=F5AE03DE0AD60F5B17B82F2CD68402FE,SHA256=6F88FB88FFB0F1D5465C2826E5B4F523598B1B8378377C8378FFEBC171BAD18B,IMPHASH=77AED1ADAF24B344F08C8AD1432908C3</Data>\n    <Data Name=\"ParentProcessGuid\">7cf65fc7-d02c-6171-1203-000000001200</Data>\n    <Data Name=\"ParentProcessId\">2032</Data>\n    <Data Name=\"ParentImage\">C:\\TOOLS\\Mimikatzx64\\mimikatz.exe</Data>\n    <Data Name=\"ParentCommandLine\">mimikatz.exe</Data>\n  </EventData>\n</Event>\n\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"Microsoft-Windows-Sysmon\"/>\n    <EventID>10</EventID>\n    <TimeCreated SystemTime=\"2021-10-21 20:40:43.1361125\"/>\n    <Computer>FS03.offsec.lan</Computer>\n    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>\n  </System>\n  <EventData>\n    <Data Name=\"RuleName\">-</Data>\n    <Data Name=\"UtcTime\">2021-10-21 20:40:43.136</Data>\n    <Data Name=\"SourceProcessGUID\">7cf65fc7-d02c-6171-1203-000000001200</Data>\n    <Data Name=\"SourceProcessId\">2032</Data>\n    <Data Name=\"SourceThreadId\">4056</Data>\n    <Data Name=\"SourceImage\">C:\\TOOLS\\Mimikatzx64\\mimikatz.exe</Data>\n    <Data Name=\"TargetProcessGUID\">7cf65fc7-6649-6165-0b00-000000001200</Data>\n    <Data Name=\"TargetProcessId\">512</Data>\n    <Data Name=\"TargetImage\">C:\\Windows\\system32\\lsass.exe</Data>\n    <Data Name=\"GrantedAccess\">0x1010</Data>\n    <Data Name=\"CallTrace\">C:\\Windows\\SYSTEM32\\ntdll.dll+909ba|C:\\Windows\\system32\\KERNELBASE.dll+2d8e|C:\\TOOLS\\Mimikatzx64\\mimikatz.exe+bcbda|C:\\TOOLS\\Mimikatzx64\\mimikatz.exe+be7bd|C:\\TOOLS\\Mimikatzx64\\mimikatz.exe+be650|C:\\TOOLS\\Mimikatzx64\\mimikatz.exe+84f28|C:\\TOOLS\\Mimikatzx64\\mimikatz.exe+84d60|C:\\TOOLS\\Mimikatzx64\\mimikatz.exe+84b2b|C:\\TOOLS\\Mimikatzx64\\mimikatz.exe+c39a9|C:\\Windows\\system32\\KERNEL32.DLL+13d2|C:\\Windows\\SYSTEM32\\ntdll.dll+154f4</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "1",
+      "10"
+    ],
+    "processes": [
+      "C:\\TOOLS\\Mimikatzx64\\mimikatz.exe",
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\system32\\lsass.exe"
+    ],
+    "accounts": [
+      "NT AUTHORITY\\SYSTEM",
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "cmd.exe",
+      "mimikatz.exe"
+    ],
+    "network": [
+      "2.2.0.0"
+    ],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "1",
+      "10"
+    ],
+    "processes": [
+      "C:\\TOOLS\\Mimikatzx64\\mimikatz.exe",
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\system32\\lsass.exe"
+    ],
+    "accounts": [
+      "NT AUTHORITY\\SYSTEM",
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "cmd.exe",
+      "mimikatz.exe"
+    ],
+    "network": [
+      "2.2.0.0"
+    ],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "1",
+      "10"
+    ],
+    "processes": [
+      "C:\\TOOLS\\Mimikatzx64\\mimikatz.exe",
+      "C:\\Windows\\System32\\cmd.exe",
+      "C:\\Windows\\system32\\lsass.exe"
+    ],
+    "accounts": [
+      "OFFSEC\\admmig",
+      "NT AUTHORITY\\SYSTEM"
+    ],
+    "commands": [
+      "mimikatz.exe, cmd.exe, \"C:\\Windows\\system32\\cmd.exe\""
+    ],
+    "network": [],
+    "registry": []
+  },
+  "under_population": {},
+  "gt_missed_by_model": {
+    "network": [
+      "2.2.0.0"
+    ]
+  }
+}

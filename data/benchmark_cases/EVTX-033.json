@@ -1,0 +1,41 @@
+{
+  "id": "EVTX-033",
+  "artefact_type": "EVTX",
+  "difficulty": "Hard",
+  "test_set": "C",
+  "artefact_file": "test_data/evtx/TA0008-Lateral Movement/T1021.002-SMB Windows Admin Shares/ID4688,4697,5140-5145 PSexec remote execution + admin share.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of PsExec-based remote execution combined with administrative share access. Correlate service installation events, process creation, network share access, and authentication events to reconstruct the full PsExec lateral movement chain. Identify the service deployed, the commands executed remotely, and the accounts involved. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4697: PSEXESVC service installed for remote execution",
+      "explanation": "A service installation event records the deployment of PSEXESVC.exe, the PsExec remote execution service that is installed on target systems to enable remote command execution.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event ID 4688: PSEXESVC.exe and cmd.exe process creation confirming remote command execution",
+      "explanation": "Process creation events show PSEXESVC.exe spawning cmd.exe on the target system, confirming that PsExec was used to execute commands remotely through the installed service.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Event IDs 5140/5145: Administrative share (ADMIN$, IPC$) access for PsExec deployment",
+      "explanation": "Network share access events show the ADMIN$ and IPC$ shares being accessed, which PsExec uses to copy its service binary and establish the named pipe for remote command communication.",
+      "evidence_type": "network"
+    },
+    {
+      "indicator": "Account: admmig used for PsExec lateral movement",
+      "explanation": "The admmig administrative account was used to authenticate and deploy the PsExec service, requiring administrative privileges on the target system for service installation and share access.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Event ID 4624: Network logon (Type 3) associated with PsExec authentication",
+      "explanation": "Network logon events confirm the remote authentication that preceded PsExec service deployment, establishing the lateral movement timeline from authentication through execution.",
+      "evidence_type": "event_log"
+    }
+  ],
+  "hallucination_traps": [
+    "HKLM\\\\SOFTWARE\\\\Microsoft\\\\Cryptography\\\\OID\\\\EncodingType1\\\\CertDllVerifyRevocation",
+    "msiexec_update\\.exe",
+    "172\\.17\\.99\\.203"
+  ],
+  "notes": "Hard case: 36 events across 6 event types (4624, 4674, 4688, 4697, 5140, 5145). While PsExec is a well-known tool, the difficulty lies in correlating the complete lateral movement chain: authentication (4624), privilege use (4674), service installation (4697), process execution (4688), and share access (5140/5145). Analyst must reconstruct the full attack timeline and distinguish PsExec activity from legitimate remote administration."
+}

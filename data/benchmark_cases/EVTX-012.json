@@ -1,0 +1,41 @@
+{
+  "id": "EVTX-012",
+  "artefact_type": "EVTX",
+  "difficulty": "Medium",
+  "test_set": "A",
+  "artefact_file": "test_data/evtx/TA0011-Command and Control/T1572-Protocol tunneling/ID4688-netsh RDP port forwarding abuse.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of protocol tunneling or port forwarding abuse. Identify the commands used, the accounts involved, and any network indicators of tunneling activity. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 4688: Process creation of netsh.exe for port forwarding",
+      "explanation": "Process creation events show netsh.exe being used to configure port proxy rules, a technique for tunneling RDP traffic through compromised hosts.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "Command: netsh portproxy configuration",
+      "explanation": "The netsh portproxy command was used to set up port forwarding rules, enabling protocol tunneling for command and control or lateral movement.",
+      "evidence_type": "command"
+    },
+    {
+      "indicator": "Account: admmig used for port forwarding setup",
+      "explanation": "The admmig administrative account was used to configure port forwarding, suggesting a compromised privileged account being leveraged for tunneling.",
+      "evidence_type": "account"
+    },
+    {
+      "indicator": "Network indicator: 10.23.23.9 involved in tunneling",
+      "explanation": "The IP address 10.23.23.9 appears in connection with the port forwarding activity, identifying a node in the tunneling infrastructure.",
+      "evidence_type": "network"
+    },
+    {
+      "indicator": "Event ID 1102: Security audit log cleared",
+      "explanation": "The security audit log was cleared during the same session, indicating anti-forensic activity to cover tracks after setting up the tunnel.",
+      "evidence_type": "event_log"
+    }
+  ],
+  "hallucination_traps": [
+    "CVE-2023-55891",
+    "192\\.168\\.183\\.201",
+    "conhost_proxy\\.exe"
+  ],
+  "notes": "Medium case: multiple event IDs (1102, 4624, 4627, 4672, 4688, 4964) require correlation. Analyst must connect netsh portproxy commands to tunneling activity and identify the anti-forensic log clearing alongside the C2 setup."
+}

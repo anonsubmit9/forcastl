@@ -1,0 +1,81 @@
+{
+  "file": "ID33205-SQL Server user linked to a database.evtx",
+  "gt_key": "ID33205-SQL Server user linked to a database.evtx",
+  "malicious": "NO",
+  "alignment_pct": 88.9,
+  "triage_reasons": [
+    "under_population",
+    "misalignment"
+  ],
+  "is_candidate": true,
+  "artefact_xml": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n  <System>\n    <Provider Name=\"MSSQL$RADAR\"/>\n    <EventID>33205</EventID>\n    <TimeCreated SystemTime=\"2020-07-15 21:09:08.5124304\"/>\n    <Computer>mssql01.offsec.lan</Computer>\n    <Channel>Application</Channel>\n  </System>\n  <EventData>\n    <Data>audit_schema_version:1\nevent_time:2020-07-15 21:09:06.1166932\nsequence_number:1\naction_id:CR  \nsucceeded:true\nis_column_permission:false\nsession_id:54\nserver_principal_id:2\ndatabase_principal_id:1\ntarget_server_principal_id:0\ntarget_database_principal_id:0\nobject_id:5\nuser_defined_event_id:0\nclass_type:SU\npermission_bitmask:00000000000000000000000000000000\nsequence_group_id:75F1A4D3-4BE1-4A50-994F-7E8197076177\nsession_server_principal_name:OFFSEC\\admmig\nserver_principal_name:OFFSEC\\admmig\nserver_principal_sid:01050000000000051500000056d628fc05668f976f2456bb57040000\ndatabase_principal_name:dbo\ntarget_server_principal_name:\ntarget_server_principal_sid:\ntarget_database_principal_name:\nserver_instance_name:MSSQL01\\RADAR\ndatabase_name:RCS-TEST-db\nschema_name:\nobject_name:test-sql\nstatement:CREATE USER [test-sql] FOR LOGIN [test-sql]\nadditional_information:\nuser_defined_information:\n</Data>\n  </EventData>\n</Event>",
+  "scored_expected": {
+    "event_ids": [
+      "33205"
+    ],
+    "processes": [],
+    "accounts": [
+      "dbo",
+      "MSSQL$RADAR",
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "CREATE USER [test-sql] FOR LOGIN [test-sql]"
+    ],
+    "network": [],
+    "registry": []
+  },
+  "base_expected": {
+    "event_ids": [
+      "33205"
+    ],
+    "processes": [],
+    "accounts": [
+      "dbo",
+      "MSSQL$RADAR",
+      "OFFSEC\\admmig"
+    ],
+    "commands": [
+      "CREATE USER [test-sql] FOR LOGIN [test-sql]"
+    ],
+    "network": [],
+    "registry": []
+  },
+  "model_detected": {
+    "event_ids": [
+      "33205"
+    ],
+    "processes": [
+      "MSSQL$RADAR"
+    ],
+    "accounts": [
+      "OFFSEC\\admmig",
+      "dbo",
+      "test-sql"
+    ],
+    "commands": [
+      "CREATE USER [test-sql] FOR LOGIN [test-sql"
+    ],
+    "network": [],
+    "registry": []
+  },
+  "under_population": {
+    "processes": [
+      {
+        "value": "MSSQL$RADAR",
+        "in_artifact": true
+      }
+    ],
+    "accounts": [
+      {
+        "value": "test-sql",
+        "in_artifact": true
+      }
+    ]
+  },
+  "gt_missed_by_model": {
+    "accounts": [
+      "MSSQL$RADAR"
+    ]
+  }
+}

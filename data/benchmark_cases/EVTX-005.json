@@ -1,0 +1,26 @@
+{
+  "id": "EVTX-005",
+  "artefact_type": "EVTX",
+  "difficulty": "Easy",
+  "test_set": "B",
+  "artefact_file": "test_data/evtx/TA0011-Command and Control/T1090-Proxy/ID5600-proxy configuration changed.evtx",
+  "scenario_prompt": "Analyze these Windows event logs for signs of proxy configuration changes that could indicate command and control infrastructure setup. Identify the nature of the configuration changes. Use only evidence present in the data.",
+  "expected_findings": [
+    {
+      "indicator": "Event ID 5600: Proxy configuration was changed",
+      "explanation": "Multiple proxy configuration change events indicate modification of system proxy settings, which can be used to route traffic through attacker-controlled infrastructure for command and control.",
+      "evidence_type": "event_log"
+    },
+    {
+      "indicator": "10 proxy configuration change events recorded",
+      "explanation": "The volume of proxy configuration changes suggests systematic reconfiguration rather than normal administrative activity.",
+      "evidence_type": "event_log"
+    }
+  ],
+  "hallucination_traps": [
+    "CobaltImplant",
+    "HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\SvcHostMonitor\\\\Parameters",
+    "192\\.168\\.247\\.199"
+  ],
+  "notes": "Easy case: 10 events all of type 5600 (proxy configuration changed). Clear C2 setup indicator with single event type, no ambiguity."
+}

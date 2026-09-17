@@ -1,0 +1,8 @@
+full corpus, 219 malicious. Sigma>=medium hits 136 misses 83
+  Claude: catches 77/83 of Sigma's misses; Sigma catches 4/10 of Claude's misses; both miss 6: ['ID11-Exchange transport config modified', 'ID11715-SQL Server started in single mode for psw recovery', 'ID5136-AdminSDholder backdoor obfuscation (via localizationDisplayId)', 'ID5137-Fake domain controller registration (DCshadow)', 'ID4768-4769-Kerberos host ticket without a trailing $', 'ID5142- New file share created']; union recall 213/219 = 97.3%
+  GPT: catches 77/83 of Sigma's misses; Sigma catches 6/12 of GPT's misses; both miss 6: ['ID11-Exchange transport config modified', 'ID11715-SQL Server started in single mode for psw recovery', 'ID5136-AdminSDholder backdoor obfuscation (via localizationDisplayId)', 'ID5137-Fake domain controller registration (DCshadow)', 'ID4768-4769-Kerberos host ticket without a trailing $', 'ID5145-DNS hosts files access via network share']; union recall 213/219 = 97.3%
+Sigma misses by difficulty: {'easy': 81, 'hard': 1, 'medium': 1}  all malicious: {'easy': 199, 'medium': 9, 'hard': 11}
+Sigma misses total_events median: 4  hits median: 5
+Sigma misses with total_events<=2: 30 / 83 ; hits with <=2: 40 / 136
+  relabelled FPs: Sigma 15, Claude 24, both 10, Sigma-only 5, Claude-only 14
+  relabelled FPs: Sigma 15, GPT 21, both 12, Sigma-only 3, GPT-only 9
